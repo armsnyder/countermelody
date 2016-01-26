@@ -5,13 +5,13 @@ A rhythm-based tactical RPG by Gregory Elliott, Corey Grief, and Adam Snyder
 There are a couple of necessary steps to take before you can contribute without causing errors 
 ([source](http://docs.unity3d.com/Manual/ExternalVersionControlSystemSupport.html)).  
 1. Download and install [Git Large File Storage](https://git-lfs.github.com/). This allows us to version large 
-(>1MB), non-text files without eating up excesive local disk space.
+(>1MB), non-text files without eating up excesive local disk space.  
 2. Confirm your project settings in Edit->Project Settings->Editor. (These should already be set correctly, but 
-just be aware.) __Version Control Mode__ should be set to __Visible Meta Files__, and __Asset Serialization__ should be set to __Force Text__.
+just be aware.) __Version Control Mode__ should be set to __Visible Meta Files__, and __Asset Serialization__ should be set to __Force Text__.  
 3. Create a .gitconfig file, which is not in the repository because it's platform-dependent, and fill it according to 
-[these directions](http://docs.unity3d.com/Manual/SmartMerge.html).
+[these directions](http://docs.unity3d.com/Manual/SmartMerge.html).  
 4. Add a Smart Merge fallback tool by following 
-[these directions](https://www.reddit.com/r/Unity3D/comments/39bdq5/how_to_solve_scene_conflicts_with_unitys_smart/).
+[these directions](https://www.reddit.com/r/Unity3D/comments/39bdq5/how_to_solve_scene_conflicts_with_unitys_smart/).  
 
 ## Tips and Guidelines
 Feel free to add tips and reminders here. We should be in agreement as far as following certain guidelines so that 
