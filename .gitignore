@@ -27,3 +27,5 @@ sysinfo.txt
 
 **/.gitconfig
 **/.DS_Store
+**/TBS Framework/*
+TBS Framework.meta
