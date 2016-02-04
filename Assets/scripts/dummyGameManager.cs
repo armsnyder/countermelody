@@ -14,7 +14,7 @@ public class dummyGameManager : MonoBehaviour {
     void LogAThing(object sender, EventArgs e)
     {
         
-        Debug.Log((e as ButtonEventArgs).buttonPressed);
+		Debug.Log((e as ButtonEventArgs).button.ToString());
     }
 
 

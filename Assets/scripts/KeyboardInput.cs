@@ -17,7 +17,7 @@ public class KeyboardInput : MonoBehaviour, IGameInput {
         {
             if (green_strum != null)
             {
-                green_strum(this, new ButtonEventArgs("green_strum"));
+				green_strum(this, new ButtonEventArgs(InputButton.GREEN_STRUM, 0));
             }
         }
 
@@ -25,7 +25,7 @@ public class KeyboardInput : MonoBehaviour, IGameInput {
         {
             if (red_strum != null)
             {
-                red_strum(this, new ButtonEventArgs("red_strum"));
+				red_strum(this, new ButtonEventArgs(InputButton.RED_STRUM, 0));
             }
         }
 
@@ -33,7 +33,7 @@ public class KeyboardInput : MonoBehaviour, IGameInput {
         {
             if (yellow_strum != null)
             {
-                yellow_strum(this, new ButtonEventArgs("yellow_strum"));
+				yellow_strum(this, new ButtonEventArgs(InputButton.YELLOW_STRUM, 0));
             }
         }
 
@@ -41,7 +41,7 @@ public class KeyboardInput : MonoBehaviour, IGameInput {
         {
             if (blue_strum != null)
             {
-                blue_strum(this, new ButtonEventArgs("blue_strum"));
+				blue_strum(this, new ButtonEventArgs(InputButton.BLUE_STRUM, 0));
             }
         }
 
@@ -49,7 +49,7 @@ public class KeyboardInput : MonoBehaviour, IGameInput {
         {
             if (orange_strum != null)
             {
-                orange_strum(this, new ButtonEventArgs("orange_strum"));
+				orange_strum(this, new ButtonEventArgs(InputButton.ORANGE_STRUM, 0));
             }
         }
 	
@@ -78,15 +78,4 @@ public class KeyboardInput : MonoBehaviour, IGameInput {
     public event EventHandler whammy_down;
 
     public event EventHandler whammy_up;
-}
-
-
-public class ButtonEventArgs : EventArgs
-{
-    public string buttonPressed;
-
-    public ButtonEventArgs(string button)
-    {
-        this.buttonPressed = button;
-    }
 }
