@@ -2,6 +2,33 @@
 using System.Collections;
 using System;
 
+public enum InputButton {
+    GREEN,
+    RED,
+    YELLOW,
+    BLUE,
+    ORANGE,
+    GREEN_STRUM,
+    RED_STRUM,
+    YELLOW_STRUM,
+    BLUE_STRUM,
+    ORANGE_STRUM,
+    WHAMMY_DOWN,
+    WHAMMY_UP,
+    PLUS,
+    MINUS
+}
+
+public class ButtonEventArgs : EventArgs {
+    public InputButton button;
+    public int playerNum;
+
+    public ButtonEventArgs(InputButton button, int playerNum) {
+        this.button = button;
+        this.playerNum = playerNum;
+    }
+}
+
 public interface IGameInput {
 
     event EventHandler green;
