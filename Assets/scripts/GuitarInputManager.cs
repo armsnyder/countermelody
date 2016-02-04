@@ -5,8 +5,11 @@ using System.Collections.ObjectModel;
 using WiimoteApi;
 
 /// <summary>
-/// Guitar input manager. This component continuously runs and manages connection with wiimotes. It handles connecting 
-/// and reconnecting with wiimotes, and provides access to the Guitar Hero extension input.
+/// Guitar/wiimote input manager. This component continuously runs and manages connection with wiimotes. It handles 
+/// connecting and reconnecting with wiimotes, and provides access to the Wiimote and Guitar Hero extension input.
+/// NOTE that this script is not a replacement for the computer's bluetooth driver. As such, all wiimotes must be 
+/// first connected to the computer via the computer's bluetooth settings by the player before this script will have
+/// access to them.
 /// </summary>
 public class GuitarInputManager : MonoBehaviour {
 
@@ -42,18 +45,20 @@ public class GuitarInputManager : MonoBehaviour {
 	public static event GuitarExtensionDisconnect OnGuitarExtensionDisconnect;
 
 	private bool isSearching = false;
-	private List<GuitarData> _guitars;  // TODO: Provide access to Wiimote objects (for rumble, D-pad, etc)
-	private List<bool> isWiimoteConnected;
+	private List<Wiimote> _wiimotes;
+	private List<bool> isGuitarConnected;
+	private List<int> readFailures;
+	private int maxTolerateReadFailures = 3;
 
 	/// <summary>
-	/// Gets the connected guitars as a list of GuitarData objects, which contain the input state of the connected 
-	/// guitar. If a wiimote is connected but does not have the guitar extension attached, it will not appear in this
-	/// list.
+	/// Gets the connected guitars as a list of Wiimote objects, which contain the input state of the connected 
+	/// guitar inside the Guitar property. The index of the wiimote is that wiimote's player number. Wiimotes that do 
+	/// not have guitars connected will still appear in this list.
 	/// </summary>
-	/// <value>The guitars.</value>
-	public ReadOnlyCollection<GuitarData> guitars {
+	/// <value>The connected wiimotes.</value>
+	public ReadOnlyCollection<Wiimote> wiimotes {
 		get {
-			return _guitars.AsReadOnly ();
+			return _wiimotes.AsReadOnly ();
 		}
 	}
 
@@ -72,24 +77,28 @@ public class GuitarInputManager : MonoBehaviour {
 					// If the value increases numRequiredPlayers, increase the size of guitars and begin looking for 
 					// new wiimotes.
 					for (int i = 0; i < value - _numRequiredPlayers; i++) {
-						_guitars.Add (null);
-						isWiimoteConnected.Add (false);
+						_wiimotes.Add (null);
+						isGuitarConnected.Add (false);
+						readFailures.Add (0);
 					}
 					StartManagingWiimotes ();
 				} else {
 					// If the value decreases numRequiredPlayers, decrease the size of guitars, and disconnect any 
 					// connected wiimotes that exceed the requirement.
 					for (int i = _numRequiredPlayers - 1; i >= value; i--) {
-						if (WiimoteManager.Wiimotes.Count > i && WiimoteManager.Wiimotes [i] != null) {
-							WiimoteManager.Wiimotes [i].SendPlayerLED (false, false, false, false);
-							WiimoteManager.Cleanup (WiimoteManager.Wiimotes [i]);
+						if (_wiimotes [i] != null) {
+							_wiimotes [i].SendPlayerLED (false, false, false, false);
+							WiimoteManager.Cleanup (_wiimotes [i]);
 							Debug.Log ("wiimote disconnected");
 							if (OnWiimoteDisconnect != null) {
 								OnWiimoteDisconnect (i);
 							}
 						}
-						_guitars.RemoveAt (_guitars.Count - 1);
-						isWiimoteConnected.RemoveAt (isWiimoteConnected.Count - 1);
+						Debug.Assert (_wiimotes.Count == isGuitarConnected.Count);
+						Debug.Assert (readFailures.Count == isGuitarConnected.Count);
+						_wiimotes.RemoveAt (_wiimotes.Count - 1);
+						isGuitarConnected.RemoveAt (isGuitarConnected.Count - 1);
+						readFailures.RemoveAt (readFailures.Count - 1);
 					}
 				}
 				_numRequiredPlayers = value;
@@ -102,9 +111,10 @@ public class GuitarInputManager : MonoBehaviour {
 	/// </summary>
 	/// <value><c>true</c> if ready; otherwise, <c>false</c>.</value>
 	public bool ready {
+		// TODO: Precalculate ready state
 		get {
 			for (int i = 0; i < _numRequiredPlayers; i++) {
-				if (_guitars [i] == null || !isWiimoteConnected [i]) {
+				if (_wiimotes [i] == null || !isGuitarConnected [i]) {
 					return false;
 				}
 			}
@@ -113,22 +123,57 @@ public class GuitarInputManager : MonoBehaviour {
 	}
 
 	private void Awake() {
-		_guitars = new List<GuitarData> (_numRequiredPlayers);
-		isWiimoteConnected = new List<bool> (_numRequiredPlayers);
+		_wiimotes = new List<Wiimote> (_numRequiredPlayers);
+		isGuitarConnected = new List<bool> (_numRequiredPlayers);
+		readFailures = new List<int> (_numRequiredPlayers);
 		for (int i = 0; i < _numRequiredPlayers; i++) {
-			_guitars.Add (null);
-			isWiimoteConnected.Add (false);
+			_wiimotes.Add (null);
+			isGuitarConnected.Add (false);
+			readFailures.Add (0);
 		}
 	}
 
 	private void Update() {
-		// TODO: Detect extension in Update loop (here) rather than Search loop (below)
-		for (int i = 0; i < WiimoteManager.Wiimotes.Count; i++) {
-			if (WiimoteManager.Wiimotes [i] != null) {
+		for (int i = 0; i < _wiimotes.Count; i++) {
+			if (_wiimotes [i] != null) {
+				// Read wiimote data
 				int ret;
 				do {
-					ret = WiimoteManager.Wiimotes [i].ReadWiimoteData();
+					ret = _wiimotes [i].ReadWiimoteData();
 				} while (ret > 0);
+				if (ret == -1) {
+					// Read failure.
+					Debug.Log ("Read failure: " + i);
+					readFailures [i]++;
+					if (readFailures [i] > maxTolerateReadFailures) {
+						// Assume wiimote has disconnected.
+						_wiimotes [i] = null;
+						isGuitarConnected [i] = false;
+						WiimoteManager.Cleanup (_wiimotes [i]);
+						Debug.Log ("wiimote disconnected: " + i);
+						if (OnWiimoteDisconnect != null) {
+							OnWiimoteDisconnect (i);
+						}
+						i--;
+						continue;
+					}
+				} else {
+					readFailures [i] = 0;
+				}
+				// Check state of extension:
+				if (isGuitarConnected [i] && _wiimotes [i].current_ext == ExtensionController.NONE) {
+					isGuitarConnected [i] = false;
+					Debug.Log ("guitar disconnected: " + i);
+					if (OnGuitarExtensionDisconnect != null) {
+						OnGuitarExtensionDisconnect (i);
+					}
+				} else if (!isGuitarConnected [i] && _wiimotes [i].current_ext == ExtensionController.GUITAR) {
+					isGuitarConnected [i] = true;
+					Debug.Log ("guitar connected: " + i);
+					if (OnGuitarExtensionConnect != null) {
+						OnGuitarExtensionConnect (i);
+					}
+				}
 			}
 		}
 	}
@@ -143,32 +188,22 @@ public class GuitarInputManager : MonoBehaviour {
 		
 		StopManagingWiimotes ();
 
-		// Clear all guitar data
-		for (int i = 0; i < _guitars.Count; i++) {
-			if (_guitars [i] != null) {
-				_guitars[i] = null;
-				Debug.Log ("extension disconnected");
-				if (OnGuitarExtensionDisconnect != null) {
-					OnGuitarExtensionDisconnect (i);
-				}
-			}
-		}
-
 		// Disconnect all wiimotes
-		for (int i = 0; i < WiimoteManager.Wiimotes.Count; i++) {
-			if (WiimoteManager.Wiimotes [i] != null) {
-				WiimoteManager.Wiimotes [i].SendPlayerLED (false, false, false, false);
-				// TODO: Figure out a way to not have to do the thread-sleep thing. Sometimes causes crash.
-				System.Threading.Thread.Sleep (50);
-				WiimoteManager.Cleanup (WiimoteManager.Wiimotes [i]);
-				Debug.Log ("wiimote disconnected: " + i);
-				if (OnWiimoteDisconnect != null) {
-					OnWiimoteDisconnect (i);
-				}
+		while (WiimoteManager.Wiimotes.Count > 0) {
+			int localIndex = IndexOfWiimote (WiimoteManager.Wiimotes [0]);
+			if (localIndex > -1) {
+				_wiimotes [localIndex] = null;
+				isGuitarConnected [localIndex] = false;
+				readFailures [localIndex] = 0;
 			}
-		}
-		for (int i = 0; i < isWiimoteConnected.Count; i++) {
-			isWiimoteConnected [i] = false;
+			WiimoteManager.Wiimotes [0].SendPlayerLED (false, false, false, false);
+			// TODO: Figure out a way to not have to do the thread-sleep thing. Sometimes causes crash.
+			System.Threading.Thread.Sleep (50);
+			WiimoteManager.Cleanup (WiimoteManager.Wiimotes [0]);
+			Debug.Log ("wiimote disconnected: " + localIndex);
+			if (OnWiimoteDisconnect != null) {
+				OnWiimoteDisconnect (localIndex);
+			}
 		}
 	}
 
@@ -185,8 +220,21 @@ public class GuitarInputManager : MonoBehaviour {
 	/// Stops tracking wiimote connection status.
 	/// </summary>
 	public void StopManagingWiimotes() {
-		StopCoroutine ("SearchForWiimotes");
 		isSearching = false;
+	}
+
+	/// <summary>
+	/// Given a Wiimote object, get the Wiimote's player number. -1 if not being tracked.
+	/// </summary>
+	/// <returns>The player number of wiimote.</returns>
+	/// <param name="wiimote">Wiimote.</param>
+	public int IndexOfWiimote(Wiimote wiimote) {
+		for (int i = 0; i < _wiimotes.Count; i++) {
+			if (_wiimotes [i] != null && _wiimotes [i].hidapi_handle == wiimote.hidapi_handle) {
+				return i;
+			}
+		}
+		return -1;
 	}
 
 	/// <summary>
@@ -194,58 +242,38 @@ public class GuitarInputManager : MonoBehaviour {
 	/// </summary>
 	private IEnumerator SearchForWiimotes() {
 		// TODO: Check for concurrency problems, probably lock a few things
-		// TODO: When a wiimote is disconnected, its index is shifted in WiimoteManager. Make sure this is reflected.
 		isSearching = true;
 		while (isSearching) {
-			
+
+			// Manage connection state of wiimotes
+			for (int i = 0; i < WiimoteManager.Wiimotes.Count; i++) {
+				if (IndexOfWiimote (WiimoteManager.Wiimotes [i]) == -1) {
+					// Wiimote is not being tracked. It must be new! Let's try to connect it!
+					bool connected = false;
+					for (int j = 0; j < _wiimotes.Count; j++) {
+						if (_wiimotes [j] == null) {
+							// Finalize connection
+							connected = true;
+							_wiimotes [j] = WiimoteManager.Wiimotes [i];
+							WiimoteManager.Wiimotes [i].SendPlayerLED (j == 0, j == 1, j == 2, j == 3);
+							WiimoteManager.Wiimotes [i].SendDataReportMode (InputDataType.REPORT_BUTTONS_EXT8);
+							Debug.Log ("wiimote connected: " + j);
+							if (OnWiimoteConnect != null) {
+								OnWiimoteConnect (j);
+							}
+							break;
+						}
+					}
+					if (!connected) {
+						// No room for a new wiimote. Reject.
+						WiimoteManager.Cleanup(WiimoteManager.Wiimotes[i]);
+					}
+				}
+			}
+
 			// If not enough wiimotes are connected, attempt to connect additional wiimotes
 			if (WiimoteManager.Wiimotes.Count < _numRequiredPlayers) {
 				WiimoteManager.FindWiimotes ();  // Not enough wiimotes connected - find more
-			}
-
-			// Manage connection state of wiimotes
-			for (int i = 0; i < isWiimoteConnected.Count; i++) {
-				if (i < WiimoteManager.Wiimotes.Count && WiimoteManager.Wiimotes [i] != null && 
-					!isWiimoteConnected [i]) {
-					// Connect newly discovered wiimote
-					isWiimoteConnected [i] = true;
-					WiimoteManager.Wiimotes [i].SendPlayerLED (i == 0, i == 1, i == 2, i == 3);
-					// Allow extensions to send data
-					WiimoteManager.Wiimotes [i].SendDataReportMode (InputDataType.REPORT_BUTTONS_EXT8);
-					Debug.Log ("wiimote connected: " + i);
-					if (OnWiimoteConnect != null) {
-						OnWiimoteConnect (i);
-					}
-				} else if ((i >= WiimoteManager.Wiimotes.Count || WiimoteManager.Wiimotes [i] == null) && 
-					isWiimoteConnected [i]) {
-					// Disconnect wiimote if it cannot be reached
-					// TODO: Problem: this doesn't fire on a spontaneous disconnect. How should we detect it?
-					isWiimoteConnected [i] = false;
-					Debug.Log ("wiimote disconnected");
-					if (OnWiimoteDisconnect != null) {
-						OnWiimoteDisconnect (i);
-					}
-				}
-			}
-
-			// Manage guitar extension state of wiimotes
-			for (int i = 0; i < _guitars.Count; i++) {
-				if (WiimoteManager.Wiimotes.Count > i && WiimoteManager.Wiimotes [i] != null &&
-				    WiimoteManager.Wiimotes [i].current_ext == ExtensionController.GUITAR && _guitars [i] == null) {
-					_guitars [i] = WiimoteManager.Wiimotes [i].Guitar;
-					Debug.Log ("extension connected: " + i);
-					if (OnGuitarExtensionConnect != null) {
-						OnGuitarExtensionConnect (i);
-					}
-				} else if ((i >= WiimoteManager.Wiimotes.Count || WiimoteManager.Wiimotes [i] == null ||
-				           WiimoteManager.Wiimotes [i].current_ext != ExtensionController.GUITAR) &&
-				           _guitars [i] != null) {
-					_guitars [i] = null;
-					Debug.Log ("extension disconnected: " + i);
-					if (OnGuitarExtensionDisconnect != null) {
-						OnGuitarExtensionDisconnect (i);
-					}
-				}
 			}
 
 			yield return new WaitForSeconds(updateInterval);
