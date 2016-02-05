@@ -14,6 +14,11 @@ public enum UnitActionMessageType {
 	SELECT
 }
 
+public class RejectActionMessage {
+	public int PlayerNumber { get; set; }
+	public UnitActionMessageType ActionType { get; set; }
+}
+
 public abstract class Interpreter : MonoBehaviour {
 
 }
