@@ -34,35 +34,35 @@ public class GuitarInput : ControllerInput {
 	[SerializeField]
 	public int WhammyThreshold = 20;
 
-	private GuitarInputManager GuitarInputManager;
+	private GuitarConnectionManager GuitarInputManager;
 	private MessageRouter MessageRouter;
 	private GuitarDataModel LastFrameData; // Data from the last frame, used to detect button up/down
 	private GuitarDataModel ThisFrameData; // Basically a buffer for incoming guitar data
 
-	public GuitarInput(int PlayerNumber) : base(PlayerNumber) {}
+	public GuitarInput(int PlayerNumber) : base(PlayerNumber) { }
 
-	void Start () {
-		GuitarInputManager = ServiceFactory.Instance.Resolve<GuitarInputManager> ();
-		MessageRouter = ServiceFactory.Instance.Resolve<MessageRouter> ();
-		MessageRouter.RaiseMessage (new RegisterGuitarInputMessage (){ PlayerNumber = PlayerNumber });
+	void Start() {
+		GuitarInputManager = ServiceFactory.Instance.Resolve<GuitarConnectionManager>();
+		MessageRouter = ServiceFactory.Instance.Resolve<MessageRouter>();
+		MessageRouter.RaiseMessage(new RegisterGuitarInputMessage() { PlayerNumber = PlayerNumber });
 	}
 
 	void OnEnable() {
 		if (MessageRouter != null) {
-			MessageRouter.RaiseMessage (new RegisterGuitarInputMessage (){ PlayerNumber = PlayerNumber });
+			MessageRouter.RaiseMessage(new RegisterGuitarInputMessage() { PlayerNumber = PlayerNumber });
 		}
 	}
 
 	void OnDisable() {
-		MessageRouter.RaiseMessage (new UnregisterGuitarInputMessage (){ PlayerNumber = PlayerNumber });
+		MessageRouter.RaiseMessage(new UnregisterGuitarInputMessage() { PlayerNumber = PlayerNumber });
 	}
 
-	void Update () {
+	void Update() {
 
 		// Make sure the wiimote and guitar are connected
 		if (!GuitarInputManager.wiimotes.ContainsKey(PlayerNumber))
 			return;
-		Wiimote wiimote = GuitarInputManager.wiimotes [PlayerNumber];
+		Wiimote wiimote = GuitarInputManager.wiimotes[PlayerNumber];
 		if (wiimote == null || wiimote.current_ext != ExtensionController.GUITAR)
 			return;
 
@@ -80,95 +80,64 @@ public class GuitarInput : ControllerInput {
 
 		// plus
 		if (ThisFrameData.plus && !LastFrameData.plus) {
-			MessageRouter.RaiseMessage (new ButtonDownMessage () { Button = InputButton.PLUS, PlayerNumber = PlayerNumber });
+			MessageRouter.RaiseMessage(new ButtonDownMessage() { Button = InputButton.PLUS, PlayerNumber = PlayerNumber });
 		} else if (!ThisFrameData.plus && LastFrameData.plus) {
-			MessageRouter.RaiseMessage (new ButtonUpMessage () { Button = InputButton.PLUS, PlayerNumber = PlayerNumber });
+			MessageRouter.RaiseMessage(new ButtonUpMessage() { Button = InputButton.PLUS, PlayerNumber = PlayerNumber });
 		}
 
 		// minus
 		if (ThisFrameData.minus && !LastFrameData.minus) {
-			MessageRouter.RaiseMessage (new ButtonDownMessage () { Button = InputButton.MINUS, PlayerNumber = PlayerNumber });
+			MessageRouter.RaiseMessage(new ButtonDownMessage() { Button = InputButton.MINUS, PlayerNumber = PlayerNumber });
 		} else if (!ThisFrameData.minus && LastFrameData.minus) {
-			MessageRouter.RaiseMessage (new ButtonUpMessage () { Button = InputButton.MINUS, PlayerNumber = PlayerNumber });
+			MessageRouter.RaiseMessage(new ButtonUpMessage() { Button = InputButton.MINUS, PlayerNumber = PlayerNumber });
 		}
 
 		// whammy
 		if (ThisFrameData.whammy && !LastFrameData.whammy) {
-			MessageRouter.RaiseMessage (new ButtonDownMessage () { Button = InputButton.WHAMMY, PlayerNumber = PlayerNumber });
+			MessageRouter.RaiseMessage(new ButtonDownMessage() { Button = InputButton.WHAMMY, PlayerNumber = PlayerNumber });
 		} else if (!ThisFrameData.whammy && LastFrameData.whammy) {
-			MessageRouter.RaiseMessage (new ButtonUpMessage () { Button = InputButton.WHAMMY, PlayerNumber = PlayerNumber });
+			MessageRouter.RaiseMessage(new ButtonUpMessage() { Button = InputButton.WHAMMY, PlayerNumber = PlayerNumber });
 		}
 
 		// green
 		if (ThisFrameData.green && !LastFrameData.green) {
-			MessageRouter.RaiseMessage (new ButtonDownMessage () { Button = InputButton.GREEN, PlayerNumber = PlayerNumber });
+			MessageRouter.RaiseMessage(new ButtonDownMessage() { Button = InputButton.GREEN, PlayerNumber = PlayerNumber });
 		} else if (!ThisFrameData.green && LastFrameData.green) {
-			MessageRouter.RaiseMessage (new ButtonUpMessage () { Button = InputButton.GREEN, PlayerNumber = PlayerNumber });
+			MessageRouter.RaiseMessage(new ButtonUpMessage() { Button = InputButton.GREEN, PlayerNumber = PlayerNumber });
 		}
 
 		// red
 		if (ThisFrameData.red && !LastFrameData.red) {
-			MessageRouter.RaiseMessage (new ButtonDownMessage () { Button = InputButton.RED, PlayerNumber = PlayerNumber });
+			MessageRouter.RaiseMessage(new ButtonDownMessage() { Button = InputButton.RED, PlayerNumber = PlayerNumber });
 		} else if (!ThisFrameData.red && LastFrameData.red) {
-			MessageRouter.RaiseMessage (new ButtonUpMessage () { Button = InputButton.RED, PlayerNumber = PlayerNumber });
+			MessageRouter.RaiseMessage(new ButtonUpMessage() { Button = InputButton.RED, PlayerNumber = PlayerNumber });
 		}
 
 		// yellow
 		if (ThisFrameData.yellow && !LastFrameData.yellow) {
-			MessageRouter.RaiseMessage (new ButtonDownMessage () { Button = InputButton.YELLOW, PlayerNumber = PlayerNumber });
+			MessageRouter.RaiseMessage(new ButtonDownMessage() { Button = InputButton.YELLOW, PlayerNumber = PlayerNumber });
 		} else if (!ThisFrameData.yellow && LastFrameData.yellow) {
-			MessageRouter.RaiseMessage (new ButtonUpMessage () { Button = InputButton.YELLOW, PlayerNumber = PlayerNumber });
+			MessageRouter.RaiseMessage(new ButtonUpMessage() { Button = InputButton.YELLOW, PlayerNumber = PlayerNumber });
 		}
 
 		// blue
 		if (ThisFrameData.blue && !LastFrameData.blue) {
-			MessageRouter.RaiseMessage (new ButtonDownMessage () { Button = InputButton.BLUE, PlayerNumber = PlayerNumber });
+			MessageRouter.RaiseMessage(new ButtonDownMessage() { Button = InputButton.BLUE, PlayerNumber = PlayerNumber });
 		} else if (!ThisFrameData.blue && LastFrameData.blue) {
-			MessageRouter.RaiseMessage (new ButtonUpMessage () { Button = InputButton.BLUE, PlayerNumber = PlayerNumber });
+			MessageRouter.RaiseMessage(new ButtonUpMessage() { Button = InputButton.BLUE, PlayerNumber = PlayerNumber });
 		}
 
 		// orange
 		if (ThisFrameData.orange && !LastFrameData.orange) {
-			MessageRouter.RaiseMessage (new ButtonDownMessage () { Button = InputButton.ORANGE, PlayerNumber = PlayerNumber });
+			MessageRouter.RaiseMessage(new ButtonDownMessage() { Button = InputButton.ORANGE, PlayerNumber = PlayerNumber });
 		} else if (!ThisFrameData.orange && LastFrameData.orange) {
-			MessageRouter.RaiseMessage (new ButtonUpMessage () { Button = InputButton.ORANGE, PlayerNumber = PlayerNumber });
+			MessageRouter.RaiseMessage(new ButtonUpMessage() { Button = InputButton.ORANGE, PlayerNumber = PlayerNumber });
 		}
 
 		// strum
-		// NOTE: As is currently implemented, multiple-fret strum is unsupported
 		if (ThisFrameData.strum && !LastFrameData.strum) {
-			if (ThisFrameData.green) {
-				MessageRouter.RaiseMessage (new ButtonDownMessage () {
-					Button = InputButton.GREEN_STRUM,
-					PlayerNumber = PlayerNumber
-				});
-			} else if (ThisFrameData.red) {
-				MessageRouter.RaiseMessage (new ButtonDownMessage () {
-					Button = InputButton.RED_STRUM,
-					PlayerNumber = PlayerNumber
-				});
-			} else if (ThisFrameData.yellow) {
-				MessageRouter.RaiseMessage (new ButtonDownMessage () {
-					Button = InputButton.YELLOW_STRUM,
-					PlayerNumber = PlayerNumber
-				});
-			} else if (ThisFrameData.blue) {
-				MessageRouter.RaiseMessage (new ButtonDownMessage () {
-					Button = InputButton.BLUE_STRUM,
-					PlayerNumber = PlayerNumber
-				});
-			} else if (ThisFrameData.orange) {
-				MessageRouter.RaiseMessage (new ButtonDownMessage () {
-					Button = InputButton.ORANGE_STRUM,
-					PlayerNumber = PlayerNumber
-				});
-			} else {
-				MessageRouter.RaiseMessage (new ButtonDownMessage () {
-					Button = InputButton.BLANK_STRUM,
-					PlayerNumber = PlayerNumber
-				});
-			}
-		} // Strum ButtonUpMessage would be useless, so not included for now
+			MessageRouter.RaiseMessage(new ButtonDownMessage() { Button = InputButton.STRUM, PlayerNumber = PlayerNumber });
+		}
 
 		// Update LastFrameData
 		LastFrameData = ThisFrameData;

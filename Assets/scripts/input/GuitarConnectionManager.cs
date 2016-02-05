@@ -25,7 +25,7 @@ public class GuitarExtensionDisconnectMessage : WiimoteMessage {}
 /// first connected to the computer via the computer's bluetooth settings by the player before this script will have
 /// access to them.
 /// </summary>
-public class GuitarInputManager : MonoBehaviour {
+public class GuitarConnectionManager : MonoBehaviour {
 
 	[SerializeField]
 	private float updateInterval = 1f;  // Number of seconds between checking on the status of connected wiimotes
@@ -56,7 +56,7 @@ public class GuitarInputManager : MonoBehaviour {
 		// Register this GameObject component as a singleton so that it can be referenced elsewhere
 		// Perhaps later we will change where this singleton is registed to an external GameManager
 		// class if we don't want to have to attach GuitarInputManager as a component.
-		ServiceFactory.Instance.RegisterSingleton<GuitarInputManager> (this);
+		ServiceFactory.Instance.RegisterSingleton<GuitarConnectionManager> (this);
 	}
 
 	private void Start() {
