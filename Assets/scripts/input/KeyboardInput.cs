@@ -6,33 +6,41 @@ using Frictionless;
 public class KeyboardInput : ControllerInput {
 
 	public KeyboardInput(int playerNumber) : base(playerNumber) {}
-	
+
+	private MessageRouter MessageRouter;
+
+	void Start() {
+		MessageRouter = ServiceFactory.Instance.Resolve<MessageRouter>();
+		// TODO: Should we raise a keyboard connected message here?
+	}
+
 	// Update is called once per frame
 	void Update () {
         if (Input.GetKeyDown(KeyCode.A)) {
-			ServiceFactory.Instance.Resolve<MessageRouter> ().RaiseMessage (new ButtonDownMessage ()
-				{ Button = InputButton.GREEN_STRUM, PlayerNumber = PlayerNumber });
+			SendStrumSequence(InputButton.GREEN);
         }
 
         if (Input.GetKeyDown(KeyCode.S)) {
-			ServiceFactory.Instance.Resolve<MessageRouter> ().RaiseMessage (new ButtonDownMessage ()
-				{ Button = InputButton.RED_STRUM, PlayerNumber = PlayerNumber });
+			SendStrumSequence(InputButton.RED);
         }
 
         if (Input.GetKeyDown(KeyCode.D)) {
-			ServiceFactory.Instance.Resolve<MessageRouter> ().RaiseMessage (new ButtonDownMessage ()
-				{ Button = InputButton.YELLOW_STRUM, PlayerNumber = PlayerNumber });
+			SendStrumSequence(InputButton.YELLOW);
         }
 
         if (Input.GetKeyDown(KeyCode.F)) {
-			ServiceFactory.Instance.Resolve<MessageRouter> ().RaiseMessage (new ButtonDownMessage ()
-				{ Button = InputButton.BLUE_STRUM, PlayerNumber = PlayerNumber });
+			SendStrumSequence(InputButton.BLUE);
         }
 
         if (Input.GetKeyDown(KeyCode.G)) {
-			ServiceFactory.Instance.Resolve<MessageRouter> ().RaiseMessage (new ButtonDownMessage ()
-				{ Button = InputButton.ORANGE_STRUM, PlayerNumber = PlayerNumber });
+			SendStrumSequence(InputButton.ORANGE);
         }
 	
+	}
+
+	void SendStrumSequence(InputButton button) {
+		MessageRouter.RaiseMessage(new ButtonDownMessage() { Button = button, PlayerNumber = this.PlayerNumber });
+		MessageRouter.RaiseMessage(new ButtonDownMessage() { Button = InputButton.STRUM, PlayerNumber = this.PlayerNumber });
+		MessageRouter.RaiseMessage(new ButtonUpMessage() { Button = button, PlayerNumber = this.PlayerNumber });
 	}
 }
