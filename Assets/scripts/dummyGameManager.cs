@@ -1,25 +1,21 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using Frictionless;
 
 public class dummyGameManager : MonoBehaviour {
 
+	void Awake() {
+		// Register MessageRouter (the event BUS) as a singleton so that it can be referenced anywhere
+		ServiceFactory.Instance.RegisterSingleton<MessageRouter> ();
+	}
+
 	// Use this for initialization
 	void Start () {
-        KeyboardInput blah = GetComponent<KeyboardInput>();
-        blah.green_strum += LogAThing;
-        blah.red_strum += LogAThing;
+		ServiceFactory.Instance.Resolve<MessageRouter> ().AddHandler<ButtonDownMessage> (LogAThing);
 	}
 
-    void LogAThing(object sender, EventArgs e)
-    {
-        
-		Debug.Log((e as ButtonEventArgs).button.ToString());
+	void LogAThing(ButtonInputMessage e) {
+		Debug.Log(e.Button.ToString());
     }
-
-
-	// Update is called once per frame
-	void Update () {
-	
-	}
 }
