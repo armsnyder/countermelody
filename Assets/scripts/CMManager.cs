@@ -10,9 +10,6 @@ public class CMManager : MonoBehaviour
     void Start()
     {
         Debug.Log("Press 'n' to end turn");
-        KeyboardInput blah = GetComponent<KeyboardInput>();
-        blah.green_strum += LogAThing;
-        blah.red_strum += LogAThing;
         Cell cur = _unit.Cell;
         //Debug.Log(_cellGrid.Cells.Count);
         /*foreach (var cell in _cellGrid.Cells)
@@ -56,10 +53,4 @@ public class CMManager : MonoBehaviour
             _unit.Move(cur, path);
         }
 	}
-
-    void LogAThing(object sender, EventArgs e)
-    {
-        
-        Debug.Log((e as ButtonEventArgs).buttonPressed);
-    }
 }
