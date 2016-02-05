@@ -13,9 +13,13 @@ public class dummyGameManager : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		ServiceFactory.Instance.Resolve<MessageRouter> ().AddHandler<ButtonDownMessage> (LogAThing);
+		ServiceFactory.Instance.Resolve<MessageRouter> ().AddHandler<ButtonUpMessage> (LogAThing);
 	}
 
 	void LogAThing(ButtonInputMessage e) {
-		Debug.Log(e.Button.ToString());
+		String logString = e.PlayerNumber + " ";
+		logString += e.Button.ToString () + " ";
+		logString += (e is ButtonDownMessage) ? "DOWN" : "UP";
+		Debug.Log(logString);
     }
 }

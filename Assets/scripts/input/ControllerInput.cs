@@ -13,8 +13,8 @@ public enum InputButton {
     YELLOW_STRUM,
     BLUE_STRUM,
     ORANGE_STRUM,
-    WHAMMY_DOWN,
-    WHAMMY_UP,
+	BLANK_STRUM,
+    WHAMMY,
     PLUS,
     MINUS
 }
