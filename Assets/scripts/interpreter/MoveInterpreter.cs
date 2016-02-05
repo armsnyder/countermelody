@@ -2,16 +2,6 @@
 using System.Collections;
 using Frictionless;
 
-public class MoveUnitMessage {
-	public Vector2 Direction { get; set; }
-	public int PlayerNumber { get; set; }
-}
-
-public class SelectUnitMessage {
-	public InputButton Color { get; set; }
-	public int PlayerNumber { get; set; }
-}
-
 public class MoveInterpreter : Interpreter {
 
 	private MessageRouter MessageRouter;
