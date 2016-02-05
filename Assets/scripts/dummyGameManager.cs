@@ -12,7 +12,7 @@ public class dummyGameManager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		ServiceFactory.Instance.Resolve<MessageRouter> ().AddHandler<ButtonInputMessage> (LogAThing);
+		ServiceFactory.Instance.Resolve<MessageRouter> ().AddHandler<ButtonDownMessage> (LogAThing);
 	}
 
 	void LogAThing(ButtonInputMessage e) {

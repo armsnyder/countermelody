@@ -24,6 +24,10 @@ public class ButtonInputMessage {
 	public int PlayerNumber { get; set; }
 }
 
+public class ButtonDownMessage : ButtonInputMessage {}
+
+public class ButtonUpMessage : ButtonInputMessage {}
+
 public abstract class ControllerInput : MonoBehaviour {
 
 	[SerializeField]
