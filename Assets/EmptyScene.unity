@@ -201,7 +201,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44ea31939cd2c4b31a828e3b96b8c14f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _numRequiredPlayers: 1
   updateInterval: 1
   findWiimotesOnEnable: 1
 --- !u!4 &1471062520
@@ -238,7 +237,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6f693cb838cb494b88b7defe8675688, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PlayerNumber: 1
+  PlayerNumber: 0
 --- !u!114 &1471062523
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -250,7 +249,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbdf1e84ae1ba44e2a9f61a9f1f478b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PlayerNumber: 0
+  PlayerNumber: 1
   WhammyThreshold: 20
 --- !u!1 &1625367368
 GameObject:

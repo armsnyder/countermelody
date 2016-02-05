@@ -44,10 +44,13 @@ public class GuitarInput : ControllerInput {
 	void Start () {
 		GuitarInputManager = ServiceFactory.Instance.Resolve<GuitarInputManager> ();
 		MessageRouter = ServiceFactory.Instance.Resolve<MessageRouter> ();
+		MessageRouter.RaiseMessage (new RegisterGuitarInputMessage (){ PlayerNumber = PlayerNumber });
 	}
 
 	void OnEnable() {
-		MessageRouter.RaiseMessage (new RegisterGuitarInputMessage (){ PlayerNumber = PlayerNumber });
+		if (MessageRouter != null) {
+			MessageRouter.RaiseMessage (new RegisterGuitarInputMessage (){ PlayerNumber = PlayerNumber });
+		}
 	}
 
 	void OnDisable() {
@@ -57,7 +60,7 @@ public class GuitarInput : ControllerInput {
 	void Update () {
 
 		// Make sure the wiimote and guitar are connected
-		if (GuitarInputManager.wiimotes.Count < PlayerNumber + 1)
+		if (!GuitarInputManager.wiimotes.ContainsKey(PlayerNumber))
 			return;
 		Wiimote wiimote = GuitarInputManager.wiimotes [PlayerNumber];
 		if (wiimote == null || wiimote.current_ext != ExtensionController.GUITAR)
