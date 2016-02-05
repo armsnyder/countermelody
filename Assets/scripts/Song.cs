@@ -9,7 +9,7 @@ public class ExitBeatWindowMessage {}
 public class Song : MonoBehaviour {
 
 	public int bpm = 80;
-	public float window = 0.2;
+	public float window = 0.2f;
 	private MessageRouter MessageRouter;
 
 	// Use this for initialization
