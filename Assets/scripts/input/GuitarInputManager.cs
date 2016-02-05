@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using WiimoteApi;
+using Frictionless;
 
 /// <summary>
 /// Guitar/wiimote input manager. This component continuously runs and manages connection with wiimotes. It handles 
@@ -131,6 +132,10 @@ public class GuitarInputManager : MonoBehaviour {
 			isGuitarConnected.Add (false);
 			readFailures.Add (0);
 		}
+		// Register this GameObject component as a singleton so that it can be referenced elsewhere
+		// Perhaps later we will change where this singleton is registed to an external GameManager
+		// class if we don't want to have to attach GuitarInputManager as a component.
+		ServiceFactory.Instance.RegisterSingleton<GuitarInputManager> (this);
 	}
 
 	private void Update() {
