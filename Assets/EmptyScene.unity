@@ -186,6 +186,7 @@ GameObject:
   - 114: {fileID: 1471062526}
   - 114: {fileID: 1471062525}
   - 114: {fileID: 1471062524}
+  - 114: {fileID: 1471062527}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -260,7 +261,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1471062518}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2cff9fae43f40b34197b407ee195cabd, type: 3}
   m_Name: 
@@ -277,7 +278,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bpm: 80
-  window: 0.2
+  window: 0.5
 --- !u!114 &1471062526
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -291,6 +292,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   NumberOfPlayers: 2
   BeatsPerTurn: 4
+--- !u!114 &1471062527
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1471062518}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b442633daab22470bae36cf63dde227e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1625367368
 GameObject:
   m_ObjectHideFlags: 0
