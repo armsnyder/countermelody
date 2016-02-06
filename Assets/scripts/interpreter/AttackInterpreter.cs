@@ -2,26 +2,27 @@
 using System.Collections;
 using Frictionless;
 
-public class AttackInterpreter : MonoBehaviour {
+public class AttackInterpreter : Interpreter {
 
 	private MessageRouter MessageRouter;
 	private bool IsAcceptingActions;
 
-	void Start() {
+	protected override void Start() {
+		base.Start ();
 		MessageRouter = ServiceFactory.Instance.Resolve<MessageRouter>();
-		MessageRouter.AddHandler<ButtonDownMessage>(OnButtonDown);
 		MessageRouter.AddHandler<UnitActionMessage>(OnUnitAction);
 		MessageRouter.AddHandler<EnterBeatWindowMessage>(OnEnterBeatWindow);
 	}
 
-	private void OnButtonDown(ButtonDownMessage m) {
-		if (IsAcceptingActions) {
+	protected override void OnButtonDown(ButtonDownMessage m) {
+		base.OnButtonDown (m);
+		if (IsAcceptingActions && m.PlayerNumber == CurrentPlayer) {
 			MessageRouter.RaiseMessage(new UnitActionMessage() {
 				Color = m.Button,
 				PlayerNumber = m.PlayerNumber,
 				ActionType = UnitActionMessageType.ATTACK
 			});
-		} else {
+		} else { // TODO: Do we want to penalize them if it isn't their turn?
 			MessageRouter.RaiseMessage(new RejectActionMessage(){
 				PlayerNumber = m.PlayerNumber
 			});
