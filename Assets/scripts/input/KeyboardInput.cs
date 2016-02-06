@@ -35,6 +35,22 @@ public class KeyboardInput : ControllerInput {
         if (Input.GetKeyDown(KeyCode.G)) {
 			SendStrumSequence(InputButton.ORANGE);
         }
+
+		if (Input.GetKeyDown(KeyCode.UpArrow)) {
+			SendMoveSequence(InputButton.RED);
+		}
+
+		if (Input.GetKeyDown(KeyCode.RightArrow)) {
+			SendMoveSequence(InputButton.BLUE);
+		}
+
+		if (Input.GetKeyDown(KeyCode.DownArrow)) {
+			SendMoveSequence(InputButton.YELLOW);
+		}
+
+		if (Input.GetKeyDown(KeyCode.LeftArrow)) {
+			SendMoveSequence(InputButton.GREEN);
+		}
 	
 	}
 
@@ -42,5 +58,10 @@ public class KeyboardInput : ControllerInput {
 		MessageRouter.RaiseMessage(new ButtonDownMessage() { Button = button, PlayerNumber = this.PlayerNumber });
 		MessageRouter.RaiseMessage(new ButtonDownMessage() { Button = InputButton.STRUM, PlayerNumber = this.PlayerNumber });
 		MessageRouter.RaiseMessage(new ButtonUpMessage() { Button = button, PlayerNumber = this.PlayerNumber });
+	}
+
+	void SendMoveSequence(InputButton button) {
+		MessageRouter.RaiseMessage (new ButtonDownMessage () { Button = button, PlayerNumber = this.PlayerNumber });
+		MessageRouter.RaiseMessage (new ButtonUpMessage () { Button = button, PlayerNumber = this.PlayerNumber });
 	}
 }
