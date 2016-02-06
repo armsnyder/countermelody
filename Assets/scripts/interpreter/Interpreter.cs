@@ -50,11 +50,12 @@ public abstract class Interpreter : MonoBehaviour {
 
 	protected virtual void OnButtonUp(ButtonUpMessage m) {
 		if (HeldFrets.ContainsKey (m.PlayerNumber)) {
-			HeldFrets [m.PlayerNumber].Remove (m.Button);
+			while (HeldFrets [m.PlayerNumber].Contains (m.Button)) {
+				HeldFrets [m.PlayerNumber].Remove (m.Button);
+			}
 		}
 	}
 
-	// TODO: Fix message ordering causing a player to attack an extra time
 	protected virtual void OnSwitchPlayer(SwitchPlayerMessage m) {
 		CurrentPlayer = m.PlayerNumber;
 	}
