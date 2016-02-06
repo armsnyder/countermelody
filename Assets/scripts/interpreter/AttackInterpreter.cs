@@ -12,6 +12,7 @@ public class AttackInterpreter : Interpreter {
 		MessageRouter = ServiceFactory.Instance.Resolve<MessageRouter>();
 		MessageRouter.AddHandler<UnitActionMessage>(OnUnitAction);
 		MessageRouter.AddHandler<EnterBeatWindowMessage>(OnEnterBeatWindow);
+		MessageRouter.AddHandler<ExitBeatWindowMessage>(OnExitBeatWindow);
 	}
 
 	protected override void OnButtonDown(ButtonDownMessage m) {
@@ -35,5 +36,9 @@ public class AttackInterpreter : Interpreter {
 
 	private void OnEnterBeatWindow(EnterBeatWindowMessage m) {
 		IsAcceptingActions = true;
+	}
+
+	private void OnExitBeatWindow(ExitBeatWindowMessage m) {
+		IsAcceptingActions = false;
 	}
 }
