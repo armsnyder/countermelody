@@ -278,7 +278,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bpm: 80
+  beatsPerMeasure: 4
   window: 0.5
+  songFile: {fileID: 8300000, guid: 1657a42069c184d3aabf282db85e0c0b, type: 3}
+  offset: 0
 --- !u!114 &1471062526
 MonoBehaviour:
   m_ObjectHideFlags: 0
