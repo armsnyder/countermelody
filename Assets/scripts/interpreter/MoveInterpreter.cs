@@ -48,7 +48,6 @@ public class MoveInterpreter : Interpreter {
 			case InputButton.RED:
 			case InputButton.YELLOW:
 			case InputButton.BLUE:
-			case InputButton.ORANGE:
 				// Send move message
 				MessageRouter.RaiseMessage (new UnitActionMessage () { 
 					ActionType = UnitActionMessageType.MOVE, 
@@ -67,14 +66,24 @@ public class MoveInterpreter : Interpreter {
 	}
 
 	private void OnExitBeatWindow(ExitBeatWindowMessage m) {
-		if (IsAcceptingActions && HeldFrets.ContainsKey(CurrentPlayer) && HeldFrets [CurrentPlayer].Count > 0) {
-			// Send end-of-beat move message
-			MessageRouter.RaiseMessage (new UnitActionMessage () { 
-				ActionType = UnitActionMessageType.MOVE, 
-				PlayerNumber = CurrentPlayer, 
-				Direction = ColorToVector (HeldFrets [CurrentPlayer] [HeldFrets.Count - 1])
-			});
-		}
+			if (IsAcceptingActions && HeldFrets.ContainsKey(CurrentPlayer) && HeldFrets [CurrentPlayer].Count > 0) {
+				// Send end-of-beat move message
+				switch (HeldFrets [CurrentPlayer] [HeldFrets.Count - 1]) {
+				case InputButton.GREEN:
+				case InputButton.BLUE:
+				case InputButton.YELLOW:
+				case InputButton.RED:
+					MessageRouter.RaiseMessage (new UnitActionMessage () { 
+						ActionType = UnitActionMessageType.MOVE, 
+						PlayerNumber = CurrentPlayer, 
+						Direction = ColorToVector (HeldFrets [CurrentPlayer] [HeldFrets.Count - 1])
+					});
+					break;
+				default:
+					break;
+				}
+			}
+		
 		IsAcceptingActions = false;
 	}
 
