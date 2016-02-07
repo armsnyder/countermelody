@@ -5,14 +5,28 @@ using System.Linq;
 using System.Collections;
 
 public class MelodyUnit : Unit {
+	public InputButton ColorButton;
+	public Color unitColor;
     public Color LeadingColor;
+	public GameObject trim;
     public override void Initialize()
     {
         base.Initialize();
         transform.position += new Vector3(0, 0, -1);
         GetComponent<Renderer>().material.color = LeadingColor;
-		MovementPoints = int.MaxValue;
+		AddTrim();
     }
+
+	private void AddTrim() {
+		GameObject Trim = Instantiate(trim);
+		Trim.transform.parent = transform;
+		Trim.transform.localPosition = new Vector3(0, 0, -1f);
+		foreach (Renderer i in Trim.GetComponentsInChildren<Renderer>()) {
+			i.material.color = unitColor;
+		}
+		MovementPoints = int.MaxValue;
+	}
+
     public override void MarkAsAttacking(Unit other)
     {      
     }
