@@ -11,6 +11,7 @@ public class MelodyUnit : Unit {
         base.Initialize();
         transform.position += new Vector3(0, 0, -1);
         GetComponent<Renderer>().material.color = LeadingColor;
+		MovementPoints = int.MaxValue;
     }
     public override void MarkAsAttacking(Unit other)
     {      

@@ -16,6 +16,8 @@ public class dummyGameManager : MonoBehaviour {
 		ServiceFactory.Instance.Resolve<MessageRouter> ().AddHandler<SwitchPlayerMessage> (OnSwitchPlayer);
 		ServiceFactory.Instance.Resolve<MessageRouter> ().AddHandler<RejectActionMessage> (OnRejectAction);
 		Metronome = GameObject.CreatePrimitive (PrimitiveType.Cube);
+		Metronome.transform.localScale = new Vector3(1000, 1000, 1);
+		Metronome.transform.position = new Vector3(0, 0, 100);
 	}
 
 	void LogAThing(ButtonInputMessage e) {
