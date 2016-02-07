@@ -24,7 +24,8 @@ public class MoveInterpreter : Interpreter {
 				if (m.PlayerNumber == CurrentPlayer && HeldFrets [CurrentPlayer].Count > 0 && IsAcceptingActions) {
 					MessageRouter.RaiseMessage (new UnitActionMessage () { 
 						ActionType = UnitActionMessageType.SELECT, 
-						PlayerNumber = CurrentPlayer
+						PlayerNumber = CurrentPlayer,
+						Color = HeldFrets [CurrentPlayer] [HeldFrets.Count - 1]
 					});
 				} else {
 					MessageRouter.RaiseMessage (new RejectActionMessage () { 
