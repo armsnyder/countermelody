@@ -25,7 +25,7 @@ public class UnitManager : MonoBehaviour
 				MoveUnit(m.Direction);
 				break;
 			case UnitActionMessageType.ATTACK:
-				Attack(m.Color);
+				Attack(m.Color, m.PlayerNumber);
 				break;
 		}
 	}
@@ -45,7 +45,18 @@ public class UnitManager : MonoBehaviour
 		}
 	}
 
-	void Attack(InputButton color) {
-
+	void Attack(InputButton color, int playerNumber) {
+		SelectedUnit = GameBoard.Units[0] as MelodyUnit;
+		MelodyUnit recipient = GameBoard.Units.Find(c => 
+			(c.PlayerNumber != playerNumber) && 
+			((c as MelodyUnit).ColorButton == color) &&
+ 			(Math.Abs(SelectedUnit.Cell.OffsetCoord[0] - c.Cell.OffsetCoord[0])) <= 1 && 
+			(Math.Abs(SelectedUnit.Cell.OffsetCoord[1] - c.Cell.OffsetCoord[1])) <= 1)
+			as MelodyUnit;
+		if (recipient) {
+			SelectedUnit.DealDamage(recipient);
+		} else {
+			MessageRouter.RaiseMessage(new RejectActionMessage { PlayerNumber = GameBoard.CurrentPlayerNumber, ActionType = UnitActionMessageType.ATTACK });
+		}
 	}
 }
