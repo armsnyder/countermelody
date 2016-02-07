@@ -32,7 +32,12 @@ public class UnitManager : MonoBehaviour
 	}
 
 	void SwitchSelection(InputButton color, int playerNumber) {
+		if (SelectedUnit) {
+			UncolorDirections (SelectedUnit.Cell);
+		}
+		
 		SelectedUnit = (GameBoard.Units.Find(c => (c.PlayerNumber == playerNumber) && ((c as MelodyUnit).ColorButton == color)) as MelodyUnit);
+		ColorDirections (SelectedUnit.Cell);
 	}
 
 	void MoveUnit(Vector2 direction) {
@@ -40,6 +45,7 @@ public class UnitManager : MonoBehaviour
 			Cell destination = GameBoard.Cells.Find(c => c.OffsetCoord == SelectedUnit.Cell.OffsetCoord + direction);
 			if (destination && !destination.IsTaken) {
 				UncolorDirections (SelectedUnit.Cell);
+				Debug.Log("Move from "+SelectedUnit.Cell.OffsetCoord+" to "+destination.OffsetCoord);
 				SelectedUnit.Move(destination, SelectedUnit.FindPath(GameBoard.Cells, destination));
 				ColorDirections (destination);
 			} else {
