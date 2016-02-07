@@ -2,6 +2,7 @@
 using System.Collections;
 using System;
 using Frictionless;
+using System.Collections.Generic;
 
 public class UnitManager : MonoBehaviour
 {
@@ -38,11 +39,38 @@ public class UnitManager : MonoBehaviour
 		if (SelectedUnit) {
 			Cell destination = GameBoard.Cells.Find(c => c.OffsetCoord == SelectedUnit.Cell.OffsetCoord + direction);
 			if (destination && !destination.IsTaken) {
+				UncolorDirections (SelectedUnit.Cell);
 				SelectedUnit.Move(destination, SelectedUnit.FindPath(GameBoard.Cells, destination));
+				ColorDirections (destination);
 			} else {
 				MessageRouter.RaiseMessage(new RejectActionMessage { PlayerNumber = GameBoard.CurrentPlayerNumber, ActionType = UnitActionMessageType.MOVE });
 			}
 		}
+	}
+
+	public void UncolorDirections(Cell cell) {
+		List<Cell> neighbors = cell.GetNeighbours (GameBoard.Cells);
+		foreach (Cell neighbor in neighbors) {
+			neighbor.UnMark ();
+		}
+	}
+
+	public void ColorDirections(Cell cell) {
+		List<Cell> neighbors = cell.GetNeighbours (GameBoard.Cells);
+		foreach (Cell neighbor in neighbors) {
+			if (neighbor.IsTaken)
+				continue;
+			Vector2 offset = neighbor.OffsetCoord - cell.OffsetCoord;
+			if (offset.x < 0) {
+				(neighbor as CMCell).SetColor (Color.green);
+			} else if (offset.x > 0) {
+				(neighbor as CMCell).SetColor (Color.blue);
+			} else if (offset.y < 0) {
+				(neighbor as CMCell).SetColor (Color.yellow);
+			} else {
+				(neighbor as CMCell).SetColor (Color.red);
+			}
+		}	
 	}
 
 	void Attack(InputButton color, int playerNumber) {
