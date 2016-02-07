@@ -66,13 +66,22 @@ public class MoveInterpreter : Interpreter {
 	}
 
 	private void OnExitBeatWindow(ExitBeatWindowMessage m) {
-		if (IsAcceptingActions && HeldFrets.ContainsKey(CurrentPlayer) && HeldFrets [CurrentPlayer].Count > 0) {
-			// Send end-of-beat move message
-			MessageRouter.RaiseMessage (new UnitActionMessage () { 
-				ActionType = UnitActionMessageType.MOVE, 
-				PlayerNumber = CurrentPlayer, 
-				Direction = ColorToVector (HeldFrets [CurrentPlayer] [HeldFrets.Count - 1])
-			});
+		switch (HeldFrets [CurrentPlayer] [HeldFrets.Count - 1]) {
+		case InputButton.GREEN:
+		case InputButton.BLUE:
+		case InputButton.YELLOW:
+		case InputButton.RED:
+			if (IsAcceptingActions && HeldFrets.ContainsKey(CurrentPlayer) && HeldFrets [CurrentPlayer].Count > 0) {
+				// Send end-of-beat move message
+				MessageRouter.RaiseMessage (new UnitActionMessage () { 
+					ActionType = UnitActionMessageType.MOVE, 
+					PlayerNumber = CurrentPlayer, 
+					Direction = ColorToVector (HeldFrets [CurrentPlayer] [HeldFrets.Count - 1])
+				});
+			}
+			break;
+		default:
+			break;
 		}
 		IsAcceptingActions = false;
 	}
