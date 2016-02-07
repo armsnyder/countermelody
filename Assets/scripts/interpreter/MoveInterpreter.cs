@@ -48,7 +48,6 @@ public class MoveInterpreter : Interpreter {
 			case InputButton.RED:
 			case InputButton.YELLOW:
 			case InputButton.BLUE:
-			case InputButton.ORANGE:
 				// Send move message
 				MessageRouter.RaiseMessage (new UnitActionMessage () { 
 					ActionType = UnitActionMessageType.MOVE, 
