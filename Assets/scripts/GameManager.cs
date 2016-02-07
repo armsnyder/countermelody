@@ -35,8 +35,13 @@ public class GameManager : MonoBehaviour {
 		BeatCounter++;
 		if (BeatCounter == BeatsPerTurn) {
 			CurrentPlayer = (CurrentPlayer + 1) % NumberOfPlayers;
-			MessageRouter.RaiseMessage (new SwitchPlayerMessage () { PlayerNumber = CurrentPlayer });
 			BeatCounter = 0;
+			StartCoroutine ("SwitchPlayerCoroutine");
 		}
+	}
+
+	private IEnumerator SwitchPlayerCoroutine() {
+		yield return null;
+		MessageRouter.RaiseMessage (new SwitchPlayerMessage () { PlayerNumber = CurrentPlayer });
 	}
 }
