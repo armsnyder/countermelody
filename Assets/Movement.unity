@@ -24691,6 +24691,7 @@ GameObject:
   - 114: {fileID: 1471062526}
   - 114: {fileID: 1471062529}
   - 114: {fileID: 1471062528}
+  - 114: {fileID: 1471062530}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -24836,6 +24837,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PlayerNumber: 1
   WhammyThreshold: 20
+--- !u!114 &1471062530
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1471062518}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a2642a6cefb44c93a1741c63bb32a49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  songFile: {fileID: 8300000, guid: 565e1b24a55594a038f2d5e626fc577e, type: 3}
 --- !u!1 &1474836972
 GameObject:
   m_ObjectHideFlags: 0
