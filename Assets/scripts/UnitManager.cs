@@ -92,7 +92,7 @@ public class UnitManager : MonoBehaviour
 	}
 
 	void Attack(InputButton color, int playerNumber) {
-		SelectedUnit[playerNumber] = GameBoard.Units[0] as MelodyUnit;
+//		SelectedUnit[playerNumber] = GameBoard.Units[0] as MelodyUnit;
 		MelodyUnit recipient = GameBoard.Units.Find(c => 
 			(c.PlayerNumber != playerNumber) && 
 			((c as MelodyUnit).ColorButton == color) &&

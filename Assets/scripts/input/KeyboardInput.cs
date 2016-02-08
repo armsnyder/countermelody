@@ -51,6 +51,18 @@ public class KeyboardInput : ControllerInput {
 		if (Input.GetKeyDown(KeyCode.LeftArrow)) {
 			SendMoveSequence(InputButton.GREEN);
 		}
+
+		if (Input.GetKeyDown (KeyCode.Space)) {
+			MessageRouter.RaiseMessage (new ButtonDownMessage () { 
+				Button = InputButton.WHAMMY, PlayerNumber = this.PlayerNumber
+			});
+		}
+
+		if (Input.GetKeyUp (KeyCode.Space)) {
+			MessageRouter.RaiseMessage (new ButtonUpMessage () { 
+				Button = InputButton.WHAMMY, PlayerNumber = this.PlayerNumber
+			});
+		}
 	
 	}
 

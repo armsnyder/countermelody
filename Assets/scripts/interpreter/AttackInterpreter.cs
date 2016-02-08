@@ -4,12 +4,10 @@ using Frictionless;
 
 public class AttackInterpreter : Interpreter {
 
-	private MessageRouter MessageRouter;
 	private bool IsAcceptingActions;
 
-	protected override void Start() {
+	protected override void Start () {
 		base.Start ();
-		MessageRouter = ServiceFactory.Instance.Resolve<MessageRouter>();
 		MessageRouter.AddHandler<UnitActionMessage>(OnUnitAction);
 		MessageRouter.AddHandler<EnterBeatWindowMessage>(OnEnterBeatWindow);
 		MessageRouter.AddHandler<ExitBeatWindowMessage>(OnExitBeatWindow);
@@ -17,6 +15,8 @@ public class AttackInterpreter : Interpreter {
 
 	protected override void OnButtonDown(ButtonDownMessage m) {
 		base.OnButtonDown (m);
+		if (!enabled)
+			return;
 		if (IsAcceptingActions && m.PlayerNumber == CurrentPlayer) {
 			MessageRouter.RaiseMessage(new UnitActionMessage() {
 				Color = m.Button,
@@ -31,14 +31,20 @@ public class AttackInterpreter : Interpreter {
 	}
 
 	private void OnUnitAction(UnitActionMessage m) {
+		if (!enabled)
+			return;
 		IsAcceptingActions = false;
 	}
 
 	private void OnEnterBeatWindow(EnterBeatWindowMessage m) {
+		if (!enabled)
+			return;
 		IsAcceptingActions = true;
 	}
 
 	private void OnExitBeatWindow(ExitBeatWindowMessage m) {
+		if (!enabled)
+			return;
 		IsAcceptingActions = false;
 	}
 }

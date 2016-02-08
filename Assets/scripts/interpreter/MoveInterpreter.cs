@@ -4,20 +4,19 @@ using Frictionless;
 
 public class MoveInterpreter : Interpreter {
 
-	private MessageRouter MessageRouter;
 	private bool IsAcceptingActions;
 
-	// Use this for initialization
-	protected override void Start () {
+	protected override void Start() {
 		base.Start ();
-		MessageRouter = ServiceFactory.Instance.Resolve<MessageRouter> ();
-		MessageRouter.AddHandler<EnterBeatWindowMessage> (OnEnterBeatWindow);
-		MessageRouter.AddHandler<ExitBeatWindowMessage> (OnExitBeatWindow);
-		MessageRouter.AddHandler<UnitActionMessage> (OnUnitAction);
+		MessageRouter.AddHandler<UnitActionMessage>(OnUnitAction);
+		MessageRouter.AddHandler<EnterBeatWindowMessage>(OnEnterBeatWindow);
+		MessageRouter.AddHandler<ExitBeatWindowMessage>(OnExitBeatWindow);
 	}
 
 	protected override void OnButtonDown(ButtonDownMessage m) {
 		base.OnButtonDown (m);
+		if (!enabled)
+			return;
 		switch (m.Button) {
 		case InputButton.STRUM:
 			if (HeldFrets.ContainsKey(m.PlayerNumber)) {
@@ -42,6 +41,8 @@ public class MoveInterpreter : Interpreter {
 
 	protected override void OnButtonUp(ButtonUpMessage m) {
 		base.OnButtonUp (m);
+		if (!enabled)
+			return;
 		if (m.PlayerNumber == CurrentPlayer && HeldFrets.ContainsKey (m.PlayerNumber) 
 			&& HeldFrets [CurrentPlayer].Count == 0 && IsAcceptingActions) {
 			switch (m.Button) {
@@ -63,13 +64,17 @@ public class MoveInterpreter : Interpreter {
 	}
 
 	private void OnEnterBeatWindow(EnterBeatWindowMessage m) {
+		if (!enabled)
+			return;
 		IsAcceptingActions = true;
 	}
 
 	private void OnExitBeatWindow(ExitBeatWindowMessage m) {
-			if (IsAcceptingActions && HeldFrets.ContainsKey(CurrentPlayer) && HeldFrets [CurrentPlayer].Count > 0) {
-				// Send end-of-beat move message
-				switch (HeldFrets [CurrentPlayer] [HeldFrets [CurrentPlayer].Count - 1]) {
+		if (!enabled)
+			return;
+		if (IsAcceptingActions && HeldFrets.ContainsKey(CurrentPlayer) && HeldFrets [CurrentPlayer].Count > 0) {
+			// Send end-of-beat move message
+			switch (HeldFrets [CurrentPlayer] [HeldFrets [CurrentPlayer].Count - 1]) {
 				case InputButton.GREEN:
 				case InputButton.BLUE:
 				case InputButton.YELLOW:
@@ -82,13 +87,15 @@ public class MoveInterpreter : Interpreter {
 					break;
 				default:
 					break;
-				}
 			}
+		}
 		
 		IsAcceptingActions = false;
 	}
 
 	private void OnUnitAction(UnitActionMessage m) {
+		if (!enabled)
+			return;
 		IsAcceptingActions = false;
 	}
 
