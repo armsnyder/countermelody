@@ -21,7 +21,7 @@ public class MelodyUnit : Unit {
 	private void AddTrim() {
 		GameObject Trim = Instantiate(trim);
 		Trim.transform.parent = transform;
-		Trim.transform.localPosition = new Vector3(0, 0, -1f);
+		Trim.transform.localPosition = new Vector3(0, 0, 0);
 		foreach (Renderer i in Trim.GetComponentsInChildren<Renderer>()) {
 			i.material.color = unitColor;
 		}
