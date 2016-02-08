@@ -6,15 +6,20 @@ using System.Collections.Generic;
 
 public class UnitManager : MonoBehaviour
 {
-    private MelodyUnit SelectedUnit;
+	private Dictionary<int, MelodyUnit> SelectedUnit;
     public CMCellGrid GameBoard;
 
 	private MessageRouter MessageRouter;
+
+	void Awake() {
+		SelectedUnit = new Dictionary<int, MelodyUnit> ();
+	}
 	
     void Start()
     {
 		MessageRouter = ServiceFactory.Instance.Resolve<MessageRouter>();
 		MessageRouter.AddHandler<UnitActionMessage>(OnUnitAction);
+		MessageRouter.AddHandler<SwitchPlayerMessage> (OnSwitchPlayer);
     }
 
 	void OnUnitAction(UnitActionMessage m) {
@@ -23,7 +28,7 @@ public class UnitManager : MonoBehaviour
 				SwitchSelection(m.Color, m.PlayerNumber);
 				break;
 			case UnitActionMessageType.MOVE:
-				MoveUnit(m.Direction);
+				MoveUnit(m.Direction, m.PlayerNumber);
 				break;
 			case UnitActionMessageType.ATTACK:
 				Attack(m.Color, m.PlayerNumber);
@@ -32,24 +37,31 @@ public class UnitManager : MonoBehaviour
 	}
 
 	void SwitchSelection(InputButton color, int playerNumber) {
-		if (SelectedUnit) {
-			UncolorDirections (SelectedUnit.Cell);
+		if (SelectedUnit.ContainsKey(playerNumber)) {
+			UncolorDirections (SelectedUnit[playerNumber].Cell);
 		}
 		
-		SelectedUnit = (GameBoard.Units.Find(c => (c.PlayerNumber == playerNumber) && ((c as MelodyUnit).ColorButton == color)) as MelodyUnit);
-		ColorDirections (SelectedUnit.Cell);
+		SelectedUnit[playerNumber] = (GameBoard.Units.Find(c => (c.PlayerNumber == playerNumber) && 
+			((c as MelodyUnit).ColorButton == color)) as MelodyUnit);
+
+		if (SelectedUnit.ContainsKey(playerNumber)) {
+			ColorDirections (SelectedUnit[playerNumber].Cell);
+		}
 	}
 
-	void MoveUnit(Vector2 direction) {
-		if (SelectedUnit) {
-			Cell destination = GameBoard.Cells.Find(c => c.OffsetCoord == SelectedUnit.Cell.OffsetCoord + direction);
+	void MoveUnit(Vector2 direction, int playerNumber) {
+		if (SelectedUnit.ContainsKey(playerNumber)) {
+			Cell destination = GameBoard.Cells.Find(c => c.OffsetCoord == 
+				SelectedUnit[playerNumber].Cell.OffsetCoord + direction);
 			if (destination && !destination.IsTaken) {
-				UncolorDirections (SelectedUnit.Cell);
-				Debug.Log("Move from "+SelectedUnit.Cell.OffsetCoord+" to "+destination.OffsetCoord);
-				SelectedUnit.Move(destination, SelectedUnit.FindPath(GameBoard.Cells, destination));
+				UncolorDirections (SelectedUnit[playerNumber].Cell);
+				SelectedUnit[playerNumber].Move(destination, 
+					SelectedUnit[playerNumber].FindPath(GameBoard.Cells, destination));
 				ColorDirections (destination);
+				SelectedUnit[playerNumber].MovementPoints = int.MaxValue; // TODO: Wow such hack
 			} else {
-				MessageRouter.RaiseMessage(new RejectActionMessage { PlayerNumber = GameBoard.CurrentPlayerNumber, ActionType = UnitActionMessageType.MOVE });
+				MessageRouter.RaiseMessage(new RejectActionMessage { PlayerNumber = GameBoard.CurrentPlayerNumber, 
+					ActionType = UnitActionMessageType.MOVE });
 			}
 		}
 	}
@@ -80,17 +92,26 @@ public class UnitManager : MonoBehaviour
 	}
 
 	void Attack(InputButton color, int playerNumber) {
-		SelectedUnit = GameBoard.Units[0] as MelodyUnit;
+		SelectedUnit[playerNumber] = GameBoard.Units[0] as MelodyUnit;
 		MelodyUnit recipient = GameBoard.Units.Find(c => 
 			(c.PlayerNumber != playerNumber) && 
 			((c as MelodyUnit).ColorButton == color) &&
- 			(Math.Abs(SelectedUnit.Cell.OffsetCoord[0] - c.Cell.OffsetCoord[0])) <= 1 && 
-			(Math.Abs(SelectedUnit.Cell.OffsetCoord[1] - c.Cell.OffsetCoord[1])) <= 1)
+			(Math.Abs(SelectedUnit[playerNumber].Cell.OffsetCoord[0] - c.Cell.OffsetCoord[0])) <= 1 && 
+			(Math.Abs(SelectedUnit[playerNumber].Cell.OffsetCoord[1] - c.Cell.OffsetCoord[1])) <= 1)
 			as MelodyUnit;
 		if (recipient) {
-			SelectedUnit.DealDamage(recipient);
+			SelectedUnit[playerNumber].DealDamage(recipient);
 		} else {
 			MessageRouter.RaiseMessage(new RejectActionMessage { PlayerNumber = GameBoard.CurrentPlayerNumber, ActionType = UnitActionMessageType.ATTACK });
+		}
+	}
+
+	void OnSwitchPlayer(SwitchPlayerMessage m) {
+		foreach (MelodyUnit cur in SelectedUnit.Values) {
+			UncolorDirections (cur.Cell);
+		}
+		if (SelectedUnit.ContainsKey (m.PlayerNumber)) {
+			ColorDirections (SelectedUnit [m.PlayerNumber].Cell);
 		}
 	}
 }

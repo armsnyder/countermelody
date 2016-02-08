@@ -12,6 +12,7 @@ public class MelodyUnit : Unit {
     public override void Initialize()
     {
         base.Initialize();
+		MovementPoints = int.MaxValue; // TODO: make less hacky?
         transform.position += new Vector3(0, 0, -1);
         GetComponent<Renderer>().material.color = LeadingColor;
 		AddTrim();
