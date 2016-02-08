@@ -44,6 +44,11 @@ public class GuitarInput : ControllerInput {
 	void Start() {
 		GuitarInputManager = ServiceFactory.Instance.Resolve<GuitarConnectionManager>();
 		MessageRouter = ServiceFactory.Instance.Resolve<MessageRouter>();
+		StartCoroutine ("RaiseRegisterInputCoroutine");
+	}
+
+	IEnumerator RaiseRegisterInputCoroutine() {
+		yield return null;
 		MessageRouter.RaiseMessage(new RegisterGuitarInputMessage() { PlayerNumber = PlayerNumber });
 	}
 
