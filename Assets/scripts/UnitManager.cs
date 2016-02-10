@@ -22,6 +22,10 @@ public class UnitManager : MonoBehaviour
 		MessageRouter.AddHandler<SwitchPlayerMessage> (OnSwitchPlayer);
     }
 
+    public CMCellGrid getGrid() {
+    	return GameBoard;
+    }
+
 	void OnUnitAction(UnitActionMessage m) {
 		switch (m.ActionType) {
 			case UnitActionMessageType.SELECT:
@@ -37,7 +41,7 @@ public class UnitManager : MonoBehaviour
 	}
 
 	void SwitchSelection(InputButton color, int playerNumber) {
-		if (SelectedUnit.ContainsKey(playerNumber)) {
+		if (SelectedUnit.ContainsKey(playerNumber) && SelectedUnit[playerNumber]) {
 			UncolorDirections (SelectedUnit[playerNumber].Cell);
 		}
 		
@@ -50,7 +54,7 @@ public class UnitManager : MonoBehaviour
 	}
 
 	void MoveUnit(Vector2 direction, int playerNumber) {
-		if (SelectedUnit.ContainsKey(playerNumber)) {
+		if (SelectedUnit.ContainsKey(playerNumber) && SelectedUnit[playerNumber]) {
 			Cell destination = GameBoard.Cells.Find(c => c.OffsetCoord == 
 				SelectedUnit[playerNumber].Cell.OffsetCoord + direction);
 			if (destination && !destination.IsTaken) {
@@ -96,11 +100,14 @@ public class UnitManager : MonoBehaviour
 		MelodyUnit recipient = GameBoard.Units.Find(c => 
 			(c.PlayerNumber != playerNumber) && 
 			((c as MelodyUnit).ColorButton == color) &&
-			(Math.Abs(SelectedUnit[playerNumber].Cell.OffsetCoord[0] - c.Cell.OffsetCoord[0])) <= 1 && 
-			(Math.Abs(SelectedUnit[playerNumber].Cell.OffsetCoord[1] - c.Cell.OffsetCoord[1])) <= 1)
+			(Math.Abs(SelectedUnit[playerNumber].Cell.OffsetCoord[0] - c.Cell.OffsetCoord[0])) <= c.AttackRange && 
+			(Math.Abs(SelectedUnit[playerNumber].Cell.OffsetCoord[1] - c.Cell.OffsetCoord[1])) <= c.AttackRange)
 			as MelodyUnit;
-		if (recipient) {
+		if (recipient && SelectedUnit[playerNumber]) {
 			SelectedUnit[playerNumber].DealDamage(recipient);
+			if(recipient.HitPoints <= 0) {
+
+			}
 		} else {
 			MessageRouter.RaiseMessage(new RejectActionMessage { PlayerNumber = GameBoard.CurrentPlayerNumber, ActionType = UnitActionMessageType.ATTACK });
 		}
