@@ -14,9 +14,16 @@ public class MelodyUnit : Unit {
         base.Initialize();
 		MovementPoints = int.MaxValue; // TODO: make less hacky?
         transform.position += new Vector3(0, 0, -1);
+        if(PlayerNumber == 0) {
+            LeadingColor = Color.black;
+        }
+        else {
+            LeadingColor = Color.white;
+        }
         GetComponent<Renderer>().material.color = LeadingColor;
         AttackFactor = 100;
 		AddTrim();
+        this.UnMark();
     }
 
 	private void AddTrim() {
@@ -54,6 +61,10 @@ public class MelodyUnit : Unit {
 
     public int GetActionPoints() {
         return TotalActionPoints;
+    }
+
+    public int GetAttackRange() {
+        return AttackRange;
     }
 
     public override void MarkAsAttacking(Unit other)
