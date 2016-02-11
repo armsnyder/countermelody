@@ -106,18 +106,11 @@ public class UnitManager : MonoBehaviour
 	}
 
 	public void ColorEnemies(int playerNumber) {		
-		//foreach (Cell neighbor in GameBoard.Cells) {
-		List<MelodyUnit> enemies;
 		foreach (Unit enemy in GameBoard.Units) {
 			if (enemy.PlayerNumber != playerNumber) {
-			//if(neighbor.IsTaken) {
-				//(SelectedUnit[playerNumber].Cell as CMCell).SetColor(Color.green);
 				float offset = Math.Abs(enemy.Cell.OffsetCoord.x - SelectedUnit[playerNumber].Cell.OffsetCoord.x) + Math.Abs(enemy.Cell.OffsetCoord.y - SelectedUnit[playerNumber].Cell.OffsetCoord.y);
-				//float offset = neighbor.OffsetCoord[0] - SelectedUnit[playerNumber].Cell.OffsetCoord[0] + neighbor.OffsetCoord[1] - SelectedUnit[playerNumber].Cell.OffsetCoord[1];
-				Debug.Log(Math.Abs(offset));
 				if (offset != 0 && offset <= SelectedUnit[playerNumber].GetAttackRange()) {
 					Debug.Log("here");
-					//(neighbor as CMCell).SetColor(Color.black);
 					(enemy.Cell as CMCell).SetColor(Color.black);
 					(SelectedUnit[playerNumber].Cell as CMCell).SetColor(Color.black);
 					enemy.MarkAsReachableEnemy();
