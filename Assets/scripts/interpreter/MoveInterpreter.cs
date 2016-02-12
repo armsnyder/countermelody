@@ -78,6 +78,10 @@ public class MoveInterpreter : Interpreter {
 				case InputButton.GREEN:
 				case InputButton.BLUE:
 				case InputButton.YELLOW:
+				case InputButton.UP:
+				case InputButton.DOWN:
+				case InputButton.LEFT:
+				case InputButton.RIGHT:
 				case InputButton.RED:
 					MessageRouter.RaiseMessage (new UnitActionMessage () { 
 						ActionType = UnitActionMessageType.MOVE, 
@@ -108,6 +112,14 @@ public class MoveInterpreter : Interpreter {
 		case InputButton.YELLOW:
 			return new Vector2 (0, -1); // Down
 		case InputButton.BLUE:
+			return new Vector2 (1, 0); // Right
+		case InputButton.LEFT:
+			return new Vector2 (-1, 0); // Left
+		case InputButton.UP:
+			return new Vector2 (0, 1); // Up
+		case InputButton.DOWN:
+			return new Vector2 (0, -1); // Down
+		case InputButton.RIGHT:
 			return new Vector2 (1, 0); // Right
 		default:
 			return new Vector2 ();

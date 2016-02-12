@@ -11,7 +11,11 @@ public enum InputButton {
 	STRUM,
     WHAMMY,
     PLUS,
-    MINUS
+    MINUS,
+    UP,
+    DOWN,
+    LEFT,
+    RIGHT
 }
 
 public class ButtonInputMessage {
