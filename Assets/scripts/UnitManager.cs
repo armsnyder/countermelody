@@ -66,7 +66,6 @@ public class UnitManager : MonoBehaviour
 					SelectedUnit[playerNumber].FindPath(GameBoard.Cells, destination));
 				ColorDirections (destination);
 				ColorEnemies (playerNumber);
-				SelectedUnit[playerNumber].MovementPoints = int.MaxValue; // TODO: Wow such hack
 			} else {
 				MessageRouter.RaiseMessage(new RejectActionMessage { PlayerNumber = GameBoard.CurrentPlayerNumber, 
 					ActionType = UnitActionMessageType.MOVE });
