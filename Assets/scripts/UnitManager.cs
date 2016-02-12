@@ -22,6 +22,10 @@ public class UnitManager : MonoBehaviour
 		MessageRouter.AddHandler<SwitchPlayerMessage> (OnSwitchPlayer);
     }
 
+    public CMCellGrid getGrid() {
+    	return GameBoard;
+    }
+
 	void OnUnitAction(UnitActionMessage m) {
 		switch (m.ActionType) {
 			case UnitActionMessageType.SELECT:
@@ -37,7 +41,8 @@ public class UnitManager : MonoBehaviour
 	}
 
 	void SwitchSelection(InputButton color, int playerNumber) {
-		if (SelectedUnit.ContainsKey(playerNumber)) {
+		if (SelectedUnit.ContainsKey(playerNumber) && SelectedUnit[playerNumber]) {
+			UncolorEnemies();
 			UncolorDirections (SelectedUnit[playerNumber].Cell);
 		}
 		
@@ -46,18 +51,21 @@ public class UnitManager : MonoBehaviour
 
 		if (SelectedUnit.ContainsKey(playerNumber)) {
 			ColorDirections (SelectedUnit[playerNumber].Cell);
+			ColorEnemies (playerNumber);
 		}
 	}
 
 	void MoveUnit(Vector2 direction, int playerNumber) {
-		if (SelectedUnit.ContainsKey(playerNumber)) {
+		if (SelectedUnit.ContainsKey(playerNumber) && SelectedUnit[playerNumber]) {
 			Cell destination = GameBoard.Cells.Find(c => c.OffsetCoord == 
 				SelectedUnit[playerNumber].Cell.OffsetCoord + direction);
 			if (destination && !destination.IsTaken) {
+				UncolorEnemies();
 				UncolorDirections (SelectedUnit[playerNumber].Cell);
 				SelectedUnit[playerNumber].Move(destination, 
 					SelectedUnit[playerNumber].FindPath(GameBoard.Cells, destination));
 				ColorDirections (destination);
+				ColorEnemies (playerNumber);
 				SelectedUnit[playerNumber].MovementPoints = int.MaxValue; // TODO: Wow such hack
 			} else {
 				MessageRouter.RaiseMessage(new RejectActionMessage { PlayerNumber = GameBoard.CurrentPlayerNumber, 
@@ -91,16 +99,39 @@ public class UnitManager : MonoBehaviour
 		}	
 	}
 
+	public void UncolorEnemies() {		
+		foreach (MelodyUnit enemy in GameBoard.Units) {
+			enemy.UnMark ();
+		}
+	}
+
+	public void ColorEnemies(int playerNumber) {		
+		foreach (Unit enemy in GameBoard.Units) {
+			if (enemy.PlayerNumber != playerNumber) {
+				float offset = Math.Abs(enemy.Cell.OffsetCoord.x - SelectedUnit[playerNumber].Cell.OffsetCoord.x) + Math.Abs(enemy.Cell.OffsetCoord.y - SelectedUnit[playerNumber].Cell.OffsetCoord.y);
+				if (offset != 0 && offset <= SelectedUnit[playerNumber].GetAttackRange()) {
+					Debug.Log("here");
+					(enemy.Cell as CMCell).SetColor(Color.black);
+					(SelectedUnit[playerNumber].Cell as CMCell).SetColor(Color.black);
+					enemy.MarkAsReachableEnemy();
+				}
+			}
+		}	
+	}
+
 	void Attack(InputButton color, int playerNumber) {
-		SelectedUnit[playerNumber] = GameBoard.Units[0] as MelodyUnit;
+//		SelectedUnit[playerNumber] = GameBoard.Units[0] as MelodyUnit;
 		MelodyUnit recipient = GameBoard.Units.Find(c => 
 			(c.PlayerNumber != playerNumber) && 
 			((c as MelodyUnit).ColorButton == color) &&
-			(Math.Abs(SelectedUnit[playerNumber].Cell.OffsetCoord[0] - c.Cell.OffsetCoord[0])) <= 1 && 
-			(Math.Abs(SelectedUnit[playerNumber].Cell.OffsetCoord[1] - c.Cell.OffsetCoord[1])) <= 1)
+			(Math.Abs(SelectedUnit[playerNumber].Cell.OffsetCoord[0] - c.Cell.OffsetCoord[0])) <= c.AttackRange && 
+			(Math.Abs(SelectedUnit[playerNumber].Cell.OffsetCoord[1] - c.Cell.OffsetCoord[1])) <= c.AttackRange)
 			as MelodyUnit;
-		if (recipient) {
+		if (recipient && SelectedUnit[playerNumber]) {
 			SelectedUnit[playerNumber].DealDamage(recipient);
+			if(recipient.HitPoints <= 0) {
+
+			}
 		} else {
 			MessageRouter.RaiseMessage(new RejectActionMessage { PlayerNumber = GameBoard.CurrentPlayerNumber, ActionType = UnitActionMessageType.ATTACK });
 		}

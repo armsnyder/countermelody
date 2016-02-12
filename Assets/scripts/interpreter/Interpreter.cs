@@ -23,15 +23,18 @@ public class RejectActionMessage {
 public abstract class Interpreter : MonoBehaviour {
 	protected static Dictionary<int, List<InputButton>> HeldFrets = new Dictionary<int, List<InputButton>> ();
 	protected static int CurrentPlayer;
+	protected MessageRouter MessageRouter;
 
 	protected virtual void Start() {
-		// TODO: Cleanup handlers upon switching out Interpreters
-		ServiceFactory.Instance.Resolve<MessageRouter> ().AddHandler<SwitchPlayerMessage> (OnSwitchPlayer);
-		ServiceFactory.Instance.Resolve<MessageRouter> ().AddHandler<ButtonDownMessage> (OnButtonDown);
-		ServiceFactory.Instance.Resolve<MessageRouter> ().AddHandler<ButtonUpMessage> (OnButtonUp);
+		MessageRouter = ServiceFactory.Instance.Resolve<MessageRouter> ();
+		MessageRouter.AddHandler<SwitchPlayerMessage> (OnSwitchPlayer);
+		MessageRouter.AddHandler<ButtonDownMessage> (OnButtonDown);
+		MessageRouter.AddHandler<ButtonUpMessage> (OnButtonUp);
 	}
 
 	protected virtual void OnButtonDown(ButtonDownMessage m) {
+		if (!enabled)
+			return;
 		switch (m.Button) {
 		case InputButton.GREEN:
 		case InputButton.RED:
@@ -49,6 +52,8 @@ public abstract class Interpreter : MonoBehaviour {
 	}
 
 	protected virtual void OnButtonUp(ButtonUpMessage m) {
+		if (!enabled)
+			return;
 		if (HeldFrets.ContainsKey (m.PlayerNumber)) {
 			while (HeldFrets [m.PlayerNumber].Contains (m.Button)) {
 				HeldFrets [m.PlayerNumber].Remove (m.Button);
