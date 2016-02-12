@@ -8,8 +8,6 @@ public class SwitchPlayerMessage {
 
 public class GameManager : MonoBehaviour {
 
-
-	public CMCellGrid GameBoard;
 	[SerializeField]
 	private int NumberOfPlayers = 2;
 
@@ -36,7 +34,6 @@ public class GameManager : MonoBehaviour {
 	private void OnExitBeatWindow(ExitBeatWindowMessage m) {
 		BeatCounter++;
 		if (BeatCounter == BeatsPerTurn) {
-			GameBoard.Units.FindAll(u => (u as MelodyUnit).PlayerNumber.Equals(CurrentPlayer)).ForEach(u => { (u as MelodyUnit).ActionPoints = (u as MelodyUnit).GetActionPoints(); });
 			CurrentPlayer = (CurrentPlayer + 1) % NumberOfPlayers;
 			BeatCounter = 0;
 			StartCoroutine ("SwitchPlayerCoroutine");

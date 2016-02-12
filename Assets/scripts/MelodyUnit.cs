@@ -12,7 +12,6 @@ public class MelodyUnit : Unit {
     public override void Initialize()
     {
         base.Initialize();
-		MovementPoints = int.MaxValue; // TODO: make less hacky?
         transform.position += new Vector3(0, 0, -1);
         if(PlayerNumber == 0) {
             LeadingColor = Color.black;
@@ -85,7 +84,7 @@ public class MelodyUnit : Unit {
 
     public override void MarkAsFriendly()
     {
-        GetComponent<Renderer>().material.color = LeadingColor + new Color(0.8f, 1, 0.8f);
+
     }
 
     public override void MarkAsReachableEnemy()
