@@ -24810,6 +24810,9 @@ MonoBehaviour:
   beatsPerMeasure: 4
   window: 0.5
   songFile: {fileID: 8300000, guid: 1657a42069c184d3aabf282db85e0c0b, type: 3}
+  instrumentFiles:
+  - {fileID: 8300000, guid: df145bb330e87496b952b759757ce439, type: 3}
+  - {fileID: 8300000, guid: 5da84bfc348e241dd92b55ce0288c6d9, type: 3}
   offset: 0
 --- !u!114 &1471062528
 MonoBehaviour:
@@ -24845,9 +24848,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1471062518}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6592ca24c6e964d2c8ea543fd2076079, type: 3}
+  m_Script: {fileID: 11500000, guid: 5a2642a6cefb44c93a1741c63bb32a49, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  songFile: {fileID: 8300000, guid: 565e1b24a55594a038f2d5e626fc577e, type: 3}
 --- !u!1 &1474836972
 GameObject:
   m_ObjectHideFlags: 0
