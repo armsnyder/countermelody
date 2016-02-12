@@ -29,6 +29,10 @@ public class GuitarInput : ControllerInput {
 		public bool plus;
 		public bool minus;
 		public bool strum;
+		public bool up;
+		public bool down;
+		public bool left;
+		public bool right;
 	}
 
 	[SerializeField]
@@ -82,6 +86,11 @@ public class GuitarInput : ControllerInput {
 		ThisFrameData.minus = guitar.minus;
 		ThisFrameData.plus = guitar.plus;
 		ThisFrameData.strum = guitar.strum;
+		ThisFrameData.up = wiimote.Button.d_up;
+		ThisFrameData.down = wiimote.Button.d_down;
+		ThisFrameData.left = wiimote.Button.d_left;
+		ThisFrameData.right = wiimote.Button.d_right;		
+
 
 		// plus
 		if (ThisFrameData.plus && !LastFrameData.plus) {
@@ -142,6 +151,34 @@ public class GuitarInput : ControllerInput {
 		// strum
 		if (ThisFrameData.strum && !LastFrameData.strum) {
 			MessageRouter.RaiseMessage(new ButtonDownMessage() { Button = InputButton.STRUM, PlayerNumber = PlayerNumber });
+		}
+
+		// up
+		if (ThisFrameData.up && !LastFrameData.up) {
+			MessageRouter.RaiseMessage(new ButtonDownMessage() { Button = InputButton.UP, PlayerNumber = PlayerNumber });
+		} else if (!ThisFrameData.up && LastFrameData.up) {
+			MessageRouter.RaiseMessage(new ButtonUpMessage() { Button = InputButton.UP, PlayerNumber = PlayerNumber });
+		}
+
+		// down
+		if (ThisFrameData.down && !LastFrameData.down) {
+			MessageRouter.RaiseMessage(new ButtonDownMessage() { Button = InputButton.DOWN, PlayerNumber = PlayerNumber });
+		} else if (!ThisFrameData.down && LastFrameData.down) {
+			MessageRouter.RaiseMessage(new ButtonUpMessage() { Button = InputButton.DOWN, PlayerNumber = PlayerNumber });
+		}
+
+		// left
+		if (ThisFrameData.left && !LastFrameData.left) {
+			MessageRouter.RaiseMessage(new ButtonDownMessage() { Button = InputButton.LEFT, PlayerNumber = PlayerNumber });
+		} else if (!ThisFrameData.left && LastFrameData.left) {
+			MessageRouter.RaiseMessage(new ButtonUpMessage() { Button = InputButton.LEFT, PlayerNumber = PlayerNumber });
+		}
+
+		// right
+		if (ThisFrameData.right && !LastFrameData.right) {
+			MessageRouter.RaiseMessage(new ButtonDownMessage() { Button = InputButton.RIGHT, PlayerNumber = PlayerNumber });
+		} else if (!ThisFrameData.right && LastFrameData.right) {
+			MessageRouter.RaiseMessage(new ButtonUpMessage() { Button = InputButton.RIGHT, PlayerNumber = PlayerNumber });
 		}
 
 		// Update LastFrameData
