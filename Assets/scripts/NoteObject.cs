@@ -11,7 +11,7 @@ public class NoteObject : MonoBehaviour {
 		}
 	}
 
-	void SetNoteColor(Note note = null) {
+	public void SetNoteColor(Note note = null) {
 		if (note != null) {
 			NoteData = note;
 		}
@@ -19,7 +19,9 @@ public class NoteObject : MonoBehaviour {
 		Color color = NoteData.fretNumber == 0 ? Color.green :
 			NoteData.fretNumber == 1 ? Color.red :
 			NoteData.fretNumber == 2 ? Color.yellow :
-			NoteData.fretNumber == 3 ? Color.green : new Color(255, 123, 0, 1);
-			GetComponent<Renderer>().material.color = color;
+			NoteData.fretNumber == 3 ? Color.blue : 
+			new Color(1, 0.5f, 0, 1);
+
+		GetComponent<Renderer>().material.color = color;
 	}
 }
