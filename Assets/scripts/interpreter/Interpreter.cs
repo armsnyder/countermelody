@@ -20,8 +20,8 @@ public class RejectActionMessage {
 	public UnitActionMessageType ActionType { get; set; }
 }
 
-public abstract class Interpreter : MonoBehaviour {
-	protected static Dictionary<int, List<InputButton>> HeldFrets = new Dictionary<int, List<InputButton>> ();
+public class Interpreter : MonoBehaviour {
+	public static Dictionary<int, List<InputButton>> HeldFrets = new Dictionary<int, List<InputButton>> ();
 	protected static int CurrentPlayer;
 	protected MessageRouter MessageRouter;
 

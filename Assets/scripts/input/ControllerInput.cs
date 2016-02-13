@@ -15,7 +15,8 @@ public enum InputButton {
     UP,
     DOWN,
     LEFT,
-    RIGHT
+    RIGHT,
+	NONE
 }
 
 public class ButtonInputMessage {
