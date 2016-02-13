@@ -35,6 +35,10 @@ public class UnitManager : MonoBehaviour
 		for (int i = 0; i < GameManager.NumberOfPlayers; i++) {
 			SelectedUnit[i] = GameBoard.Units.Find(c => 
 			c.PlayerNumber == i && ((c as MelodyUnit).ColorButton == InputButton.GREEN)) as MelodyUnit;
+
+			if (i == GameManager.CurrentPlayer) {
+				ColorDirections(SelectedUnit[i].Cell);
+			}
 		}
 	}
 
@@ -58,7 +62,6 @@ public class UnitManager : MonoBehaviour
 
 	void SwitchSelection(InputButton color, int playerNumber) {
 		if (SelectedUnit.ContainsKey(playerNumber) && SelectedUnit[playerNumber]) {
-			//UncolorEnemies();
 			UncolorDirections (SelectedUnit[playerNumber].Cell);
 		}
 		
@@ -67,7 +70,6 @@ public class UnitManager : MonoBehaviour
 
 		if (SelectedUnit.ContainsKey(playerNumber)) {
 			ColorDirections (SelectedUnit[playerNumber].Cell);
-			//ColorEnemies (playerNumber);
 		}
 	}
 
@@ -76,12 +78,10 @@ public class UnitManager : MonoBehaviour
 			Cell destination = GameBoard.Cells.Find(c => c.OffsetCoord == 
 				SelectedUnit[playerNumber].Cell.OffsetCoord + direction);
 			if (destination && !destination.IsTaken) {
-				//UncolorEnemies();
 				UncolorDirections (SelectedUnit[playerNumber].Cell);
 				SelectedUnit[playerNumber].Move(destination, 
 					SelectedUnit[playerNumber].FindPath(GameBoard.Cells, destination));
 				ColorDirections (destination);
-				//ColorEnemies (playerNumber);
 			} else {
 				MessageRouter.RaiseMessage(new RejectActionMessage { PlayerNumber = GameBoard.CurrentPlayerNumber, 
 					ActionType = UnitActionMessageType.MOVE });
