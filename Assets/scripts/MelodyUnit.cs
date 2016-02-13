@@ -90,7 +90,8 @@ public class MelodyUnit : Unit {
 
     public override void MarkAsReachableEnemy()
     {
-        GetComponent<Renderer>().material.color = LeadingColor + Color.red ;
+		//TODO: Do something other than color to mark as reachable
+        GetComponent<Renderer>().material.color =  Color.red ;
     }
 
     public override void MarkAsSelected()

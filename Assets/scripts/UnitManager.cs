@@ -137,18 +137,26 @@ public class UnitManager : MonoBehaviour
 		int currentPlayer = GameManager.CurrentPlayer;
 		List<Cell> AttackableCells = GameBoard.Cells.FindAll(c => 
 		{
-			Vector2 offset = c.OffsetCoord - SelectedUnit[GameManager.CurrentPlayer].Cell.OffsetCoord;
-			return Math.Abs(offset[0]) + Math.Abs(offset[1]) <= SelectedUnit[GameManager.CurrentPlayer].AttackRange;
+			Vector2 offset = c.OffsetCoord - SelectedUnit[currentPlayer].Cell.OffsetCoord;
+			return Math.Abs(offset[0]) + Math.Abs(offset[1]) <= SelectedUnit[currentPlayer].AttackRange;
 		});
-		// highlight them
+		//highlight them
 		foreach (Cell c in AttackableCells) {
 			(c as CMCell).MarkAsHighlighted();
 		}
+		//highlight units that are in the range
+		List<Unit> AttackableUnits = GameBoard.Units.FindAll(c => AttackableCells.Contains(c.Cell) && c.PlayerNumber != currentPlayer);
+		foreach (Unit u in AttackableUnits) {
+			(u as MelodyUnit).MarkAsReachableEnemy();
+		}
 	}
 
-	void UnHighlightCells() {
+	void UnHighlightAll() {
 		foreach(Cell c in GameBoard.Cells) {
 			c.UnMark();
+		}
+		foreach(Unit u in GameBoard.Units) {
+			u.UnMark();
 		}
 	}
 
@@ -167,7 +175,7 @@ public class UnitManager : MonoBehaviour
 	}
 
 	void OnStateChange(StateChangeMessage m) {
-		UnHighlightCells();
+		UnHighlightAll();
 		switch (m.State) {
 			case State.AttackState:
 				MarkAttackRange();
