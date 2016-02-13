@@ -8,6 +8,7 @@ public class dummyGameManager : MonoBehaviour {
 	private GameObject Metronome;
 	private int CurrentPlayer;
 
+	public bool simulateBattles = false;
 	public GameObject NoteThing;
 
 	// Use this for initialization
@@ -20,6 +21,8 @@ public class dummyGameManager : MonoBehaviour {
 		Metronome = GameObject.CreatePrimitive (PrimitiveType.Cube);
 		Metronome.transform.localScale = new Vector3(1000, 1000, 1);
 		Metronome.transform.position = new Vector3(0, 0, 100);
+		if (simulateBattles)
+			StartCoroutine (EnterExitBattlesPeriodically ());
 	}
 
 	void spawnNote(int i) {
@@ -61,5 +64,14 @@ public class dummyGameManager : MonoBehaviour {
 
 	void OnRejectAction(RejectActionMessage m) {
 		Debug.Log ("Reject: "+m.ActionType.ToString());
+	}
+
+	IEnumerator EnterExitBattlesPeriodically() {
+		while (true) {
+			yield return new WaitForSeconds (2f);
+			ServiceFactory.Instance.Resolve<MessageRouter> ().RaiseMessage (new EnterBattleMessage ());
+			yield return new WaitForSeconds (2f);
+			ServiceFactory.Instance.Resolve<MessageRouter> ().RaiseMessage (new ExitBattleMessage ());
+		}
 	}
 }
