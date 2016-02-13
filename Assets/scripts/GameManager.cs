@@ -15,7 +15,8 @@ public class GameManager : MonoBehaviour {
 	private int BeatsPerTurn = 4; // TODO: Get this information from the Song
 
 	private int BeatCounter;
-	private int CurrentPlayer;
+	private int _CurrentPlayer;
+	public int CurrentPlayer { get { return _CurrentPlayer; } }
 
 	private MessageRouter MessageRouter;
 
@@ -25,7 +26,7 @@ public class GameManager : MonoBehaviour {
 		// Register GameManager as a singleton so we can get access to things like Number of Players elsewhere
 		ServiceFactory.Instance.RegisterSingleton<GameManager>(this);
 		BeatCounter = 0;
-		CurrentPlayer = 0;
+		_CurrentPlayer = 0;
 	}
 
 	void Start() {
@@ -36,7 +37,7 @@ public class GameManager : MonoBehaviour {
 	private void OnExitBeatWindow(ExitBeatWindowMessage m) {
 		BeatCounter++;
 		if (BeatCounter == BeatsPerTurn) {
-			CurrentPlayer = (CurrentPlayer + 1) % NumberOfPlayers;
+			_CurrentPlayer = (_CurrentPlayer + 1) % NumberOfPlayers;
 			BeatCounter = 0;
 			StartCoroutine ("SwitchPlayerCoroutine");
 		}
@@ -44,6 +45,6 @@ public class GameManager : MonoBehaviour {
 
 	private IEnumerator SwitchPlayerCoroutine() {
 		yield return null;
-		MessageRouter.RaiseMessage (new SwitchPlayerMessage () { PlayerNumber = CurrentPlayer });
+		MessageRouter.RaiseMessage (new SwitchPlayerMessage () { PlayerNumber = _CurrentPlayer });
 	}
 }
