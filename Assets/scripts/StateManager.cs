@@ -27,12 +27,14 @@ public class StateManager : MonoBehaviour {
 	void OnButtonDown(ButtonDownMessage m) {
 		if (m.Button == InputButton.WHAMMY && m.PlayerNumber == CurrentPlayer) {
 			LoadAttackInterpreter ();
+			Debug.Assert(AttackInterpreter.enabled && !MoveInterpreter.enabled,"Attack Interpreter Active");
 		}
 	}
 
 	void OnButtonUp(ButtonUpMessage m) {
 		if (m.Button == InputButton.WHAMMY && m.PlayerNumber == CurrentPlayer) {
 			LoadMoveInterpreter ();
+			Debug.Assert(!AttackInterpreter.enabled && MoveInterpreter.enabled, "Move Interpreter Active");
 		}
 	}
 
