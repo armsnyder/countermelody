@@ -24849,6 +24849,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: df145bb330e87496b952b759757ce439, type: 3}
   - {fileID: 8300000, guid: 5da84bfc348e241dd92b55ce0288c6d9, type: 3}
   offset: 0
+  songData: {fileID: 102900000, guid: dff5a95fd4d4141eea5176a800149a14, type: 3}
 --- !u!114 &1471062528
 MonoBehaviour:
   m_ObjectHideFlags: 0
