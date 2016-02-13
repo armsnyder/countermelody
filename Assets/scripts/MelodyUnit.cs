@@ -1,14 +1,22 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Collections;
+using Frictionless;
+
+public class UnitDeathMessage {
+	public MelodyUnit unit;
+}
 
 public class MelodyUnit : Unit {
 	public InputButton ColorButton;
 	public Color unitColor;
     public Color LeadingColor;
 	public GameObject trim;
+	public MessageRouter MessageRouter;
+
     public override void Initialize()
     {
         base.Initialize();
@@ -20,10 +28,24 @@ public class MelodyUnit : Unit {
             LeadingColor = Color.white;
         }
         GetComponent<Renderer>().material.color = LeadingColor;
-        AttackFactor = 100;
+        AttackFactor = 20;
 		AddTrim();
         this.UnMark();
-    }
+		MessageRouter = ServiceFactory.Instance.Resolve<MessageRouter>();
+	}
+
+	protected override void Defend(Unit other, int damage) {
+		base.Defend(other, damage);
+		UpdateHealthBar();
+	}
+
+	public void UpdateHealthBar() {
+		if (GetComponentInChildren<Image>() != null) {
+			GetComponentInChildren<Image>().transform.localScale = new Vector3((float)((float)HitPoints / (float)TotalHitPoints), 1, 1);
+			GetComponentInChildren<Image>().color = Color.Lerp(Color.red, Color.green,
+				(float)((float)HitPoints / (float)TotalHitPoints));
+		}
+	}
 
 	private void AddTrim() {
 		GameObject Trim = Instantiate(trim);
@@ -34,29 +56,6 @@ public class MelodyUnit : Unit {
 		}
 		MovementPoints = int.MaxValue;
 	}
-
-    /*protected override void Defend(Unit other, int damage)
-    {
-        MarkAsDefending(other);
-        HitPoints -= Mathf.Clamp(damage - DefenceFactor, 1, damage);  //Damage is calculated by subtracting attack factor of attacker and defence factor of defender. If result is below 1, it is set to 1.
-                                                                      //This behaviour can be overridden in derived classes.
-        if (UnitAttacked != null)
-            UnitAttacked.Invoke(this, new AttackEventArgs(other, this, damage));
-
-        if (HitPoints <= 0)
-        {
-            if (UnitDestroyed != null)
-                UnitDestroyed.Invoke(this, new AttackEventArgs(other, this, damage));
-            OnDestroyed();
-        }
-    }
-
-    protected override void OnDestroyed()
-    {
-        Cell.IsTaken = false;
-        MarkAsDestroyed();
-        //Destroy(gameObject);
-    }*/
 
     public int GetActionPoints() {
         return TotalActionPoints;
@@ -75,7 +74,10 @@ public class MelodyUnit : Unit {
     }
 
     public override void MarkAsDestroyed()
-    {      
+    {
+		MessageRouter.RaiseMessage(new UnitDeathMessage {
+			unit = this
+		});
     }
 
     public override void MarkAsFinished()
@@ -84,7 +86,6 @@ public class MelodyUnit : Unit {
 
     public override void MarkAsFriendly()
     {
-
     }
 
     public override void MarkAsReachableEnemy()

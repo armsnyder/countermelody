@@ -10,10 +10,13 @@ public class CMCellGrid : CellGrid {
 	private Boolean isFirstFrame = true;
 
 	void Update() {
+		// TODO: There's gotta be a better way of doing this....
 		if (isFirstFrame) {
 			MessageRouter = ServiceFactory.Instance.Resolve<MessageRouter>();
 			MessageRouter.AddHandler<SwitchPlayerMessage>(OnSwitchPlayer);
 			isFirstFrame = false;
+
+			ServiceFactory.Instance.RegisterSingleton < CellGrid > (this);
 		}
 	}
 

@@ -7,8 +7,8 @@ using System.Collections.Generic;
 public class UnitManager : MonoBehaviour
 {
 	private Dictionary<int, MelodyUnit> SelectedUnit;
-    public CMCellGrid GameBoard;
-
+    private CMCellGrid GameBoard;
+	private GameManager GameManager;
 	private MessageRouter MessageRouter;
 
 	void Awake() {
@@ -19,8 +19,22 @@ public class UnitManager : MonoBehaviour
     {
 		MessageRouter = ServiceFactory.Instance.Resolve<MessageRouter>();
 		MessageRouter.AddHandler<UnitActionMessage>(OnUnitAction);
-		MessageRouter.AddHandler<SwitchPlayerMessage> (OnSwitchPlayer);
+		MessageRouter.AddHandler<SwitchPlayerMessage>(OnSwitchPlayer);
+		MessageRouter.AddHandler<UnitDeathMessage>(OnUnitDeath);
+		GameManager = ServiceFactory.Instance.Resolve<GameManager>();
+		StartCoroutine("GetGameBoard");
     }
+
+	private IEnumerator GetGameBoard() {
+		while (!ServiceFactory.Instance.Resolve<CellGrid>()) {
+			yield return null;
+		}
+		GameBoard = ServiceFactory.Instance.Resolve<CellGrid>() as CMCellGrid;
+		for (int i = 0; i < GameManager.NumberOfPlayers; i++) {
+			SelectedUnit[i] = GameBoard.Units.Find(c => 
+			c.PlayerNumber == i && ((c as MelodyUnit).ColorButton == InputButton.GREEN)) as MelodyUnit;
+		}
+	}
 
     public CMCellGrid getGrid() {
     	return GameBoard;
@@ -119,7 +133,6 @@ public class UnitManager : MonoBehaviour
 	}
 
 	void Attack(InputButton color, int playerNumber) {
-//		SelectedUnit[playerNumber] = GameBoard.Units[0] as MelodyUnit;
 		MelodyUnit recipient = GameBoard.Units.Find(c => 
 			(c.PlayerNumber != playerNumber) && 
 			((c as MelodyUnit).ColorButton == color) &&
@@ -143,5 +156,10 @@ public class UnitManager : MonoBehaviour
 		if (SelectedUnit.ContainsKey (m.PlayerNumber)) {
 			ColorDirections (SelectedUnit [m.PlayerNumber].Cell);
 		}
+	}
+
+	void OnUnitDeath(UnitDeathMessage m) {
+		UncolorDirections(m.unit.Cell);
+		SelectedUnit[m.unit.PlayerNumber] = GameBoard.Units.Find(c => c.PlayerNumber == m.unit.PlayerNumber) as MelodyUnit;
 	}
 }
