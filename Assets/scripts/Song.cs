@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEditor;
 using System.Collections;
 using System.Collections.Generic;
 using Frictionless;
@@ -61,7 +60,7 @@ public class Song : MonoBehaviour {
 	public AudioClip songFile;
 	public AudioClip[] instrumentFiles;
 	public float offset = 0f;
-	public DefaultAsset songData;
+	public TextAsset songData;
 
 	public float playerPosition { get { return player.time; } }
 
@@ -323,11 +322,10 @@ public class Song : MonoBehaviour {
 	/// </summary>
 	/// <returns>The song data, as a list of Note objects</returns>
 	/// <param name="songData">Song data, as a MIDI file asset</param>
-	private Note[] LoadSongData(DefaultAsset songData) {
+	private Note[] LoadSongData(TextAsset songData) {
 		List<Note> ret = new List<Note> (1000);
-		string dataPath = AssetDatabase.GetAssetPath (songData);
 		byte[] buffer = new byte[2048];
-		using (Stream source = File.OpenRead (dataPath)) {
+		using (Stream source = new MemoryStream(songData.bytes)) {
 			int timeCode = 0;
 			int statusCode = 0;
 			int dataIndex = 0;
