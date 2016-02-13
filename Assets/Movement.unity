@@ -314,6 +314,10 @@ Prefab:
       propertyPath: m_Name
       value: BaseUnit (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 11449884, guid: 94251f35eb6c1e6448b7b452e1db67fa, type: 2}
+      propertyPath: HitPoints
+      value: 100
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94251f35eb6c1e6448b7b452e1db67fa, type: 2}
   m_IsPrefabParent: 0
@@ -9724,6 +9728,10 @@ Prefab:
       propertyPath: unitColor.g
       value: 0.47843137
       objectReference: {fileID: 0}
+    - target: {fileID: 11449884, guid: 94251f35eb6c1e6448b7b452e1db67fa, type: 2}
+      propertyPath: HitPoints
+      value: 100
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94251f35eb6c1e6448b7b452e1db67fa, type: 2}
   m_IsPrefabParent: 0
@@ -11560,6 +11568,10 @@ Prefab:
       propertyPath: PlayerNumber
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 11449884, guid: 94251f35eb6c1e6448b7b452e1db67fa, type: 2}
+      propertyPath: HitPoints
+      value: 100
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94251f35eb6c1e6448b7b452e1db67fa, type: 2}
   m_IsPrefabParent: 0
@@ -11811,6 +11823,10 @@ Prefab:
     - target: {fileID: 11449884, guid: 94251f35eb6c1e6448b7b452e1db67fa, type: 2}
       propertyPath: unitColor.b
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11449884, guid: 94251f35eb6c1e6448b7b452e1db67fa, type: 2}
+      propertyPath: HitPoints
+      value: 100
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94251f35eb6c1e6448b7b452e1db67fa, type: 2}
@@ -12435,6 +12451,10 @@ Prefab:
     - target: {fileID: 11449884, guid: 94251f35eb6c1e6448b7b452e1db67fa, type: 2}
       propertyPath: unitColor.b
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11449884, guid: 94251f35eb6c1e6448b7b452e1db67fa, type: 2}
+      propertyPath: HitPoints
+      value: 100
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94251f35eb6c1e6448b7b452e1db67fa, type: 2}
@@ -15718,6 +15738,10 @@ Prefab:
     - target: {fileID: 11449884, guid: 94251f35eb6c1e6448b7b452e1db67fa, type: 2}
       propertyPath: unitColor.g
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11449884, guid: 94251f35eb6c1e6448b7b452e1db67fa, type: 2}
+      propertyPath: HitPoints
+      value: 100
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94251f35eb6c1e6448b7b452e1db67fa, type: 2}
@@ -20997,6 +21021,10 @@ Prefab:
       propertyPath: unitColor.g
       value: 0.484
       objectReference: {fileID: 0}
+    - target: {fileID: 11449884, guid: 94251f35eb6c1e6448b7b452e1db67fa, type: 2}
+      propertyPath: HitPoints
+      value: 100
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94251f35eb6c1e6448b7b452e1db67fa, type: 2}
   m_IsPrefabParent: 0
@@ -23123,6 +23151,10 @@ Prefab:
       propertyPath: unitColor.r
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 11449884, guid: 94251f35eb6c1e6448b7b452e1db67fa, type: 2}
+      propertyPath: HitPoints
+      value: 100
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94251f35eb6c1e6448b7b452e1db67fa, type: 2}
   m_IsPrefabParent: 0
@@ -24204,6 +24236,10 @@ Prefab:
       propertyPath: unitColor.r
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 11449884, guid: 94251f35eb6c1e6448b7b452e1db67fa, type: 2}
+      propertyPath: HitPoints
+      value: 100
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94251f35eb6c1e6448b7b452e1db67fa, type: 2}
   m_IsPrefabParent: 0
@@ -24691,6 +24727,7 @@ GameObject:
   - 114: {fileID: 1471062529}
   - 114: {fileID: 1471062528}
   - 114: {fileID: 1471062530}
+  - 114: {fileID: 1471062531}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -24734,7 +24771,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5ae5c2e461854148b95c71b133b46cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GameBoard: {fileID: 1548027802}
 --- !u!114 &1471062522
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24851,6 +24887,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   songFile: {fileID: 8300000, guid: 565e1b24a55594a038f2d5e626fc577e, type: 3}
+--- !u!114 &1471062531
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1471062518}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6592ca24c6e964d2c8ea543fd2076079, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1474836972
 GameObject:
   m_ObjectHideFlags: 0
@@ -25936,6 +25983,10 @@ Prefab:
     - target: {fileID: 11449884, guid: 94251f35eb6c1e6448b7b452e1db67fa, type: 2}
       propertyPath: unitColor.r
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11449884, guid: 94251f35eb6c1e6448b7b452e1db67fa, type: 2}
+      propertyPath: HitPoints
+      value: 100
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94251f35eb6c1e6448b7b452e1db67fa, type: 2}
