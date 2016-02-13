@@ -10,6 +10,7 @@ public class UnitManager : MonoBehaviour
     private CMCellGrid GameBoard;
 	private GameManager GameManager;
 	private MessageRouter MessageRouter;
+	private StateManager StateManager;
 
 	void Awake() {
 		SelectedUnit = new Dictionary<int, MelodyUnit> ();
@@ -21,6 +22,7 @@ public class UnitManager : MonoBehaviour
 		MessageRouter.AddHandler<UnitActionMessage>(OnUnitAction);
 		MessageRouter.AddHandler<SwitchPlayerMessage>(OnSwitchPlayer);
 		MessageRouter.AddHandler<UnitDeathMessage>(OnUnitDeath);
+		MessageRouter.AddHandler<StateChangeMessage>(OnStateChange);
 		GameManager = ServiceFactory.Instance.Resolve<GameManager>();
 		StartCoroutine("GetGameBoard");
     }
@@ -33,6 +35,10 @@ public class UnitManager : MonoBehaviour
 		for (int i = 0; i < GameManager.NumberOfPlayers; i++) {
 			SelectedUnit[i] = GameBoard.Units.Find(c => 
 			c.PlayerNumber == i && ((c as MelodyUnit).ColorButton == InputButton.GREEN)) as MelodyUnit;
+
+			if (i == GameManager.CurrentPlayer) {
+				ColorDirections(SelectedUnit[i].Cell);
+			}
 		}
 	}
 
@@ -56,7 +62,6 @@ public class UnitManager : MonoBehaviour
 
 	void SwitchSelection(InputButton color, int playerNumber) {
 		if (SelectedUnit.ContainsKey(playerNumber) && SelectedUnit[playerNumber]) {
-			UncolorEnemies();
 			UncolorDirections (SelectedUnit[playerNumber].Cell);
 		}
 		
@@ -65,7 +70,6 @@ public class UnitManager : MonoBehaviour
 
 		if (SelectedUnit.ContainsKey(playerNumber)) {
 			ColorDirections (SelectedUnit[playerNumber].Cell);
-			ColorEnemies (playerNumber);
 		}
 	}
 
@@ -74,12 +78,10 @@ public class UnitManager : MonoBehaviour
 			Cell destination = GameBoard.Cells.Find(c => c.OffsetCoord == 
 				SelectedUnit[playerNumber].Cell.OffsetCoord + direction);
 			if (destination && !destination.IsTaken) {
-				UncolorEnemies();
 				UncolorDirections (SelectedUnit[playerNumber].Cell);
 				SelectedUnit[playerNumber].Move(destination, 
 					SelectedUnit[playerNumber].FindPath(GameBoard.Cells, destination));
 				ColorDirections (destination);
-				ColorEnemies (playerNumber);
 			} else {
 				MessageRouter.RaiseMessage(new RejectActionMessage { PlayerNumber = GameBoard.CurrentPlayerNumber, 
 					ActionType = UnitActionMessageType.MOVE });
@@ -112,25 +114,6 @@ public class UnitManager : MonoBehaviour
 		}	
 	}
 
-	public void UncolorEnemies() {		
-		foreach (MelodyUnit enemy in GameBoard.Units) {
-			enemy.UnMark ();
-		}
-	}
-
-	public void ColorEnemies(int playerNumber) {		
-		foreach (Unit enemy in GameBoard.Units) {
-			if (enemy.PlayerNumber != playerNumber) {
-				float offset = Math.Abs(enemy.Cell.OffsetCoord.x - SelectedUnit[playerNumber].Cell.OffsetCoord.x) + Math.Abs(enemy.Cell.OffsetCoord.y - SelectedUnit[playerNumber].Cell.OffsetCoord.y);
-				if (offset != 0 && offset <= SelectedUnit[playerNumber].GetAttackRange()) {
-					Debug.Log("here");
-					(enemy.Cell as CMCell).SetColor(Color.black);
-					(SelectedUnit[playerNumber].Cell as CMCell).SetColor(Color.black);
-					enemy.MarkAsReachableEnemy();
-				}
-			}
-		}	
-	}
 
 	void Attack(InputButton color, int playerNumber) {
 		MelodyUnit recipient = GameBoard.Units.Find(c => 
@@ -149,6 +132,34 @@ public class UnitManager : MonoBehaviour
 		}
 	}
 
+	void MarkAttackRange() {
+		//find all cells in attack range
+		int currentPlayer = GameManager.CurrentPlayer;
+		List<Cell> AttackableCells = GameBoard.Cells.FindAll(c => 
+		{
+			Vector2 offset = c.OffsetCoord - SelectedUnit[currentPlayer].Cell.OffsetCoord;
+			return Math.Abs(offset[0]) + Math.Abs(offset[1]) <= SelectedUnit[currentPlayer].AttackRange;
+		});
+		//highlight them
+		foreach (Cell c in AttackableCells) {
+			(c as CMCell).MarkAsHighlighted();
+		}
+		//highlight units that are in the range
+		List<Unit> AttackableUnits = GameBoard.Units.FindAll(c => AttackableCells.Contains(c.Cell) && c.PlayerNumber != currentPlayer);
+		foreach (Unit u in AttackableUnits) {
+			(u as MelodyUnit).MarkAsReachableEnemy();
+		}
+	}
+
+	void UnHighlightAll() {
+		foreach(Cell c in GameBoard.Cells) {
+			c.UnMark();
+		}
+		foreach(Unit u in GameBoard.Units) {
+			u.UnMark();
+		}
+	}
+
 	void OnSwitchPlayer(SwitchPlayerMessage m) {
 		foreach (MelodyUnit cur in SelectedUnit.Values) {
 			UncolorDirections (cur.Cell);
@@ -161,5 +172,18 @@ public class UnitManager : MonoBehaviour
 	void OnUnitDeath(UnitDeathMessage m) {
 		UncolorDirections(m.unit.Cell);
 		SelectedUnit[m.unit.PlayerNumber] = GameBoard.Units.Find(c => c.PlayerNumber == m.unit.PlayerNumber) as MelodyUnit;
+	}
+
+	void OnStateChange(StateChangeMessage m) {
+		UnHighlightAll();
+		switch (m.State) {
+			case State.AttackState:
+				MarkAttackRange();
+				break;
+			case State.MoveState:
+				ColorDirections(SelectedUnit[GameManager.CurrentPlayer].Cell);
+				break;
+		}
+
 	}
 }

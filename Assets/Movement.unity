@@ -280,11 +280,11 @@ Prefab:
     m_Modifications:
     - target: {fileID: 461836, guid: 94251f35eb6c1e6448b7b452e1db67fa, type: 2}
       propertyPath: m_LocalPosition.x
-      value: 1.56
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 461836, guid: 94251f35eb6c1e6448b7b452e1db67fa, type: 2}
       propertyPath: m_LocalPosition.y
-      value: 1.32
+      value: 0.7
       objectReference: {fileID: 0}
     - target: {fileID: 461836, guid: 94251f35eb6c1e6448b7b452e1db67fa, type: 2}
       propertyPath: m_LocalPosition.z
@@ -317,6 +317,10 @@ Prefab:
     - target: {fileID: 11449884, guid: 94251f35eb6c1e6448b7b452e1db67fa, type: 2}
       propertyPath: HitPoints
       value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 11449884, guid: 94251f35eb6c1e6448b7b452e1db67fa, type: 2}
+      propertyPath: AttackRange
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94251f35eb6c1e6448b7b452e1db67fa, type: 2}
@@ -11738,6 +11742,10 @@ Prefab:
     - target: {fileID: 11449884, guid: 94251f35eb6c1e6448b7b452e1db67fa, type: 2}
       propertyPath: HitPoints
       value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 11449884, guid: 94251f35eb6c1e6448b7b452e1db67fa, type: 2}
+      propertyPath: AttackRange
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 94251f35eb6c1e6448b7b452e1db67fa, type: 2}
@@ -24962,6 +24970,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   simulateBattles: 0
+  NoteThing: {fileID: 102260, guid: 1c69d35036871f24f9105e0db867d8fe, type: 2}
 --- !u!114 &1471062524
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -9,6 +9,7 @@ public class dummyGameManager : MonoBehaviour {
 	private int CurrentPlayer;
 
 	public bool simulateBattles = false;
+	public GameObject NoteThing;
 
 	// Use this for initialization
 	void Start () {
@@ -22,6 +23,14 @@ public class dummyGameManager : MonoBehaviour {
 		Metronome.transform.position = new Vector3(0, 0, 100);
 		if (simulateBattles)
 			StartCoroutine (EnterExitBattlesPeriodically ());
+	}
+
+	void spawnNote(int i) {
+		GameObject Note = Instantiate(NoteThing);
+		Note.GetComponent<NoteObject>().SetNoteColor(new Note {
+			fretNumber = i
+		});
+		Note.transform.localPosition = new Vector3(i, 0, -10);
 	}
 
 	void LogAThing(ButtonInputMessage e) {
