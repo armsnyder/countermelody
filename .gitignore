@@ -29,3 +29,9 @@ sysinfo.txt
 **/.DS_Store
 **/TBS Framework/*
 TBS Framework.meta
+
+**/Standard Assets/*
+Standard Assets.meta
+
+**/Editor/*
+Editor.meta
