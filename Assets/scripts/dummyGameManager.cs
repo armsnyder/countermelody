@@ -8,6 +8,8 @@ public class dummyGameManager : MonoBehaviour {
 	private GameObject Metronome;
 	private int CurrentPlayer;
 
+	public GameObject NoteThing;
+
 	// Use this for initialization
 	void Start () {
 		ServiceFactory.Instance.Resolve<MessageRouter> ().AddHandler<SwitchPlayerMessage> (LogCurrentPlayer);
@@ -18,6 +20,14 @@ public class dummyGameManager : MonoBehaviour {
 		Metronome = GameObject.CreatePrimitive (PrimitiveType.Cube);
 		Metronome.transform.localScale = new Vector3(1000, 1000, 1);
 		Metronome.transform.position = new Vector3(0, 0, 100);
+	}
+
+	void spawnNote(int i) {
+		GameObject Note = Instantiate(NoteThing);
+		Note.GetComponent<NoteObject>().SetNoteColor(new Note {
+			fretNumber = i
+		});
+		Note.transform.localPosition = new Vector3(i, 0, -10);
 	}
 
 	void LogAThing(ButtonInputMessage e) {
