@@ -55,7 +55,7 @@ public class dummyGameManager : MonoBehaviour {
 
 	IEnumerator OnExitBeatWindow() {
 		yield return new WaitForSeconds (0.05f);
-		Metronome.GetComponent<Renderer> ().material.color = CurrentPlayer == 0 ? new Color (0.7f, 0.8f, 0.75f) : new Color (0.1f, 0.1f, 0.1f);
+		Metronome.GetComponent<Renderer> ().material.color = CurrentPlayer == 1 ? new Color (0.7f, 0.8f, 0.75f) : new Color (0.1f, 0.1f, 0.1f);
 	}
 
 	void OnSwitchPlayer(SwitchPlayerMessage m) {
