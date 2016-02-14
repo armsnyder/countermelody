@@ -12,9 +12,8 @@ public class GameManager : MonoBehaviour {
 	public int NumberOfPlayers = 2;
 
 	[SerializeField]
-	private int BeatsPerTurn = 4; // TODO: Get this information from the Song
+	public int MeasuresPerTurn = 1;
 
-	private int BeatCounter;
 	private int _CurrentPlayer;
 	public int CurrentPlayer { get { return _CurrentPlayer; } }
 
@@ -25,7 +24,6 @@ public class GameManager : MonoBehaviour {
 		ServiceFactory.Instance.RegisterSingleton<MessageRouter> ();
 		// Register GameManager as a singleton so we can get access to things like Number of Players elsewhere
 		ServiceFactory.Instance.RegisterSingleton<GameManager>(this);
-		BeatCounter = 0;
 		_CurrentPlayer = 0;
 	}
 
@@ -35,10 +33,11 @@ public class GameManager : MonoBehaviour {
 	}
 
 	private void OnExitBeatWindow(ExitBeatWindowMessage m) {
-		BeatCounter++;
-		if (BeatCounter == BeatsPerTurn) {
+		// Gets info about turn length / whose turn it is from Song.cs (helps game remain in sync)
+		// TODO: Make sure correct player turn after battle
+		int BeatsPerTurn = m.BeatsPerMeasure * MeasuresPerTurn;
+		if (m.BeatNumber % BeatsPerTurn == BeatsPerTurn - 1) { // If it's the last beat of a player's turn...
 			_CurrentPlayer = (_CurrentPlayer + 1) % NumberOfPlayers;
-			BeatCounter = 0;
 			StartCoroutine ("SwitchPlayerCoroutine");
 		}
 	}
