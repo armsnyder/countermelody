@@ -5,20 +5,7 @@ using Frictionless;
 using System.IO;
 using System;
 
-/// <summary>
-/// Sent slightly ahead of BeatCenterMessage
-/// </summary>
-public class EnterBeatWindowMessage {}
-
-/// <summary>
-/// Sent slightly behind BeatCenterMessage
-/// </summary>
-public class ExitBeatWindowMessage {}
-
-/// <summary>
-/// Sent on each beat of the song
-/// </summary>
-public class BeatCenterMessage {
+public abstract class GenericBeatMessage {
 	/// <summary>
 	/// The index of the beat in a musical measure. For a typical song, this will be in the range [0, 3]
 	/// </summary>
@@ -33,6 +20,23 @@ public class BeatCenterMessage {
 	/// The tempo of the music in beats per minute. Can be used to calculate when the next beat is coming.
 	/// </summary>
 	public float BeatsPerMinute { get; set; }
+}
+
+/// <summary>
+/// Sent slightly ahead of BeatCenterMessage
+/// </summary>
+public class EnterBeatWindowMessage : GenericBeatMessage {}
+
+/// <summary>
+/// Sent slightly behind BeatCenterMessage
+/// </summary>
+public class ExitBeatWindowMessage : GenericBeatMessage {}
+
+/// <summary>
+/// Sent on each beat of the song
+/// </summary>
+public class BeatCenterMessage : GenericBeatMessage {
+	
 }
 
 public class Note {
@@ -119,16 +123,27 @@ public class Song : MonoBehaviour {
 			}
 			previousTime = currentTime;
 			if (currentTime > 60f / bpm * beatsCounter) {
+				// Continue to increment beat until we have caught up
+				while (currentTime > 60f / bpm * beatsCounter) {
+					beatsCounter++;
+				}
 				MessageRouter.RaiseMessage (new BeatCenterMessage () {
-					BeatNumber = beatsCounter % beatsPerMeasure, 
+					BeatNumber = (beatsCounter - 1) % beatsPerMeasure, 
 					BeatsPerMeasure = beatsPerMeasure, 
 					BeatsPerMinute = bpm
 				});
-				beatsCounter++;
 				yield return new WaitForSeconds (60f / bpm * window / 2);
-				MessageRouter.RaiseMessage (new ExitBeatWindowMessage ());
+				MessageRouter.RaiseMessage (new ExitBeatWindowMessage () {
+					BeatNumber = (beatsCounter - 1) % beatsPerMeasure, 
+					BeatsPerMeasure = beatsPerMeasure, 
+					BeatsPerMinute = bpm
+				});
 				yield return new WaitForSeconds (60f / bpm * (1 - window));
-				MessageRouter.RaiseMessage (new EnterBeatWindowMessage ());
+				MessageRouter.RaiseMessage (new EnterBeatWindowMessage () {
+					BeatNumber = (beatsCounter) % beatsPerMeasure, 
+					BeatsPerMeasure = beatsPerMeasure, 
+					BeatsPerMinute = bpm
+				});
 			}
 			yield return null;
 		}
