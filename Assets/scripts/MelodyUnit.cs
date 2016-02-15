@@ -103,4 +103,22 @@ public class MelodyUnit : Unit {
     {
         GetComponent<Renderer>().material.color = LeadingColor;
     }
+
+	public void DealDamage(MelodyUnit other, float damagePercent)
+	{
+		if (isMoving)
+			return;
+		if (ActionPoints == 0)
+			return;
+
+		MarkAsAttacking(other);
+		ActionPoints--;
+		other.Defend(this, (int) (AttackFactor * damagePercent));
+
+		if (ActionPoints == 0)
+		{
+			SetState(new UnitStateMarkedAsFinished(this));
+			MovementPoints = 0;
+		}  
+	}
 }

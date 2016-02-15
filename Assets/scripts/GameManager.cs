@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour {
 
 	private int _CurrentPlayer;
 	public int CurrentPlayer { get { return _CurrentPlayer; } }
+	private bool isInBattle;
 
 	private MessageRouter MessageRouter;
 
@@ -30,11 +31,23 @@ public class GameManager : MonoBehaviour {
 	void Start() {
 		MessageRouter = ServiceFactory.Instance.Resolve<MessageRouter> ();
 		MessageRouter.AddHandler<ExitBeatWindowMessage> (OnExitBeatWindow);
+		MessageRouter.AddHandler<EnterBattleMessage> (OnEnterBattle);
+		MessageRouter.AddHandler<ExitBattleMessage> (OnExitBattle);
+		StartCoroutine (FirstFrameCoroutine ());
+	}
+
+	IEnumerator FirstFrameCoroutine() {
+		yield return null;
+		for (int i = 0; i < NumberOfPlayers; i++) {
+			// Start every player on medium
+			// TODO: Remove this once proper difficulty select is implemented
+			MessageRouter.RaiseMessage (new BattleDifficultyChangeMessage () { PlayerNumber = i, Difficulty = 1 });
+		}
 	}
 
 	private void OnExitBeatWindow(ExitBeatWindowMessage m) {
 		// Gets info about turn length / whose turn it is from Song.cs (helps game remain in sync)
-		// TODO: Make sure correct player turn after battle
+		if (isInBattle) return; // Do not change player if in battle
 		int BeatsPerTurn = m.BeatsPerMeasure * MeasuresPerTurn;
 		if (m.BeatNumber % BeatsPerTurn == BeatsPerTurn - 1) { // If it's the last beat of a player's turn...
 			_CurrentPlayer = (_CurrentPlayer + 1) % NumberOfPlayers;
@@ -45,5 +58,13 @@ public class GameManager : MonoBehaviour {
 	private IEnumerator SwitchPlayerCoroutine() {
 		yield return null;
 		MessageRouter.RaiseMessage (new SwitchPlayerMessage () { PlayerNumber = _CurrentPlayer });
+	}
+
+	void OnEnterBattle(EnterBattleMessage m) {
+		isInBattle = true;
+	}
+
+	void OnExitBattle(ExitBattleMessage m) {
+		isInBattle = false;
 	}
 }
