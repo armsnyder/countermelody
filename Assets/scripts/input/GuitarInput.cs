@@ -88,10 +88,10 @@ public class GuitarInput : ControllerInput {
 		ThisFrameData.minus = guitar.minus;
 		ThisFrameData.plus = guitar.plus;
 		ThisFrameData.strum = guitar.strum;
-		ThisFrameData.up = wiimote.Button.d_up || stick[1] > 0.5 + stickThreshold;
-		ThisFrameData.down = wiimote.Button.d_down || stick[1] < 0.5 - stickThreshold;
-		ThisFrameData.left = wiimote.Button.d_left || stick[0] < 0.5 - stickThreshold;
-		ThisFrameData.right = wiimote.Button.d_right || stick[0] > 0.5 + stickThreshold;
+		ThisFrameData.up = wiimote.Button.d_left || stick[1] > 0.5 + stickThreshold;
+		ThisFrameData.down = wiimote.Button.d_right || stick[1] < 0.5 - stickThreshold;
+		ThisFrameData.left = wiimote.Button.d_up || stick[0] < 0.5 - stickThreshold;
+		ThisFrameData.right = wiimote.Button.d_down || stick[0] > 0.5 + stickThreshold;
 
 
 		// plus

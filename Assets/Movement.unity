@@ -280,11 +280,11 @@ Prefab:
     m_Modifications:
     - target: {fileID: 461836, guid: 94251f35eb6c1e6448b7b452e1db67fa, type: 2}
       propertyPath: m_LocalPosition.x
-      value: 1.5
+      value: 9.77
       objectReference: {fileID: 0}
     - target: {fileID: 461836, guid: 94251f35eb6c1e6448b7b452e1db67fa, type: 2}
       propertyPath: m_LocalPosition.y
-      value: 0.7
+      value: -6.67
       objectReference: {fileID: 0}
     - target: {fileID: 461836, guid: 94251f35eb6c1e6448b7b452e1db67fa, type: 2}
       propertyPath: m_LocalPosition.z
@@ -24898,11 +24898,11 @@ GameObject:
   - 114: {fileID: 1471062523}
   - 114: {fileID: 1471062525}
   - 114: {fileID: 1471062527}
-  - 114: {fileID: 1471062526}
   - 114: {fileID: 1471062529}
   - 114: {fileID: 1471062528}
   - 114: {fileID: 1471062530}
   - 114: {fileID: 1471062531}
+  - 114: {fileID: 1471062526}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -24995,7 +24995,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   NumberOfPlayers: 2
-  BeatsPerTurn: 4
+  MeasuresPerTurn: 1
 --- !u!114 &1471062526
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -25004,9 +25004,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1471062518}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b442633daab22470bae36cf63dde227e, type: 3}
+  m_Script: {fileID: 11500000, guid: c81aec325714a4812abc5f0ad9a184bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  battleMeasures: 1
+  parentCam: {fileID: 1983920731}
+  notePrefab: {fileID: 102260, guid: 1c69d35036871f24f9105e0db867d8fe, type: 2}
 --- !u!114 &1471062527
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -32853,6 +32856,81 @@ MeshFilter:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1854734871}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1855340375
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 1855340376}
+  - 33: {fileID: 1855340379}
+  - 65: {fileID: 1855340378}
+  - 23: {fileID: 1855340377}
+  m_Layer: 0
+  m_Name: Temp Battle Target Line
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1855340376
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1855340375}
+  m_LocalRotation: {x: 0.18446602, y: 0, z: 0, w: 0.9828389}
+  m_LocalPosition: {x: 0, y: -2, z: 5}
+  m_LocalScale: {x: 8, y: 0.1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1983920732}
+  m_RootOrder: 0
+--- !u!23 &1855340377
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1855340375}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_Materials:
+  - {fileID: 2100000, guid: 3a9974dbd85184497803971f7de60451, type: 2}
+  m_SubsetIndices: 
+  m_StaticBatchRoot: {fileID: 0}
+  m_UseLightProbes: 1
+  m_ReflectionProbeUsage: 1
+  m_ProbeAnchor: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_PreserveUVs: 1
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingOrder: 0
+--- !u!65 &1855340378
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1855340375}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!33 &1855340379
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1855340375}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &1856570210
 GameObject:
   m_ObjectHideFlags: 0
@@ -35658,7 +35736,6 @@ GameObject:
   - 20: {fileID: 1983920731}
   - 124: {fileID: 1983920730}
   - 92: {fileID: 1983920729}
-  - 81: {fileID: 1983920728}
   m_Layer: 0
   m_Name: Battle Camera
   m_TagString: Untagged
@@ -35666,13 +35743,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!81 &1983920728
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1983920727}
-  m_Enabled: 1
 --- !u!92 &1983920729
 Behaviour:
   m_ObjectHideFlags: 0
@@ -35730,7 +35800,8 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 57.28, y: -0.6066053, z: 18.9}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 1855340376}
   m_Father: {fileID: 0}
   m_RootOrder: 8
 --- !u!1 &1986846535

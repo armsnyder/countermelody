@@ -14,7 +14,7 @@ GameObject:
   - 114: {fileID: 11444640}
   m_Layer: 0
   m_Name: Note
-  m_TagString: Untagged
+  m_TagString: noteObject
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -87,13 +87,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22fb5bcac43b8884a9fcb3c18e34fac5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  destroyY: -10
+  velocity: {x: 0, y: -0.22, z: 0}
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1
   serializedVersion: 2
   m_Modification:
     m_TransformParent: {fileID: 0}
-    m_Modifications: []
+    m_Modifications:
+    - target: {fileID: 0}
+      propertyPath: velocity.y
+      value: -0.22
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: destroyY
+      value: -10
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_TagString
+      value: noteObject
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 102260}

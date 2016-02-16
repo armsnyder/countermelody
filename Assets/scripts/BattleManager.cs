@@ -63,8 +63,11 @@ public class BattleManager : MonoBehaviour {
 	private PlayerBattleData attacker;
 	private PlayerBattleData defender;
 	private int battleProgressInMeasures; // Number of measures into the battle
+	private MeshRenderer targetLine; // Renderer for note targets. Currently a temporary black line.
 
 	public int battleMeasures = 1;
+	public Camera parentCam;
+	public GameObject notePrefab;
 
 	void Awake() {
 		players = new Dictionary<int, PlayerBattleData> ();
@@ -77,6 +80,8 @@ public class BattleManager : MonoBehaviour {
 		messageRouter.AddHandler<ButtonDownMessage> (OnButtonDown);
 		messageRouter.AddHandler<BeatCenterMessage> (OnBeatCenter);
 		messageRouter.AddHandler<BattleDifficultyChangeMessage> (OnBattleDifficultyChange);
+		targetLine = GameObject.Find ("Temp Battle Target Line").GetComponent<MeshRenderer> ();
+		targetLine.enabled = false;
 	}
 
 	/// <summary>
@@ -105,6 +110,7 @@ public class BattleManager : MonoBehaviour {
 	}
 
 	void OnStartBattle(EnterBattleMessage m) {
+		targetLine.enabled = true;
 		Song song = ServiceFactory.Instance.Resolve<Song>();
 		Debug.Assert (players.ContainsKey (m.AttackingUnit.PlayerNumber));
 		Debug.Assert (players.ContainsKey (m.DefendingUnit.PlayerNumber));
@@ -117,7 +123,27 @@ public class BattleManager : MonoBehaviour {
 		defender.battleNotes = song.GetNextBattleNotes (battleMeasures, defender.instrumentID, defender.difficulty);
 		attacker.battleNoteStates = new int[attacker.battleNotes.Length];
 		defender.battleNoteStates = new int[defender.battleNotes.Length];
-		// TODO: Spawn note objects here
+
+		// Spawn notes:
+		float margin = 3f;
+		float offset = 10f;
+		float spawnHeight = -4f;
+		float spawnDepth = 13f;
+		float stretchFactor = 10.73f;
+		float currentMusicTime = song.playerPosition;
+		foreach (int playerNumber in players.Keys) {
+			foreach (Note note in players[playerNumber].battleNotes) {
+				GameObject spawnedNote = (GameObject)Instantiate (notePrefab, parentCam.transform.position + 
+					new Vector3 (margin + (playerNumber-1) * offset + (offset / 6) * note.fretNumber, spawnHeight, spawnDepth), 
+					Quaternion.identity);
+				spawnedNote.transform.position += 
+					new Vector3 (0, stretchFactor * (note.getPositionTime (song.bpm) - currentMusicTime), 0);
+				spawnedNote.transform.parent = parentCam.transform;
+				NoteObject spawnedCode = spawnedNote.GetComponent<NoteObject> ();
+				spawnedCode.NoteData = note;
+			}
+		}
+
 		isInBattle = true;
 		battleProgressInMeasures = 0;
 	}
@@ -137,6 +163,7 @@ public class BattleManager : MonoBehaviour {
 		// Delay by half beat to allow any final eigth notes to be played
 		// TODO: Figure out if we can penalize spamming strum to hit every note
 		yield return new WaitForSeconds(delay);
+		targetLine.enabled = false;
 		isInBattle = false;
 		int attackerHitCount = 0;
 		foreach (int i in attacker.battleNoteStates) {
@@ -169,9 +196,18 @@ public class BattleManager : MonoBehaviour {
 			// TODO: Add support for HOPOs
 			bool noteWasHit = false;
 			// Go through the possible notes that the player could have been trying to hit
+			GameObject[] noteObjects = GameObject.FindGameObjectsWithTag("noteObject");
 			foreach (Note n in hitNotes) { // Warning! O(n^2)
-				if (noteWasHit)
+				if (noteWasHit) {
+					// TODO: Make this less computationally expensive. Bad search.
+					foreach (GameObject no in noteObjects) {
+						NoteObject noc = no.GetComponent<NoteObject> ();
+						if (noc.NoteData.position == n.position) {
+							GameObject.Destroy (no);
+						}
+					}
 					break;
+				}
 				for (int i = 0; i < players [m.PlayerNumber].battleNotes.Length; i++) {
 					if (n.Equals (players [m.PlayerNumber].battleNotes [i])) {
 						if (players [m.PlayerNumber].battleNoteStates [i] == 0) {

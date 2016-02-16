@@ -41,7 +41,7 @@ public class GameManager : MonoBehaviour {
 		for (int i = 0; i < NumberOfPlayers; i++) {
 			// Start every player on medium
 			// TODO: Remove this once proper difficulty select is implemented
-			MessageRouter.RaiseMessage (new BattleDifficultyChangeMessage () { PlayerNumber = i, Difficulty = 1 });
+			MessageRouter.RaiseMessage (new BattleDifficultyChangeMessage () { PlayerNumber = i, Difficulty = 2 });
 		}
 	}
 
@@ -66,5 +66,7 @@ public class GameManager : MonoBehaviour {
 
 	void OnExitBattle(ExitBattleMessage m) {
 		isInBattle = false;
+		_CurrentPlayer = (_CurrentPlayer + 1) % NumberOfPlayers;
+		StartCoroutine ("SwitchPlayerCoroutine");
 	}
 }

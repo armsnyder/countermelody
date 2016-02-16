@@ -192,6 +192,10 @@ public class UnitManager : MonoBehaviour
 	void OnExitBattle(ExitBattleMessage m) {
 		// Battle is over. Deal damage according to results.
 		// TODO: Consider whether we want the defending unit to deal damage
+		if (m.AttackingUnit == null || m.DefendingUnit == null) {
+			return;
+			// TODO: Figure out why this is ever null. Ignored for demo purposes only.
+		}
 		float attackPower = m.AttackerHitPercent - m.DefenderHitPercent / 2;
 		if (attackPower > 0) {
 			m.AttackingUnit.DealDamage(m.DefendingUnit, attackPower);

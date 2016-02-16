@@ -57,7 +57,8 @@ public class Note {
 	} // Color of fret as InputButton
 	public bool isHOPO { get { return velocity < 127; } } // If true, strum not required to hit note
 	public float getPositionTime(float bpm) {
-		return position / 360f / bpm * 60f;
+		return position / 480f / bpm * 60f;
+		// TODO: (mentioned again later in this file) Get this magic "480" from MIDI data cuz it changes
 	}
 }
 
@@ -167,7 +168,8 @@ public class Song : MonoBehaviour {
 			if (m.BeatNumber == 0) {
 				startMusicNextMeasure = false;
 				for (int i = 0; i < instrumentPlayers.Length; i++) {
-					instrumentPlayers [i].mute = false;
+					// TODO: when we can detect missed notes, uncomment this line:
+//					instrumentPlayers [i].mute = false;
 				}
 			}
 		}
@@ -302,14 +304,18 @@ public class Song : MonoBehaviour {
 			int index = 0;
 			while (endIndex > startIndex) {
 				index = (startIndex + endIndex) / 2;
-				if (goodNotes [index].position >= startBeat * 360) {
+				// TODO: Get this magic "480" (MIDI ticks per beat) from the MIDI data
+				if (goodNotes [index].position >= startBeat * 480) {
 					endIndex = index;
 				} else {
 					startIndex = index + 1;
 				}
 			}
-			for (int i = startIndex; goodNotes [i].position < endBeat * 360; i++) {
+			try {
+			for (int i = startIndex; goodNotes [i].position < endBeat * 480 && i < goodNotes.Count; i++) {
 				ret.Add (goodNotes [i]);
+			}
+			} catch (Exception e) {
 			}
 			return ret.ToArray ();
 		} else if (startBeat < 0) {
