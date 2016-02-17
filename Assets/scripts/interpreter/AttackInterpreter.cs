@@ -17,6 +17,8 @@ public class AttackInterpreter : Interpreter {
 		base.OnButtonDown (m);
 		if (!enabled)
 			return;
+		if (m.Button == InputButton.WHAMMY) // So that we don't immediately send a rejection upon entering state
+			return;
 		if (IsAcceptingActions && m.PlayerNumber == CurrentPlayer) {
 			MessageRouter.RaiseMessage(new UnitActionMessage() {
 				Color = m.Button,

@@ -23,6 +23,7 @@ public class UnitManager : MonoBehaviour
 		MessageRouter.AddHandler<SwitchPlayerMessage>(OnSwitchPlayer);
 		MessageRouter.AddHandler<UnitDeathMessage>(OnUnitDeath);
 		MessageRouter.AddHandler<StateChangeMessage>(OnStateChange);
+		MessageRouter.AddHandler<ExitBattleMessage> (OnExitBattle);
 		GameManager = ServiceFactory.Instance.Resolve<GameManager>();
 		StartCoroutine("GetGameBoard");
     }
@@ -123,10 +124,11 @@ public class UnitManager : MonoBehaviour
 			(Math.Abs(SelectedUnit[playerNumber].Cell.OffsetCoord[1] - c.Cell.OffsetCoord[1])) <= c.AttackRange)
 			as MelodyUnit;
 		if (recipient && SelectedUnit[playerNumber]) {
-			SelectedUnit[playerNumber].DealDamage(recipient);
-			if(recipient.HitPoints <= 0) {
-
-			}
+			// Passes control to BattleManager
+			MessageRouter.RaiseMessage (new EnterBattleMessage () { 
+				AttackingUnit = SelectedUnit [playerNumber],
+				DefendingUnit = recipient
+			});
 		} else {
 			MessageRouter.RaiseMessage(new RejectActionMessage { PlayerNumber = GameBoard.CurrentPlayerNumber, ActionType = UnitActionMessageType.ATTACK });
 		}
@@ -185,5 +187,21 @@ public class UnitManager : MonoBehaviour
 				break;
 		}
 
+	}
+
+	void OnExitBattle(ExitBattleMessage m) {
+		// Battle is over. Deal damage according to results.
+		// TODO: Consider whether we want the defending unit to deal damage
+		if (m.AttackingUnit == null || m.DefendingUnit == null) {
+			return;
+			// TODO: Figure out why this is ever null. Ignored for demo purposes only.
+		}
+		float attackPower = m.AttackerHitPercent - m.DefenderHitPercent / 2;
+		if (attackPower > 0) {
+			m.AttackingUnit.DealDamage(m.DefendingUnit, attackPower);
+		}
+//		if(m.DefendingUnit.HitPoints <= 0) {
+//
+//		}
 	}
 }

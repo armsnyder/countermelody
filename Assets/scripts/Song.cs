@@ -57,7 +57,8 @@ public class Note {
 	} // Color of fret as InputButton
 	public bool isHOPO { get { return velocity < 127; } } // If true, strum not required to hit note
 	public float getPositionTime(float bpm) {
-		return position / 360f / bpm * 60f;
+		return position / 480f / bpm * 60f;
+		// TODO: (mentioned again later in this file) Get this magic "480" from MIDI data cuz it changes
 	}
 }
 
@@ -79,6 +80,7 @@ public class Song : MonoBehaviour {
 	private AudioSource[] instrumentPlayers;
 	private Note[] notes;
 	private List<List<List<Note>>> sortedNotes;  // Sorted by instrument, then difficulty, then time
+	private bool startMusicNextMeasure;  // If true, battle is about to begin
 
 	// Use this for initialization
 	void Start () {
@@ -88,6 +90,7 @@ public class Song : MonoBehaviour {
 		MessageRouter.AddHandler<ExitBattleMessage> (OnExitBattle);
 		MessageRouter.AddHandler<NoteHitMessage> (OnNoteHit);
 		MessageRouter.AddHandler<NoteMissMessage> (OnNoteMiss);
+		MessageRouter.AddHandler<BeatCenterMessage> (OnBeatCenterMessage);
 		player = gameObject.AddComponent<AudioSource> ();
 		player.clip = songFile;
 		player.loop = true;
@@ -150,14 +153,25 @@ public class Song : MonoBehaviour {
 	}
 
 	void OnEnterBattle(EnterBattleMessage m) {
-		for (int i = 0; i < instrumentPlayers.Length; i++) {
-			instrumentPlayers [i].mute = false;
-		}
+		startMusicNextMeasure = true;
 	}
 
 	void OnExitBattle(ExitBattleMessage m) {
 		for (int i = 0; i < instrumentPlayers.Length; i++) {
 			instrumentPlayers [i].mute = true;
+		}
+	}
+
+	void OnBeatCenterMessage(BeatCenterMessage m) {
+		if (startMusicNextMeasure) {
+			// If battle about to start and a new measure begins, start playing music
+			if (m.BeatNumber == 0) {
+				startMusicNextMeasure = false;
+				for (int i = 0; i < instrumentPlayers.Length; i++) {
+					// TODO: when we can detect missed notes, uncomment this line:
+//					instrumentPlayers [i].mute = false;
+				}
+			}
 		}
 	}
 
@@ -290,14 +304,18 @@ public class Song : MonoBehaviour {
 			int index = 0;
 			while (endIndex > startIndex) {
 				index = (startIndex + endIndex) / 2;
-				if (goodNotes [index].position >= startBeat) {
+				// TODO: Get this magic "480" (MIDI ticks per beat) from the MIDI data
+				if (goodNotes [index].position >= startBeat * 480) {
 					endIndex = index;
 				} else {
 					startIndex = index + 1;
 				}
 			}
-			for (int i = startIndex; goodNotes [i].position < endBeat; i++) {
+			try {
+			for (int i = startIndex; goodNotes [i].position < endBeat * 480 && i < goodNotes.Count; i++) {
 				ret.Add (goodNotes [i]);
+			}
+			} catch (Exception e) {
 			}
 			return ret.ToArray ();
 		} else if (startBeat < 0) {
@@ -336,6 +354,19 @@ public class Song : MonoBehaviour {
 		Note[] ret = new Note[notes.Length];
 		Array.Copy (notes, ret, notes.Length);
 		return ret;
+	}
+
+	/// <summary>
+	/// Gets the next sequence of notes starting at the next measure for a specified number of measures
+	/// </summary>
+	/// <returns>The next battle notes.</returns>
+	/// <param name="numberOfMeasures">Number of measures.</param>
+	/// <param name="instrumentID">Instrument</param>
+	/// <param name="difficulty">Difficulty (0-2)</param>
+	public Note[] GetNextBattleNotes(int numberOfMeasures, int instrumentID, int difficulty) {
+		int startMeasure = (int) Math.Ceiling (player.time / 60f * bpm / beatsPerMeasure);
+		int endMeasure = startMeasure + numberOfMeasures;
+		return GetNotes (instrumentID, difficulty, startMeasure * beatsPerMeasure, endMeasure * beatsPerMeasure);
 	}
 
 	/// <summary>

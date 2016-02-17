@@ -77,6 +77,8 @@ public class GuitarInput : ControllerInput {
 
 		// Update data buffer
 		GuitarData guitar = wiimote.Guitar;
+		float[] stick = guitar.GetStick01 ();
+		float stickThreshold = 0.1f;
 		ThisFrameData.green = guitar.green;
 		ThisFrameData.red = guitar.red;
 		ThisFrameData.yellow = guitar.yellow;
@@ -86,10 +88,10 @@ public class GuitarInput : ControllerInput {
 		ThisFrameData.minus = guitar.minus;
 		ThisFrameData.plus = guitar.plus;
 		ThisFrameData.strum = guitar.strum;
-		ThisFrameData.up = wiimote.Button.d_up;
-		ThisFrameData.down = wiimote.Button.d_down;
-		ThisFrameData.left = wiimote.Button.d_left;
-		ThisFrameData.right = wiimote.Button.d_right;		
+		ThisFrameData.up = wiimote.Button.d_left || stick[1] > 0.5 + stickThreshold;
+		ThisFrameData.down = wiimote.Button.d_right || stick[1] < 0.5 - stickThreshold;
+		ThisFrameData.left = wiimote.Button.d_up || stick[0] < 0.5 - stickThreshold;
+		ThisFrameData.right = wiimote.Button.d_down || stick[0] > 0.5 + stickThreshold;
 
 
 		// plus
