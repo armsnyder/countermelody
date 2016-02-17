@@ -16,52 +16,103 @@ public class KeyboardInput : ControllerInput {
 
 	// Update is called once per frame
 	void Update () {
+
+		// KeyDowns
+
         if (Input.GetKeyDown(KeyCode.A)) {
-			SendButtonPress(InputButton.GREEN);
+			SendButtonDown(InputButton.GREEN);
         }
 
         if (Input.GetKeyDown(KeyCode.S)) {
-			SendButtonPress(InputButton.RED);
+			SendButtonDown(InputButton.RED);
         }
 
         if (Input.GetKeyDown(KeyCode.D)) {
-			SendButtonPress(InputButton.YELLOW);
+			SendButtonDown(InputButton.YELLOW);
         }
 
         if (Input.GetKeyDown(KeyCode.F)) {
-			SendButtonPress(InputButton.BLUE);
+			SendButtonDown(InputButton.BLUE);
         }
 
         if (Input.GetKeyDown(KeyCode.G)) {
-			SendButtonPress(InputButton.ORANGE);
+			SendButtonDown(InputButton.ORANGE);
         }
 
 		if (Input.GetKeyDown(KeyCode.UpArrow)) {
-			SendButtonPress(InputButton.UP);
+			SendButtonDown(InputButton.UP);
 		}
 
 		if (Input.GetKeyDown(KeyCode.RightArrow)) {
-			SendButtonPress(InputButton.RIGHT);
+			SendButtonDown(InputButton.RIGHT);
 		}
 
 		if (Input.GetKeyDown(KeyCode.DownArrow)) {
-			SendButtonPress(InputButton.DOWN);
+			SendButtonDown(InputButton.DOWN);
 		}
 
 		if (Input.GetKeyDown(KeyCode.LeftArrow)) {
-			SendButtonPress(InputButton.LEFT);
+			SendButtonDown(InputButton.LEFT);
 		}
 
 		if (Input.GetKeyDown (KeyCode.Space)) {
-			MessageRouter.RaiseMessage (new ButtonDownMessage () { 
-				Button = InputButton.STRUM, PlayerNumber = this.PlayerNumber
-			});
+			SendButtonDown (InputButton.STRUM);
+		}
+
+		// KeyUps
+
+		if (Input.GetKeyUp(KeyCode.A)) {
+			SendButtonUp(InputButton.GREEN);
+		}
+
+		if (Input.GetKeyUp(KeyCode.S)) {
+			SendButtonUp(InputButton.RED);
+		}
+
+		if (Input.GetKeyUp(KeyCode.D)) {
+			SendButtonUp(InputButton.YELLOW);
+		}
+
+		if (Input.GetKeyUp(KeyCode.F)) {
+			SendButtonUp(InputButton.BLUE);
+		}
+
+		if (Input.GetKeyUp(KeyCode.G)) {
+			SendButtonUp(InputButton.ORANGE);
+		}
+
+		if (Input.GetKeyUp(KeyCode.UpArrow)) {
+			SendButtonUp(InputButton.UP);
+		}
+
+		if (Input.GetKeyUp(KeyCode.RightArrow)) {
+			SendButtonUp(InputButton.RIGHT);
+		}
+
+		if (Input.GetKeyUp(KeyCode.DownArrow)) {
+			SendButtonUp(InputButton.DOWN);
+		}
+
+		if (Input.GetKeyUp(KeyCode.LeftArrow)) {
+			SendButtonUp(InputButton.LEFT);
+		}
+
+		if (Input.GetKeyUp (KeyCode.Space)) {
+			SendButtonUp (InputButton.STRUM);
 		}
 	
 	}
 
 	void SendButtonPress(InputButton button) {
+		SendButtonDown (button);
+		SendButtonUp (button);
+	}
+
+	void SendButtonDown(InputButton button) {
 		MessageRouter.RaiseMessage (new ButtonDownMessage () { Button = button, PlayerNumber = this.PlayerNumber });
+	}
+
+	void SendButtonUp(InputButton button) {
 		MessageRouter.RaiseMessage (new ButtonUpMessage () { Button = button, PlayerNumber = this.PlayerNumber });
 	}
 }
