@@ -179,9 +179,6 @@ public class UnitManager : MonoBehaviour
 	void OnStateChange(StateChangeMessage m) {
 		UnHighlightAll();
 		switch (m.State) {
-			case State.AttackState:
-				MarkAttackRange();
-				break;
 			case State.MoveState:
 				ColorDirections(SelectedUnit[GameManager.CurrentPlayer].Cell);
 				break;
