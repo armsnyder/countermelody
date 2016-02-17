@@ -117,6 +117,8 @@ public class BattleManager : MonoBehaviour {
 		// Prepare battle data per player
 		attacker = players [m.AttackingUnit.PlayerNumber];
 		defender = players [m.DefendingUnit.PlayerNumber];
+		attacker.unit = m.AttackingUnit;
+		defender.unit = m.DefendingUnit;
 		attacker.instrumentID = 0; // Edgy synth
 		defender.instrumentID = 1; // Smoother synth
 		attacker.battleNotes = song.GetNextBattleNotes (battleMeasures, attacker.instrumentID, attacker.difficulty);
@@ -198,16 +200,6 @@ public class BattleManager : MonoBehaviour {
 			// Go through the possible notes that the player could have been trying to hit
 			GameObject[] noteObjects = GameObject.FindGameObjectsWithTag("noteObject");
 			foreach (Note n in hitNotes) { // Warning! O(n^2)
-				if (noteWasHit) {
-					// TODO: Make this less computationally expensive. Bad search.
-					foreach (GameObject no in noteObjects) {
-						NoteObject noc = no.GetComponent<NoteObject> ();
-						if (noc.NoteData.position == n.position) {
-							GameObject.Destroy (no);
-						}
-					}
-					break;
-				}
 				for (int i = 0; i < players [m.PlayerNumber].battleNotes.Length; i++) {
 					if (n.Equals (players [m.PlayerNumber].battleNotes [i])) {
 						if (players [m.PlayerNumber].battleNoteStates [i] == 0) {
@@ -220,6 +212,16 @@ public class BattleManager : MonoBehaviour {
 							break;
 						}
 					}
+				}
+				if (noteWasHit) {
+					// TODO: Make this less computationally expensive. Bad search.
+					foreach (GameObject no in noteObjects) {
+						NoteObject noc = no.GetComponent<NoteObject> ();
+						if (noc.NoteData.Equals(n)) {
+							GameObject.Destroy (no);
+						}
+					}
+					break;
 				}
 			}
 			if (!noteWasHit) {
