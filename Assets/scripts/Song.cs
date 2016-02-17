@@ -57,9 +57,9 @@ public class Note {
 	} // Color of fret as InputButton
 	public bool isHOPO { get { return velocity < 127; } } // If true, strum not required to hit note
 	public float getPositionTime(float bpm) {
-		return position / 480f / bpm * 60f;
-		// TODO: (mentioned again later in this file) Get this magic "480" from MIDI data cuz it changes
+		return (float) position / ppq / bpm * 60f;
 	}
+	public int ppq {get; set;}
 }
 
 public class Song : MonoBehaviour {
@@ -298,21 +298,24 @@ public class Song : MonoBehaviour {
 	public Note[] GetNotes(int instrumentID, int difficulty, int startBeat, int endBeat) {
 		if (startBeat >= 0 && endBeat <= player.clip.length / 60f * bpm) {
 			List<Note> goodNotes = sortedNotes [instrumentID] [difficulty];
+			if (goodNotes.Count == 0)
+				return new Note[0];
+			int ppq = goodNotes [0].ppq;
+			Debug.Assert (ppq > 0);
 			List<Note> ret = new List<Note> ();
 			int startIndex = 0;
 			int endIndex = goodNotes.Count;
 			int index = 0;
 			while (endIndex > startIndex) {
 				index = (startIndex + endIndex) / 2;
-				// TODO: Get this magic "480" (MIDI ticks per beat) from the MIDI data
-				if (goodNotes [index].position >= startBeat * 480) {
+				if (goodNotes [index].position >= startBeat * ppq) {
 					endIndex = index;
 				} else {
 					startIndex = index + 1;
 				}
 			}
 			try {
-			for (int i = startIndex; goodNotes [i].position < endBeat * 480 && i < goodNotes.Count; i++) {
+			for (int i = startIndex; goodNotes [i].position < endBeat * ppq && i < goodNotes.Count; i++) {
 				ret.Add (goodNotes [i]);
 			}
 			} catch (Exception e) {
@@ -377,6 +380,7 @@ public class Song : MonoBehaviour {
 	private Note[] LoadSongData(TextAsset songData) {
 		List<Note> ret = new List<Note> (1000);
 		byte[] buffer = new byte[2048];
+		int ppq = 0; // Ticks per beat
 		using (Stream source = new MemoryStream(songData.bytes)) {
 			int timeCode = 0;
 			int statusCode = 0;
@@ -387,6 +391,26 @@ public class Song : MonoBehaviour {
 			byte currentNote = 0; // Note value of last note read
 			byte timeComponent = 0;
 			int bytesRead = 0;
+
+			// Start by reading the header information in the MIDI file:
+			int headerSize = 14;
+			bytesRead = source.Read (buffer, 0, headerSize);
+			Debug.Assert (buffer.Length >= headerSize, "Buffer must be at least 14 Bytes");
+			Debug.Assert (bytesRead == headerSize, "File must be at least as long as a header, duh.");
+			// Verify it is indeed a MIDI file:
+			byte[] filetype = new byte[4];
+			Array.Copy (buffer, filetype, 4);
+			if (BitConverter.IsLittleEndian)
+				Array.Reverse(filetype);
+			Debug.Assert (BitConverter.ToInt32 (filetype, 0) == 0x4d546864, "Must be a MIDI file");
+			// Get the PPQ (ticks per beat) from header:
+			byte[] ppqArray = new byte[2];
+			Array.Copy (buffer, 12, ppqArray, 0, 2);
+			if (BitConverter.IsLittleEndian)
+				Array.Reverse(ppqArray);
+			ppq = BitConverter.ToInt16 (ppqArray, 0);
+
+			// Read actual MIDI events:
 			while ((bytesRead = source.Read (buffer, 0, buffer.Length)) > 0) {
 				for (int i = 0; i < bytesRead; i++) {
 					if ((buffer [i] & 0x80) > 0 && awaitingStatus) { // Byte is a status message
@@ -402,6 +426,7 @@ public class Song : MonoBehaviour {
 								currentNote = buffer [i];
 								activeNotes [currentNote] = InterpretMIDINote (currentNote);
 								activeNotes [currentNote].position = timeCode;
+								activeNotes [currentNote].ppq = ppq;
 								ret.Add (activeNotes [currentNote]);
 								break;
 							case 1: // Note velocity
