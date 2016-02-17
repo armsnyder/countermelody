@@ -40,7 +40,7 @@ public class BeatCenterMessage : GenericBeatMessage {
 }
 
 public class Note {
-	public int position { get; set; } // Number of position units into the song the note occurs (120 = 16th note)
+	public int position { get; set; } // Number of MIDI ticks into the song the note occurs
 	public int instrumentID { get; set; } // Which musical track the note belongs to
 	public int difficulty { get; set; } // Easy = 0, medium = 1, hard = 2
 	public int duration { get; set; } // Number of position units the note lasts (120 = 16th note)
@@ -59,7 +59,7 @@ public class Note {
 	public float getPositionTime(float bpm) {
 		return (float) position / ppq / bpm * 60f;
 	}
-	public int ppq {get; set;}
+	public int ppq {get; set;} // A technical MIDI term for ticks per beat
 }
 
 public class Song : MonoBehaviour {
@@ -300,22 +300,20 @@ public class Song : MonoBehaviour {
 			List<Note> goodNotes = sortedNotes [instrumentID] [difficulty];
 			if (goodNotes.Count == 0)
 				return new Note[0];
-			int ppq = goodNotes [0].ppq;
-			Debug.Assert (ppq > 0);
 			List<Note> ret = new List<Note> ();
 			int startIndex = 0;
 			int endIndex = goodNotes.Count;
 			int index = 0;
 			while (endIndex > startIndex) {
 				index = (startIndex + endIndex) / 2;
-				if (goodNotes [index].position >= startBeat * ppq) {
+				if (goodNotes [index].position >= startBeat * goodNotes [index].ppq) {
 					endIndex = index;
 				} else {
 					startIndex = index + 1;
 				}
 			}
 			try {
-			for (int i = startIndex; goodNotes [i].position < endBeat * ppq && i < goodNotes.Count; i++) {
+			for (int i = startIndex; goodNotes [i].position < endBeat * goodNotes [i].ppq && i < goodNotes.Count; i++) {
 				ret.Add (goodNotes [i]);
 			}
 			} catch (Exception e) {
