@@ -124,7 +124,6 @@ public class UnitManager : MonoBehaviour
 			as MelodyUnit;
 		if (recipient && SelectedUnit[playerNumber]) {
 			// Passes control to BattleManager
-			Debug.Log("enter");
 			MessageRouter.RaiseMessage (new EnterBattleMessage () { 
 				AttackingUnit = SelectedUnit [playerNumber],
 				DefendingUnit = recipient

@@ -196,7 +196,7 @@ public class BattleManager : MonoBehaviour {
 			Note[] hitNotes = ServiceFactory.Instance.Resolve<Song> ()
 				.GetHitNotes (players [m.PlayerNumber].instrumentID, players [m.PlayerNumber].difficulty, frets);
 			// TODO: Add support for HOPOs
-			bool noteWasHit = false;
+			bool noteWasHit = true;
 			// Go through the possible notes that the player could have been trying to hit
 			GameObject[] noteObjects = GameObject.FindGameObjectsWithTag("noteObject");
 			foreach (Note n in hitNotes) { // Warning! O(n^2)
