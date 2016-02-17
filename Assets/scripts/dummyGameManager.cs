@@ -26,7 +26,7 @@ public class dummyGameManager : MonoBehaviour {
 	}
 
 	void spawnNote(int i) {
-		GameObject Note = Instantiate(NoteThing);
+		GameObject Note = GameObjectUtil.Instantiate(NoteThing);
 		Note.GetComponent<NoteObject>().SetNoteColor(new Note {
 			fretNumber = i
 		});
