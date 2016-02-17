@@ -17,62 +17,50 @@ public class KeyboardInput : ControllerInput {
 	// Update is called once per frame
 	void Update () {
         if (Input.GetKeyDown(KeyCode.A)) {
-			SendStrumSequence(InputButton.GREEN);
+			SendButtonPress(InputButton.GREEN);
         }
 
         if (Input.GetKeyDown(KeyCode.S)) {
-			SendStrumSequence(InputButton.RED);
+			SendButtonPress(InputButton.RED);
         }
 
         if (Input.GetKeyDown(KeyCode.D)) {
-			SendStrumSequence(InputButton.YELLOW);
+			SendButtonPress(InputButton.YELLOW);
         }
 
         if (Input.GetKeyDown(KeyCode.F)) {
-			SendStrumSequence(InputButton.BLUE);
+			SendButtonPress(InputButton.BLUE);
         }
 
         if (Input.GetKeyDown(KeyCode.G)) {
-			SendStrumSequence(InputButton.ORANGE);
+			SendButtonPress(InputButton.ORANGE);
         }
 
 		if (Input.GetKeyDown(KeyCode.UpArrow)) {
-			SendMoveSequence(InputButton.RED);
+			SendButtonPress(InputButton.UP);
 		}
 
 		if (Input.GetKeyDown(KeyCode.RightArrow)) {
-			SendMoveSequence(InputButton.BLUE);
+			SendButtonPress(InputButton.RIGHT);
 		}
 
 		if (Input.GetKeyDown(KeyCode.DownArrow)) {
-			SendMoveSequence(InputButton.YELLOW);
+			SendButtonPress(InputButton.DOWN);
 		}
 
 		if (Input.GetKeyDown(KeyCode.LeftArrow)) {
-			SendMoveSequence(InputButton.GREEN);
+			SendButtonPress(InputButton.LEFT);
 		}
 
 		if (Input.GetKeyDown (KeyCode.Space)) {
 			MessageRouter.RaiseMessage (new ButtonDownMessage () { 
-				Button = InputButton.WHAMMY, PlayerNumber = this.PlayerNumber
-			});
-		}
-
-		if (Input.GetKeyUp (KeyCode.Space)) {
-			MessageRouter.RaiseMessage (new ButtonUpMessage () { 
-				Button = InputButton.WHAMMY, PlayerNumber = this.PlayerNumber
+				Button = InputButton.STRUM, PlayerNumber = this.PlayerNumber
 			});
 		}
 	
 	}
 
-	void SendStrumSequence(InputButton button) {
-		MessageRouter.RaiseMessage(new ButtonDownMessage() { Button = button, PlayerNumber = this.PlayerNumber });
-		MessageRouter.RaiseMessage(new ButtonDownMessage() { Button = InputButton.STRUM, PlayerNumber = this.PlayerNumber });
-		MessageRouter.RaiseMessage(new ButtonUpMessage() { Button = button, PlayerNumber = this.PlayerNumber });
-	}
-
-	void SendMoveSequence(InputButton button) {
+	void SendButtonPress(InputButton button) {
 		MessageRouter.RaiseMessage (new ButtonDownMessage () { Button = button, PlayerNumber = this.PlayerNumber });
 		MessageRouter.RaiseMessage (new ButtonUpMessage () { Button = button, PlayerNumber = this.PlayerNumber });
 	}

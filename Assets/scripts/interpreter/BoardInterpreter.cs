@@ -47,7 +47,7 @@ public class BoardInterpreter : Interpreter {
 					MessageRouter.RaiseMessage(new UnitActionMessage() {
 						ActionType = UnitActionMessageType.MOVE,
 						PlayerNumber = CurrentPlayer,
-						Direction = DirectionToVector(HeldFrets[CurrentPlayer][HeldFrets[CurrentPlayer].Count - 1])
+						Direction = DirectionToVector(m.Button)
 					});
 				} else {
 					MessageRouter.RaiseMessage(new RejectActionMessage() {
