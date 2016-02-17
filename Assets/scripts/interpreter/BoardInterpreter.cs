@@ -29,7 +29,8 @@ public class BoardInterpreter : Interpreter {
 					} else {
 						MessageRouter.RaiseMessage (new UnitActionMessage () { 
 							ActionType = UnitActionMessageType.ATTACK, 
-							PlayerNumber = CurrentPlayer
+							PlayerNumber = CurrentPlayer,
+							Color = InputButton.NONE
 						});
 					}
 				} else {
