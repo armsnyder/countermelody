@@ -18,24 +18,46 @@ public class MoveInterpreter : Interpreter {
 		if (!enabled)
 			return;
 		switch (m.Button) {
-		case InputButton.STRUM:
-			if (HeldFrets.ContainsKey(m.PlayerNumber)) {
-				if (m.PlayerNumber == CurrentPlayer && HeldFrets [CurrentPlayer].Count > 0 && IsAcceptingActions) {
-					MessageRouter.RaiseMessage (new UnitActionMessage () { 
-						ActionType = UnitActionMessageType.SELECT, 
-						PlayerNumber = CurrentPlayer,
-						Color = HeldFrets [CurrentPlayer] [HeldFrets[CurrentPlayer].Count - 1]
-					});
+			case InputButton.STRUM:
+				if (m.PlayerNumber == CurrentPlayer && IsAcceptingActions) {
+					if (HeldFrets.ContainsKey(m.PlayerNumber) && HeldFrets [CurrentPlayer].Count > 0) {
+						MessageRouter.RaiseMessage (new UnitActionMessage () { 
+							ActionType = UnitActionMessageType.ATTACK, 
+							PlayerNumber = CurrentPlayer,
+							Color = HeldFrets [CurrentPlayer] [HeldFrets[CurrentPlayer].Count - 1]
+						});
+					} else {
+						MessageRouter.RaiseMessage (new UnitActionMessage () { 
+							ActionType = UnitActionMessageType.ATTACK, 
+							PlayerNumber = CurrentPlayer
+						});
+					}
 				} else {
-					MessageRouter.RaiseMessage (new RejectActionMessage () { 
-						ActionType = UnitActionMessageType.SELECT, 
+					MessageRouter.RaiseMessage(new RejectActionMessage() {
+						ActionType = UnitActionMessageType.ATTACK,
 						PlayerNumber = CurrentPlayer
 					});
 				}
-			}
-			break;
-		default:
-			break;
+				break;
+			case InputButton.UP:
+			case InputButton.DOWN:
+			case InputButton.LEFT:
+			case InputButton.RIGHT:
+				if (m.PlayerNumber == CurrentPlayer && IsAcceptingActions) {
+					MessageRouter.RaiseMessage(new UnitActionMessage() {
+						ActionType = UnitActionMessageType.MOVE,
+						PlayerNumber = CurrentPlayer,
+						Direction = DirectionToVector(HeldFrets[CurrentPlayer][HeldFrets[CurrentPlayer].Count - 1])
+					});
+				} else {
+					MessageRouter.RaiseMessage(new RejectActionMessage() {
+						ActionType = UnitActionMessageType.MOVE,
+						PlayerNumber = CurrentPlayer
+					});
+				}
+				break;
+			default:
+				break;
 		}
 	}
 
@@ -43,27 +65,27 @@ public class MoveInterpreter : Interpreter {
 		base.OnButtonUp (m);
 		if (!enabled)
 			return;
-		if (m.PlayerNumber == CurrentPlayer && HeldFrets.ContainsKey (m.PlayerNumber) 
-			&& HeldFrets [CurrentPlayer].Count == 0 && IsAcceptingActions) {
-			switch (m.Button) {
+		switch (m.Button) {
 			case InputButton.GREEN:
 			case InputButton.RED:
 			case InputButton.YELLOW:
-			case InputButton.UP:
-			case InputButton.DOWN:
-			case InputButton.LEFT:
-			case InputButton.RIGHT:
 			case InputButton.BLUE:
-				// Send move message
-				MessageRouter.RaiseMessage (new UnitActionMessage () { 
-					ActionType = UnitActionMessageType.MOVE, 
-					PlayerNumber = CurrentPlayer, 
-					Direction = ColorToVector (m.Button)
-				});
+			case InputButton.ORANGE:
+				if (m.PlayerNumber == CurrentPlayer && IsAcceptingActions) {
+					MessageRouter.RaiseMessage(new UnitActionMessage() {
+						ActionType = UnitActionMessageType.SELECT,
+						PlayerNumber = CurrentPlayer,
+						Color = m.Button
+					});
+				} else {
+					MessageRouter.RaiseMessage(new RejectActionMessage() {
+						ActionType = UnitActionMessageType.SELECT,
+						PlayerNumber = CurrentPlayer
+					});
+				}
 				break;
 			default:
 				break;
-			}
 		}
 	}
 
@@ -76,28 +98,6 @@ public class MoveInterpreter : Interpreter {
 	private void OnExitBeatWindow(ExitBeatWindowMessage m) {
 		if (!enabled)
 			return;
-		if (IsAcceptingActions && HeldFrets.ContainsKey(CurrentPlayer) && HeldFrets [CurrentPlayer].Count > 0) {
-			// Send end-of-beat move message
-			switch (HeldFrets [CurrentPlayer] [HeldFrets [CurrentPlayer].Count - 1]) {
-				case InputButton.GREEN:
-				case InputButton.BLUE:
-				case InputButton.YELLOW:
-				case InputButton.UP:
-				case InputButton.DOWN:
-				case InputButton.LEFT:
-				case InputButton.RIGHT:
-				case InputButton.RED:
-					MessageRouter.RaiseMessage (new UnitActionMessage () { 
-						ActionType = UnitActionMessageType.MOVE, 
-						PlayerNumber = CurrentPlayer, 
-						Direction = ColorToVector (HeldFrets [CurrentPlayer] [HeldFrets[CurrentPlayer].Count - 1])
-					});
-					break;
-				default:
-					break;
-			}
-		}
-		
 		IsAcceptingActions = false;
 	}
 
@@ -107,26 +107,18 @@ public class MoveInterpreter : Interpreter {
 		IsAcceptingActions = false;
 	}
 
-	private Vector2 ColorToVector(InputButton color) {
-		switch (color) {
-		case InputButton.GREEN:
-			return new Vector2 (-1, 0); // Left
-		case InputButton.RED:
-			return new Vector2 (0, 1); // Up
-		case InputButton.YELLOW:
-			return new Vector2 (0, -1); // Down
-		case InputButton.BLUE:
-			return new Vector2 (1, 0); // Right
-		case InputButton.LEFT:
-			return new Vector2 (-1, 0); // Left
-		case InputButton.UP:
-			return new Vector2 (0, 1); // Up
-		case InputButton.DOWN:
-			return new Vector2 (0, -1); // Down
-		case InputButton.RIGHT:
-			return new Vector2 (1, 0); // Right
-		default:
-			return new Vector2 ();
+	private Vector2 DirectionToVector(InputButton b) {
+		switch (b) {
+			case InputButton.LEFT:
+				return new Vector2 (-1, 0); // Left
+			case InputButton.UP:
+				return new Vector2 (0, 1); // Up
+			case InputButton.DOWN:
+				return new Vector2 (0, -1); // Down
+			case InputButton.RIGHT:
+				return new Vector2 (1, 0); // Right
+			default:
+				return new Vector2 ();
 		}
 	}
 }
