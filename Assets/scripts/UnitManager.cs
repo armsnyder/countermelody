@@ -125,6 +125,7 @@ public class UnitManager : MonoBehaviour
 			as MelodyUnit;
 		if (recipient && SelectedUnit[playerNumber]) {
 			// Passes control to BattleManager
+			Debug.Log("enter");
 			MessageRouter.RaiseMessage (new EnterBattleMessage () { 
 				AttackingUnit = SelectedUnit [playerNumber],
 				DefendingUnit = recipient
@@ -196,7 +197,7 @@ public class UnitManager : MonoBehaviour
 			return;
 			// TODO: Figure out why this is ever null. Ignored for demo purposes only.
 		}
-		float attackPower = m.AttackerHitPercent - m.DefenderHitPercent / 2;
+		float attackPower = m.AttackerHitPercent * 10 - m.DefenderHitPercent / 2;
 		if (attackPower > 0) {
 			m.AttackingUnit.DealDamage(m.DefendingUnit, attackPower);
 		}
