@@ -266,7 +266,7 @@ public class Song : MonoBehaviour {
 					startIndex = index + 1;
 				}
 			}
-			for (int i = startIndex; goodNotes [i].getPositionTime (bpm) < endTime; i++) {
+			for (int i = startIndex; i < goodNotes.Count && goodNotes [i].getPositionTime (bpm) < endTime; i++) {
 				ret.Add (goodNotes [i]);
 			}
 			return ret.ToArray ();
@@ -312,11 +312,8 @@ public class Song : MonoBehaviour {
 					startIndex = index + 1;
 				}
 			}
-			try {
-			for (int i = startIndex; goodNotes [i].position < endBeat * goodNotes [i].ppq && i < goodNotes.Count; i++) {
+			for (int i = startIndex; i < goodNotes.Count && goodNotes [i].position < endBeat * goodNotes [i].ppq; i++) {
 				ret.Add (goodNotes [i]);
-			}
-			} catch (Exception e) {
 			}
 			return ret.ToArray ();
 		} else if (startBeat < 0) {
