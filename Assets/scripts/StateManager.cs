@@ -3,7 +3,6 @@ using System.Collections;
 using Frictionless;
 
 public enum State {
-	AttackState,
 	MoveState,
 	BattleState,
 	None
@@ -17,8 +16,7 @@ public class StateChangeMessage {
 public class StateManager : MonoBehaviour {
 
 	MessageRouter MessageRouter;
-	AttackInterpreter AttackInterpreter;
-	MoveInterpreter MoveInterpreter;
+	BoardInterpreter BoardInterpreter;
 	Interpreter DefaultInterpreter;
 	int CurrentPlayer;
 	private State _CurrentState = State.None;
@@ -27,45 +25,20 @@ public class StateManager : MonoBehaviour {
 
 		//Add Event Handlers
 		MessageRouter = ServiceFactory.Instance.Resolve<MessageRouter> ();
-		MessageRouter.AddHandler<ButtonDownMessage> (OnButtonDown);
-		MessageRouter.AddHandler<ButtonUpMessage> (OnButtonUp);
 		MessageRouter.AddHandler<SwitchPlayerMessage> (OnSwitchPlayer);
 		MessageRouter.AddHandler<EnterBattleMessage> (OnEnterBattle);
 		MessageRouter.AddHandler<ExitBattleMessage> (OnExitBattle);
 
-		//Get Attack and Move Interpreters from the gameobject or create new ones
-		AttackInterpreter = gameObject.AddComponent<AttackInterpreter> ();
-		MoveInterpreter = gameObject.AddComponent<MoveInterpreter> ();
+		BoardInterpreter = gameObject.AddComponent<BoardInterpreter> ();
 		DefaultInterpreter = gameObject.AddComponent<Interpreter> ();
-//		if (AttackInterpreter == null)
-//			AttackInterpreter = gameObject.AddComponent<AttackInterpreter> ();
-//		if (MoveInterpreter == null)
-//			MoveInterpreter = gameObject.AddComponent<MoveInterpreter> ();
-//		if (DefaultInterpreter == null)
-//			DefaultInterpreter = gameObject.AddComponent<Interpreter> ();
+
 		//Start in Move State
-		LoadMoveInterpreter();
+		LoadBoardInterpreter();
 		ChangeState (State.MoveState);
 	}
 
-	void OnButtonDown(ButtonDownMessage m) {
-		if (_CurrentState == State.MoveState && m.Button == InputButton.WHAMMY && m.PlayerNumber == CurrentPlayer) {
-			LoadAttackInterpreter ();
-			ChangeState (State.AttackState);
-			Debug.Assert(AttackInterpreter.enabled && !MoveInterpreter.enabled,"Attack Interpreter Active");
-		}
-	}
-
-	void OnButtonUp(ButtonUpMessage m) {
-		if (_CurrentState == State.AttackState && m.Button == InputButton.WHAMMY && m.PlayerNumber == CurrentPlayer) {
-			LoadMoveInterpreter ();
-			ChangeState (State.MoveState);
-			Debug.Assert(!AttackInterpreter.enabled && MoveInterpreter.enabled, "Move Interpreter Active");
-		}
-	}
-
 	void OnSwitchPlayer(SwitchPlayerMessage m) {
-		LoadMoveInterpreter ();
+		LoadBoardInterpreter ();
 		CurrentPlayer = m.PlayerNumber;
 	}
 
@@ -75,27 +48,18 @@ public class StateManager : MonoBehaviour {
 	}
 
 	void OnExitBattle(ExitBattleMessage m) {
-		LoadMoveInterpreter ();
+		LoadBoardInterpreter ();
 		ChangeState (State.MoveState);
 	}
 
-	void LoadAttackInterpreter() {
-		Debug.Assert (AttackInterpreter != null && MoveInterpreter != null);
-		MoveInterpreter.enabled = false;
+	void LoadBoardInterpreter() {
+		Debug.Assert (DefaultInterpreter != null && BoardInterpreter != null);
 		DefaultInterpreter.enabled = false;
-		AttackInterpreter.enabled = true;
-	}
-
-	void LoadMoveInterpreter() {
-		Debug.Assert (AttackInterpreter != null && MoveInterpreter != null);
-		AttackInterpreter.enabled = false;
-		DefaultInterpreter.enabled = false;
-		MoveInterpreter.enabled = true;
+		BoardInterpreter.enabled = true;
 	}
 
 	void LoadDefaultInterpreter() {
-		AttackInterpreter.enabled = false;
-		MoveInterpreter.enabled = false;
+		BoardInterpreter.enabled = false;
 		DefaultInterpreter.enabled = true;
 	}
 

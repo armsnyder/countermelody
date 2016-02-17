@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Frictionless;
 
-public class MoveInterpreter : Interpreter {
+public class BoardInterpreter : Interpreter {
 
 	private bool IsAcceptingActions;
 
