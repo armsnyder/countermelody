@@ -117,6 +117,8 @@ public class BattleManager : MonoBehaviour {
 		// Prepare battle data per player
 		attacker = players [m.AttackingUnit.PlayerNumber];
 		defender = players [m.DefendingUnit.PlayerNumber];
+		attacker.unit = m.AttackingUnit;
+		defender.unit = m.DefendingUnit;
 		attacker.instrumentID = 0; // Edgy synth
 		defender.instrumentID = 1; // Smoother synth
 		attacker.battleNotes = song.GetNextBattleNotes (battleMeasures, attacker.instrumentID, attacker.difficulty);
