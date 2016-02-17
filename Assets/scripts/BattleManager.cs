@@ -157,31 +157,31 @@ public class BattleManager : MonoBehaviour {
 		}
 		if (isInBattle && m.BeatNumber == m.BeatsPerMeasure - 1 && battleProgressInMeasures == battleMeasures) {
 			// Delay by half beat to allow any final sixteenth notes to be played
-			StartCoroutine(EndBattleCoroutine(60f / m.BeatsPerMinute * 7 / 8, attacker, defender));
+			StartCoroutine(EndBattleCoroutine(60f / m.BeatsPerMinute * 7 / 8));
 		}
 	}
 
-	IEnumerator EndBattleCoroutine(float delay, PlayerBattleData local_attacker, PlayerBattleData local_defender) {
+	IEnumerator EndBattleCoroutine(float delay) {
 		// Delay by half beat to allow any final eigth notes to be played
 		// TODO: Figure out if we can penalize spamming strum to hit every note
 		yield return new WaitForSeconds(delay);
 		targetLine.enabled = false;
 		isInBattle = false;
 		int attackerHitCount = 0;
-		foreach (int i in local_attacker.battleNoteStates) {
+		foreach (int i in attacker.battleNoteStates) {
 			if (i == 1)
 				attackerHitCount++;
 		}
 		int defenderHitCount = 0;
-		foreach (int i in local_defender.battleNoteStates) {
+		foreach (int i in defender.battleNoteStates) {
 			if (i == 1)
 				defenderHitCount++;
 		}
 		messageRouter.RaiseMessage (new ExitBattleMessage () {
-			AttackingUnit = local_attacker.unit,
-			DefendingUnit = local_defender.unit,
-			AttackerHitPercent = (float) attackerHitCount / local_attacker.battleNotes.Length,
-			DefenderHitPercent = (float) defenderHitCount / local_defender.battleNotes.Length
+			AttackingUnit = attacker.unit,
+			DefendingUnit = defender.unit,
+			AttackerHitPercent = (float) attackerHitCount / attacker.battleNotes.Length,
+			DefenderHitPercent = (float) defenderHitCount / defender.battleNotes.Length
 		});
 	}
 
