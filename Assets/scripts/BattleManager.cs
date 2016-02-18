@@ -135,14 +135,13 @@ public class BattleManager : MonoBehaviour {
 		float currentMusicTime = song.playerPosition;
 		foreach (int playerNumber in players.Keys) {
 			foreach (Note note in players[playerNumber].battleNotes) {
-				GameObject spawnedNote = (GameObject)Instantiate (notePrefab, parentCam.transform.position + 
-					new Vector3 (margin + (playerNumber-1) * offset + (offset / 6) * note.fretNumber, spawnHeight, spawnDepth), 
-					Quaternion.identity);
+				GameObject spawnedNote = GameObjectUtil.Instantiate (notePrefab, parentCam.transform.position +
+				                         new Vector3 (margin + (playerNumber - 1) * offset + (offset / 6) * note.fretNumber, 
+					                         spawnHeight, spawnDepth));
 				spawnedNote.transform.position += 
 					new Vector3 (0, stretchFactor * (note.getPositionTime (song.bpm) - currentMusicTime), 0);
-				spawnedNote.transform.parent = parentCam.transform;
 				NoteObject spawnedCode = spawnedNote.GetComponent<NoteObject> ();
-				spawnedCode.NoteData = note;
+				spawnedCode.SetNoteColor(note);
 			}
 		}
 
@@ -218,7 +217,7 @@ public class BattleManager : MonoBehaviour {
 					foreach (GameObject no in noteObjects) {
 						NoteObject noc = no.GetComponent<NoteObject> ();
 						if (noc.NoteData.Equals(n)) {
-							GameObject.Destroy (no);
+							GameObjectUtil.Destroy (no);
 						}
 					}
 					break;
