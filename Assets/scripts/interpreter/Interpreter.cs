@@ -40,10 +40,6 @@ public class Interpreter : MonoBehaviour {
 		case InputButton.RED:
 		case InputButton.YELLOW:
 		case InputButton.BLUE:
-		case InputButton.UP:
-		case InputButton.DOWN:
-		case InputButton.LEFT:
-		case InputButton.RIGHT:
 		case InputButton.ORANGE:
 			if (!HeldFrets.ContainsKey (m.PlayerNumber)) {
 				HeldFrets.Add (m.PlayerNumber, new List<InputButton> ());
