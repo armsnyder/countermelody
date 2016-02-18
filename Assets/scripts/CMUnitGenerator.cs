@@ -30,7 +30,7 @@ public class CMUnitGenerator : MonoBehaviour, IUnitGenerator
                 }//Unit gets snapped to the nearest cell
                 else
                 {
-                    Destroy(unit.gameObject);
+                    GameObjectUtil.Destroy(unit.gameObject);
                 }//If the nearest cell is taken, the unit gets destroyed.
             }
             else
