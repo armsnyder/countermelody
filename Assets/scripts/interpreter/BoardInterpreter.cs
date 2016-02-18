@@ -99,6 +99,14 @@ public class BoardInterpreter : Interpreter {
 	private void OnExitBeatWindow(ExitBeatWindowMessage m) {
 		if (!enabled)
 			return;
+		if (HeldFrets.ContainsKey(CurrentPlayer) && HeldFrets[CurrentPlayer].Count > 0 && IsAcceptingActions) {
+			MessageRouter.RaiseMessage(new UnitActionMessage() {
+				ActionType = UnitActionMessageType.SELECT,
+				PlayerNumber = CurrentPlayer,
+				Color = HeldFrets[CurrentPlayer][HeldFrets[CurrentPlayer].Count - 1]
+			});
+		}
+
 		IsAcceptingActions = false;
 	}
 
