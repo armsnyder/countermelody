@@ -8,17 +8,8 @@ public class NoteObject : MonoBehaviour {
 	public float destroyY = -10f; // Y coordinate under which object will self destruct
 	public Vector3 velocity = new Vector3(0, -0.22f, 0);
 
-	private void Start() {
-		if (_NoteData != null) {
-			SetNoteColor();
-		}
-	}
-
-	public void SetNoteColor(Note note = null) {
-		if (note != null) {
-			_NoteData = note;
-		}
-		Debug.Assert(_NoteData != null, "NoteData must be provided to SetNoteColor or NoteData must be set before setting color");
+	public void SetNoteColor(Note note) {
+		_NoteData = note;
 		Color color = _NoteData.fretNumber == 0 ? Color.green :
 			_NoteData.fretNumber == 1 ? Color.red :
 			_NoteData.fretNumber == 2 ? Color.yellow :
