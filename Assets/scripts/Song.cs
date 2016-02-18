@@ -74,6 +74,8 @@ public class Song : MonoBehaviour {
 	public TextAsset songData;
 
 	public float playerPosition { get { return player.time; } }
+	public int totalBeats { get { return (int)Math.Round (player.clip.length / 60f * bpm); } }
+	public float totalSeconds { get { return player.clip.length; } }
 
 	private MessageRouter MessageRouter;
 	private AudioSource player;
@@ -252,9 +254,13 @@ public class Song : MonoBehaviour {
 	/// <param name="startTime">Start time (seconds)</param>
 	/// <param name="endTime">End time (seconds)</param>
 	public Note[] GetNotes(int instrumentID, int difficulty, float startTime, float endTime) {
-		if (startTime >= 0f && endTime <= player.clip.length) {
+		if (startTime >= endTime)
+			return new Note[0];
+		if (startTime >= 0f && endTime <= totalSeconds) {
 			List<Note> goodNotes = sortedNotes [instrumentID] [difficulty];
 			List<Note> ret = new List<Note> ();
+			if (goodNotes.Count == 0)
+				return new Note[0];
 			int startIndex = 0;
 			int endIndex = goodNotes.Count;
 			int index = 0;
@@ -266,20 +272,20 @@ public class Song : MonoBehaviour {
 					startIndex = index + 1;
 				}
 			}
-			for (int i = startIndex; goodNotes [i].getPositionTime (bpm) < endTime; i++) {
+			for (int i = startIndex; i < goodNotes.Count && goodNotes [i].getPositionTime (bpm) < endTime; i++) {
 				ret.Add (goodNotes [i]);
 			}
 			return ret.ToArray ();
 		} else if (startTime < 0) {
-			Note[] x = GetNotes (instrumentID, difficulty, player.clip.length + startTime, player.clip.length);
+			Note[] x = GetNotes (instrumentID, difficulty, totalSeconds + startTime, totalSeconds);
 			Note[] y = GetNotes (instrumentID, difficulty, 0, endTime);
 			Note[] ret = new Note[x.Length + y.Length];
 			x.CopyTo (ret, 0);
 			y.CopyTo (ret, x.Length);
 			return ret;
 		} else {
-			Note[] x = GetNotes (instrumentID, difficulty, startTime, player.clip.length);
-			Note[] y = GetNotes (instrumentID, difficulty, 0, endTime - player.clip.length);
+			Note[] x = GetNotes (instrumentID, difficulty, startTime, totalSeconds);
+			Note[] y = GetNotes (instrumentID, difficulty, 0, endTime - totalSeconds);
 			Note[] ret = new Note[x.Length + y.Length];
 			x.CopyTo (ret, 0);
 			y.CopyTo (ret, x.Length);
@@ -296,7 +302,9 @@ public class Song : MonoBehaviour {
 	/// <param name="startBeat">Start beat (beats since beginning of song)</param>
 	/// <param name="endBeat">End beat (beats since beginning of song)</param>
 	public Note[] GetNotes(int instrumentID, int difficulty, int startBeat, int endBeat) {
-		if (startBeat >= 0 && endBeat <= player.clip.length / 60f * bpm) {
+		if (startBeat >= endBeat)
+			return new Note[0];
+		if (startBeat >= 0 && endBeat <= totalBeats) {
 			List<Note> goodNotes = sortedNotes [instrumentID] [difficulty];
 			if (goodNotes.Count == 0)
 				return new Note[0];
@@ -312,24 +320,20 @@ public class Song : MonoBehaviour {
 					startIndex = index + 1;
 				}
 			}
-			try {
-			for (int i = startIndex; goodNotes [i].position < endBeat * goodNotes [i].ppq && i < goodNotes.Count; i++) {
+			for (int i = startIndex; i < goodNotes.Count && goodNotes [i].position < endBeat * goodNotes [i].ppq; i++) {
 				ret.Add (goodNotes [i]);
-			}
-			} catch (Exception e) {
 			}
 			return ret.ToArray ();
 		} else if (startBeat < 0) {
-			Note[] x = GetNotes (instrumentID, difficulty, player.clip.length / 60f * bpm + startBeat, 
-				player.clip.length / 60f * bpm);
+			Note[] x = GetNotes (instrumentID, difficulty, totalBeats + startBeat, totalBeats);
 			Note[] y = GetNotes (instrumentID, difficulty, 0, endBeat);
 			Note[] ret = new Note[x.Length + y.Length];
 			x.CopyTo (ret, 0);
 			y.CopyTo (ret, x.Length);
 			return ret;
 		} else {
-			Note[] x = GetNotes (instrumentID, difficulty, startBeat, player.clip.length / 60f * bpm);
-			Note[] y = GetNotes (instrumentID, difficulty, 0, endBeat - (player.clip.length / 60f * bpm));
+			Note[] x = GetNotes (instrumentID, difficulty, startBeat, totalBeats);
+			Note[] y = GetNotes (instrumentID, difficulty, 0, endBeat - totalBeats);
 			Note[] ret = new Note[x.Length + y.Length];
 			x.CopyTo (ret, 0);
 			y.CopyTo (ret, x.Length);

@@ -138,8 +138,12 @@ public class BattleManager : MonoBehaviour {
 				GameObject spawnedNote = GameObjectUtil.Instantiate (notePrefab, parentCam.transform.position +
 				                         new Vector3 (margin + (playerNumber - 1) * offset + (offset / 6) * note.fretNumber, 
 					                         spawnHeight, spawnDepth));
+				float heightOffset = note.getPositionTime (song.bpm) - currentMusicTime;
+				while (heightOffset < 0)
+					heightOffset += song.totalSeconds;
 				spawnedNote.transform.position += 
-					new Vector3 (0, stretchFactor * (note.getPositionTime (song.bpm) - currentMusicTime), 0);
+					new Vector3 (0, stretchFactor * heightOffset, 0);
+				spawnedNote.transform.parent = parentCam.transform;
 				NoteObject spawnedCode = spawnedNote.GetComponent<NoteObject> ();
 				spawnedCode.SetNoteColor(note);
 			}
