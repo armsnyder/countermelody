@@ -62,6 +62,10 @@ public class Note {
 	public int ppq {get; set;} // A technical MIDI term for ticks per beat
 }
 
+public class NoteStrikeMessage {
+	public Note note {get; set;}
+}
+
 public class Song : MonoBehaviour {
 
 	public float bpm = 80f;
@@ -111,6 +115,7 @@ public class Song : MonoBehaviour {
 			instrumentPlayers [i].Play ();
 		}
 		StartCoroutine ("BeatCoroutine");
+		StartCoroutine (BroadcastNotes ());
 	}
 	
 	void OnDisable() {
@@ -161,6 +166,28 @@ public class Song : MonoBehaviour {
 	void OnExitBattle(ExitBattleMessage m) {
 		for (int i = 0; i < instrumentPlayers.Length; i++) {
 			instrumentPlayers [i].mute = true;
+		}
+	}
+
+	IEnumerator BroadcastNotes() {
+		List<List<int>> progress = new List<List<int>> ();
+		for (int i = 0; i < sortedNotes.Count; i++) {
+			progress.Add (new List<int> ());
+			for (int j = 0; j < sortedNotes [i].Count; j++) {
+				progress [i].Add (0);
+			}
+		}
+		for (;;) {
+			for (int inst = 0; inst < progress.Count; inst++) {
+				for (int diff = 0; diff < progress [inst].Count; diff++) {
+					Note nextNote = sortedNotes [inst] [diff] [progress [inst] [diff] + 1];
+					if (nextNote.getPositionTime (bpm) <= playerPosition) {
+						MessageRouter.RaiseMessage (new NoteStrikeMessage (){ note = nextNote });
+						progress [inst] [diff]++;
+					}
+				}
+			}
+			yield return null;
 		}
 	}
 

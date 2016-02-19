@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Frictionless;
 
 public class NoteObject : MonoBehaviour {
 
@@ -8,6 +9,10 @@ public class NoteObject : MonoBehaviour {
 	public float destroyY = -10f; // Y coordinate under which object will self destruct
 	public Vector3 velocity = new Vector3(0, -0.22f, 0);
 	public Vector3 centerOfObject = new Vector3(.5f, -.5f);
+
+	void Start() {
+		ServiceFactory.Instance.Resolve<MessageRouter> ().AddHandler<NoteStrikeMessage> (OnNote);
+	}
 
 	public void SetNoteColor(Note note) {
 		_NoteData = note;
@@ -28,5 +33,11 @@ public class NoteObject : MonoBehaviour {
 
 	void FixedUpdate() {
 		transform.position += velocity; // Notes constantly fall
+	}
+
+	void OnNote(NoteStrikeMessage m) {
+		if (enabled && m.note.Equals (_NoteData)) {
+			velocity = Vector3.zero;
+		}
 	}
 }
