@@ -159,7 +159,8 @@ public class BattleManager : MonoBehaviour {
 			foreach (Note note in players[playerNumber].battleNotes) {
 				GameObject spawnedNote = GameObjectUtil.Instantiate(notePrefab);
 				spawnedNote.transform.parent = parentCam.transform;
-				spawnedNote.transform.position = parentCam.ScreenToWorldPoint(new Vector3(PlayerXPos + ((note.fretNumber+1) * FRET_RANGE / 5), SPAWN_HEIGHT, SPAWN_DEPTH));
+				spawnedNote.transform.position = parentCam.ScreenToWorldPoint(
+					new Vector3(PlayerXPos + ((note.fretNumber+1) * FRET_RANGE / 5), SPAWN_HEIGHT, SPAWN_DEPTH));
 
 
 				NoteObject NoteObject = spawnedNote.GetComponent<NoteObject> ();
@@ -171,7 +172,8 @@ public class BattleManager : MonoBehaviour {
 				}
 
 				Vector3 DistanceToTarget = new Vector3(0f, spawnedNote.transform.position.y - targetLine.transform.position.y, 0f);
-				Vector3 StartingOffset = ((1 / Time.fixedDeltaTime) * heightOffset * NoteObject.velocity * -1) - DistanceToTarget - NoteObject.centerOfObject; //MATH BITCHES
+				Vector3 StartingOffset = ((1 / Time.fixedDeltaTime) * heightOffset * NoteObject.velocity * -1)
+					- DistanceToTarget - NoteObject.centerOfObject; //MATH BITCHES
 				spawnedNote.transform.position += StartingOffset;
 
 			}
