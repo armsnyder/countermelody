@@ -78,11 +78,6 @@ public class BoardInterpreter : Interpreter {
 						PlayerNumber = CurrentPlayer,
 						Color = m.Button
 					});
-				} else {
-					MessageRouter.RaiseMessage(new RejectActionMessage() {
-						ActionType = UnitActionMessageType.SELECT,
-						PlayerNumber = CurrentPlayer
-					});
 				}
 				break;
 			default:
