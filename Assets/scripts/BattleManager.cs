@@ -56,7 +56,6 @@ public class BattleManager : MonoBehaviour {
 		public Note[] battleNotes { get; set; }
 		public int[] battleNoteStates { get; set; }
 		public MelodyUnit unit {get; set;}
-		public int PlayerIndex { get; set; }
 	}
 
 	private Dictionary<int, PlayerBattleData> players;
@@ -66,15 +65,16 @@ public class BattleManager : MonoBehaviour {
 	private PlayerBattleData defender;
 	private int battleProgressInMeasures; // Number of measures into the battle
 	private MeshRenderer targetLine; // Renderer for note targets. Currently a temporary black line.
+	private GameObject divider; // Divider between player's notes
 
 	public int battleMeasures = 1;
 	public Camera parentCam;
 	public GameObject notePrefab;
 
 	//Constants
-	private float CENTER_MARGIN = Screen.width / 27f;
-	private float UNIT_MARGIN = Screen.width * 4f / 27f;
-	private float FRET_RANGE = Screen.width / 3f; // Change based on number of players
+	private float CENTER_MARGIN = Screen.width * 2 / 27f;
+	private float UNIT_MARGIN = Screen.width * 3.5f / 27f;
+	private float FRET_RANGE = Screen.width / 3f; //TODO: Change based on number of players
 	private float SPAWN_HEIGHT = Screen.height;
 	private const float SPAWN_DEPTH = 13f;
 
@@ -92,6 +92,12 @@ public class BattleManager : MonoBehaviour {
 		targetLine = GameObject.Find ("Temp Battle Target Line").GetComponent<MeshRenderer> ();
 		targetLine.enabled = false;
 		targetLine.transform.localPosition = new Vector3(0, -2, SPAWN_DEPTH);
+
+		//Add the divider
+		divider = GameObject.CreatePrimitive(PrimitiveType.Cube);
+		divider.transform.position = parentCam.ScreenToWorldPoint(new Vector3(Screen.width / 2, 0, SPAWN_DEPTH));
+		divider.transform.localScale = new Vector3(0.1f, 100f, 1f);
+		divider.GetComponent<MeshRenderer>().enabled = false;
 	}
 
 	/// <summary>
@@ -122,6 +128,7 @@ public class BattleManager : MonoBehaviour {
 
 	void OnStartBattle(EnterBattleMessage m) {
 		targetLine.enabled = true;
+		divider.GetComponent<MeshRenderer>().enabled = true;
 		Song song = ServiceFactory.Instance.Resolve<Song>();
 		Debug.Assert (players.ContainsKey (m.AttackingUnit.PlayerNumber));
 		Debug.Assert (players.ContainsKey (m.DefendingUnit.PlayerNumber));
@@ -152,7 +159,7 @@ public class BattleManager : MonoBehaviour {
 			foreach (Note note in players[playerNumber].battleNotes) {
 				GameObject spawnedNote = GameObjectUtil.Instantiate(notePrefab);
 				spawnedNote.transform.parent = parentCam.transform;
-				spawnedNote.transform.position = parentCam.ScreenToWorldPoint(new Vector3(PlayerXPos + (note.fretNumber * FRET_RANGE / 5), SPAWN_HEIGHT, SPAWN_DEPTH));
+				spawnedNote.transform.position = parentCam.ScreenToWorldPoint(new Vector3(PlayerXPos + ((note.fretNumber+1) * FRET_RANGE / 5), SPAWN_HEIGHT, SPAWN_DEPTH));
 
 
 				NoteObject NoteObject = spawnedNote.GetComponent<NoteObject> ();
@@ -191,6 +198,7 @@ public class BattleManager : MonoBehaviour {
 		// TODO: Figure out if we can penalize spamming strum to hit every note
 		yield return new WaitForSeconds(delay);
 		targetLine.enabled = false;
+		divider.GetComponent<MeshRenderer>().enabled = false;
 		isInBattle = false;
 		int attackerHitCount = 0;
 		foreach (int i in attacker.battleNoteStates) {
