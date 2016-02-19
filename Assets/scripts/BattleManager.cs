@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Frictionless;
+using System.Linq;
 
 /// <summary>
 /// Sent when a player hits a note
@@ -55,6 +56,7 @@ public class BattleManager : MonoBehaviour {
 		public Note[] battleNotes { get; set; }
 		public int[] battleNoteStates { get; set; }
 		public MelodyUnit unit {get; set;}
+		public int PlayerIndex { get; set; }
 	}
 
 	private Dictionary<int, PlayerBattleData> players;
@@ -69,6 +71,13 @@ public class BattleManager : MonoBehaviour {
 	public Camera parentCam;
 	public GameObject notePrefab;
 
+	//Constants
+	private float CENTER_MARGIN = Screen.width / 27f;
+	private float UNIT_MARGIN = Screen.width * 4f / 27f;
+	private float FRET_RANGE = Screen.width / 3f; // Change based on number of players
+	private float SPAWN_HEIGHT = Screen.height;
+	private const float SPAWN_DEPTH = 13f;
+
 	void Awake() {
 		players = new Dictionary<int, PlayerBattleData> ();
 	}
@@ -82,6 +91,7 @@ public class BattleManager : MonoBehaviour {
 		messageRouter.AddHandler<BattleDifficultyChangeMessage> (OnBattleDifficultyChange);
 		targetLine = GameObject.Find ("Temp Battle Target Line").GetComponent<MeshRenderer> ();
 		targetLine.enabled = false;
+		targetLine.transform.localPosition = new Vector3(0, -2, SPAWN_DEPTH);
 	}
 
 	/// <summary>
@@ -109,6 +119,7 @@ public class BattleManager : MonoBehaviour {
 
 	}
 
+
 	void OnStartBattle(EnterBattleMessage m) {
 		targetLine.enabled = true;
 		Song song = ServiceFactory.Instance.Resolve<Song>();
@@ -117,36 +128,47 @@ public class BattleManager : MonoBehaviour {
 		// Prepare battle data per player
 		attacker = players [m.AttackingUnit.PlayerNumber];
 		defender = players [m.DefendingUnit.PlayerNumber];
+
 		attacker.unit = m.AttackingUnit;
 		defender.unit = m.DefendingUnit;
+
 		attacker.instrumentID = 0; // Edgy synth
 		defender.instrumentID = 1; // Smoother synth
+
 		attacker.battleNotes = song.GetNextBattleNotes (battleMeasures, attacker.instrumentID, attacker.difficulty);
 		defender.battleNotes = song.GetNextBattleNotes (battleMeasures, defender.instrumentID, defender.difficulty);
+
 		attacker.battleNoteStates = new int[attacker.battleNotes.Length];
 		defender.battleNoteStates = new int[defender.battleNotes.Length];
 
-		// Spawn notes:
-		float margin = 3f;
-		float offset = 10f;
-		float spawnHeight = -4f;
-		float spawnDepth = 13f;
-		float stretchFactor = 10.73f;
+		List<int> OrderedPlayers = players.Keys.ToList();
+		OrderedPlayers.Sort();
+
+		float PlayerXPos = UNIT_MARGIN;
+
 		float currentMusicTime = song.playerPosition;
-		foreach (int playerNumber in players.Keys) {
+		// Spawn notes:
+		foreach (int playerNumber in OrderedPlayers) {
 			foreach (Note note in players[playerNumber].battleNotes) {
-				GameObject spawnedNote = GameObjectUtil.Instantiate (notePrefab, parentCam.transform.position +
-				                         new Vector3 (margin + (playerNumber - 1) * offset + (offset / 6) * note.fretNumber, 
-					                         spawnHeight, spawnDepth));
-				float heightOffset = note.getPositionTime (song.bpm) - currentMusicTime;
-				while (heightOffset < 0)
-					heightOffset += song.totalSeconds;
-				spawnedNote.transform.position += 
-					new Vector3 (0, stretchFactor * heightOffset, 0);
+				GameObject spawnedNote = GameObjectUtil.Instantiate(notePrefab);
 				spawnedNote.transform.parent = parentCam.transform;
-				NoteObject spawnedCode = spawnedNote.GetComponent<NoteObject> ();
-				spawnedCode.SetNoteColor(note);
+				spawnedNote.transform.position = parentCam.ScreenToWorldPoint(new Vector3(PlayerXPos + (note.fretNumber * FRET_RANGE / 5), SPAWN_HEIGHT, SPAWN_DEPTH));
+
+
+				NoteObject NoteObject = spawnedNote.GetComponent<NoteObject> ();
+				NoteObject.SetNoteColor(note);
+
+				float heightOffset = (note.getPositionTime(song.bpm) - currentMusicTime);
+				while (heightOffset < 0) {
+					heightOffset += song.totalSeconds;
+				}
+
+				Vector3 DistanceToTarget = new Vector3(0f, spawnedNote.transform.position.y - targetLine.transform.position.y, 0f);
+				Vector3 StartingOffset = ((1 / Time.fixedDeltaTime) * heightOffset * NoteObject.velocity * -1) - DistanceToTarget - NoteObject.centerOfObject; //MATH BITCHES
+				spawnedNote.transform.position += StartingOffset;
+
 			}
+			PlayerXPos += FRET_RANGE + CENTER_MARGIN;
 		}
 
 		isInBattle = true;
