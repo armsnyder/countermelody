@@ -7,7 +7,7 @@ public class NoteObject : MonoBehaviour {
 	private Note _NoteData;
 	public float destroyY = -10f; // Y coordinate under which object will self destruct
 	public Vector3 velocity = new Vector3(0, -0.22f, 0);
-	public Vector3 centerOfObject = new Vector3(.5f, -.5f);
+	public Vector3 centerOfObject = new Vector3(.5f, 0f);
 
 	public void SetNoteColor(Note note) {
 		_NoteData = note;

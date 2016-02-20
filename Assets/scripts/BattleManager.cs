@@ -72,10 +72,6 @@ public class BattleManager : MonoBehaviour {
 	public GameObject notePrefab;
 
 	//Constants
-	private float CENTER_MARGIN = Screen.width * 2 / 27f;
-	private float UNIT_MARGIN = Screen.width * 3.5f / 27f;
-	private float FRET_RANGE = Screen.width / 3f; //TODO: Change based on number of players
-	private float SPAWN_HEIGHT = Screen.height;
 	private const float SPAWN_DEPTH = 13f;
 
 	void Awake() {
@@ -127,6 +123,12 @@ public class BattleManager : MonoBehaviour {
 
 
 	void OnStartBattle(EnterBattleMessage m) {
+
+		float CENTER_MARGIN = Screen.width * 2 / 27f;
+		float UNIT_MARGIN = Screen.width * 3.5f / 27f;
+		float FRET_RANGE = Screen.width / 3f; //TODO: Change based on number of players
+		float SPAWN_HEIGHT = Screen.height;
+
 		targetLine.enabled = true;
 		divider.GetComponent<MeshRenderer>().enabled = true;
 		Song song = ServiceFactory.Instance.Resolve<Song>();
