@@ -192,12 +192,12 @@ public class BattleManager : MonoBehaviour {
 		battleProgressInMeasures = 0;
 	}
 
-	/*void Update() {
+	void Update() {
 		if (isInBattle) {
 			MarkPassedNotes(attacker);
 			MarkPassedNotes(defender);
 		}
-	}*/
+	}
 
 	void OnBeatCenter(BeatCenterMessage m) {
 		// After the final beat of a battle sequence is played, trigger EndBattle
