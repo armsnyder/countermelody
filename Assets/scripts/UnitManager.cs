@@ -117,11 +117,39 @@ public class UnitManager : MonoBehaviour
 
 
 	void Attack(InputButton color, int playerNumber) {
-		MelodyUnit recipient = GameBoard.Units.Find(c => 
+		MelodyUnit recipient = null;
+		List<Unit> recipients;
+		if (color == InputButton.NONE) {
+			recipients = GameBoard.Units.FindAll(c => 
+			(c.PlayerNumber != playerNumber) && 
+			(Math.Abs(SelectedUnit[playerNumber].Cell.OffsetCoord[0] - c.Cell.OffsetCoord[0])) + (Math.Abs(SelectedUnit[playerNumber].Cell.OffsetCoord[1] - c.Cell.OffsetCoord[1])) <= SelectedUnit[playerNumber].AttackRange);
+            int lowestValue = int.MaxValue;
+            if (recipients.Count > 0) {
+            	recipient = recipients[0] as MelodyUnit;
+            	lowestValue = recipient.HitPoints;
+            }
+            foreach(Unit r in recipients) {
+            	if (r.HitPoints < lowestValue) {
+            		recipient = r as MelodyUnit;
+            		lowestValue = r.HitPoints;
+            	}
+            }
+			if (recipient) {
+				MessageRouter.RaiseMessage (new EnterBattleMessage () { 
+					AttackingUnit = SelectedUnit [playerNumber],
+					DefendingUnit = recipient
+				});
+			}
+			else {
+				MessageRouter.RaiseMessage(new RejectActionMessage { PlayerNumber = GameBoard.CurrentPlayerNumber, ActionType = UnitActionMessageType.ATTACK });
+			}
+			return;
+		}
+		recipient = GameBoard.Units.Find(c => 
 			(c.PlayerNumber != playerNumber) && 
 			((c as MelodyUnit).ColorButton == color) &&
 			(Math.Abs(SelectedUnit[playerNumber].Cell.OffsetCoord[0] - c.Cell.OffsetCoord[0])) + (Math.Abs(SelectedUnit[playerNumber].Cell.OffsetCoord[1] - c.Cell.OffsetCoord[1])) <= SelectedUnit[playerNumber].AttackRange) 
-			as MelodyUnit;
+			as MelodyUnit;		
 		if (recipient && SelectedUnit[playerNumber]) {
 			// Passes control to BattleManager
 			MessageRouter.RaiseMessage (new EnterBattleMessage () { 
