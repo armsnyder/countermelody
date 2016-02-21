@@ -10,8 +10,8 @@ GameObject:
   - 4: {fileID: 485928}
   - 33: {fileID: 3373576}
   - 23: {fileID: 2338444}
-  - 114: {fileID: 11444640}
   - 114: {fileID: 11485698}
+  - 114: {fileID: 11491086}
   m_Layer: 0
   m_Name: Note
   m_TagString: noteObject
@@ -64,7 +64,18 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 102260}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &11444640
+--- !u!114 &11485698
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 102260}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 47ce939adbe0e4df29d746a1aea9e31c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &11491086
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -77,17 +88,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   destroyY: -10
   velocity: {x: 0, y: -0.22, z: 0}
---- !u!114 &11485698
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 102260}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 47ce939adbe0e4df29d746a1aea9e31c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  centerOfObject: {x: 0.5, y: -0.2, z: 0}
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1
@@ -106,6 +107,10 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: m_TagString
       value: noteObject
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: centerOfObject.y
+      value: -0.2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
