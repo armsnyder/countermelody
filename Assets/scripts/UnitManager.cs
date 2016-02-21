@@ -65,9 +65,15 @@ public class UnitManager : MonoBehaviour
 		if (SelectedUnit.ContainsKey(playerNumber) && SelectedUnit[playerNumber]) {
 			UnHighlightAll();
 		}
-		
-		SelectedUnit[playerNumber] = (GameBoard.Units.Find(c => (c.PlayerNumber == playerNumber) && 
-			((c as MelodyUnit).ColorButton == color)) as MelodyUnit);
+
+		MelodyUnit selection = (GameBoard.Units.Find(c => (c.PlayerNumber == playerNumber) && ((c as MelodyUnit).ColorButton == color)) as MelodyUnit);
+		if (selection != null)
+			SelectedUnit[playerNumber] = selection;
+		else
+			MessageRouter.RaiseMessage(new RejectActionMessage () {
+				ActionType = UnitActionMessageType.SELECT,
+				PlayerNumber = playerNumber
+			});
 
 		if (SelectedUnit.ContainsKey(playerNumber)) {
 			MarkAttackRange();
@@ -219,10 +225,7 @@ public class UnitManager : MonoBehaviour
 			return;
 			// TODO: Figure out why this is ever null. Ignored for demo purposes only.
 		}
-		float attackPower = m.AttackerHitPercent - m.DefenderHitPercent / 2;
-		if (attackPower > 0) {
-			m.AttackingUnit.DealDamage(m.DefendingUnit, attackPower);
-		}
+		m.AttackingUnit.DealDamage(m.DefendingUnit, m.AttackerHitPercent, m.DefenderHitPercent);
 //		if(m.DefendingUnit.HitPoints <= 0) {
 //
 //		}

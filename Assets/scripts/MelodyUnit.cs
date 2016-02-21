@@ -28,14 +28,13 @@ public class MelodyUnit : Unit {
 			GetComponentInChildren<SpriteRenderer> ().material.EnableKeyword ("INVERT_OFF");
 		}
 
-//        transform.position += new Vector3(0, 0, -1);
-        AttackFactor = 20;
         this.UnMark();
 		MessageRouter = ServiceFactory.Instance.Resolve<MessageRouter>();
 	}
 
-	protected override void Defend(Unit other, int damage) {
-		base.Defend(other, damage);
+	void Defend(Unit other, int damage, float defenseModifier) {
+		MarkAsDefending(other);
+		HitPoints -= Mathf.Clamp(damage - (int)(DefenceFactor * defenseModifier), 1, damage);
 		UpdateHealthBar();
 	}
 
@@ -91,7 +90,7 @@ public class MelodyUnit : Unit {
     {
     }
 
-	public void DealDamage(MelodyUnit other, float damagePercent)
+	public void DealDamage(MelodyUnit other, float attackModifier, float DefenseModifier)
 	{
 		if (isMoving)
 			return;
@@ -100,7 +99,7 @@ public class MelodyUnit : Unit {
 
 		MarkAsAttacking(other);
 		ActionPoints--;
-		other.Defend(this, (int) (AttackFactor * damagePercent));
+		other.Defend(this, (int) (AttackFactor * attackModifier));
 
 		if (ActionPoints == 0)
 		{
