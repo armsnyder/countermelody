@@ -24,7 +24,7 @@ public class CMUnitGenerator : MonoBehaviour, IUnitGenerator
                 {
                     cell.IsTaken = true;
                     unit.Cell = cell;
-                    unit.transform.position = cell.transform.position;
+					unit.transform.position = cell.transform.position;
                     unit.Initialize();
                     ret.Add(unit);
                 }//Unit gets snapped to the nearest cell
