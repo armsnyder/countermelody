@@ -968,6 +968,7 @@ Prefab:
 Prefab:
   m_ObjectHideFlags: 0
   serializedVersion: 2
+<<<<<<< HEAD
   m_Modification:
     m_TransformParent: {fileID: 1308950908}
     m_Modifications:
