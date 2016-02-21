@@ -304,6 +304,10 @@ public class BattleManager : MonoBehaviour {
 			int i = Array.IndexOf(players[player.playerNumber].battleNotes, n);
 			if (i >= 0 && players[player.playerNumber].battleNoteStates[i] != 1) {
 				players[player.playerNumber].battleNoteStates[i] = -1;
+				messageRouter.RaiseMessage (new NoteMissMessage () {
+					PlayerNumber = player.playerNumber,
+					InstrumentID = player.instrumentID
+				});
 			}
 		}
 	}

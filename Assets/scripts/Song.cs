@@ -170,8 +170,7 @@ public class Song : MonoBehaviour {
 			if (m.BeatNumber == 0) {
 				startMusicNextMeasure = false;
 				for (int i = 0; i < instrumentPlayers.Length; i++) {
-					// TODO: when we can detect missed notes, uncomment this line:
-//					instrumentPlayers [i].mute = false;
+					instrumentPlayers [i].mute = false;
 				}
 			}
 		}
