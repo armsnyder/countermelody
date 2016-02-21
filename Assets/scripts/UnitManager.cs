@@ -123,7 +123,7 @@ public class UnitManager : MonoBehaviour
 			recipients = GameBoard.Units.FindAll(c => 
 			(c.PlayerNumber != playerNumber) && 
 			(Math.Abs(SelectedUnit[playerNumber].Cell.OffsetCoord[0] - c.Cell.OffsetCoord[0])) + (Math.Abs(SelectedUnit[playerNumber].Cell.OffsetCoord[1] - c.Cell.OffsetCoord[1])) <= SelectedUnit[playerNumber].AttackRange);
-            int lowestValue = 1000;
+            int lowestValue = int.MaxValue;
             if (recipients.Count > 0) {
             	recipient = recipients[0] as MelodyUnit;
             	lowestValue = recipient.HitPoints;
