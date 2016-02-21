@@ -171,7 +171,7 @@ MonoBehaviour:
   HitPoints: 100
   AttackRange: 1
   AttackFactor: 100
-  DefenceFactor: 1
+  DefenceFactor: 50
   MovementPoints: 8
   MovementSpeed: 10
   ActionPoints: 1
@@ -277,6 +277,10 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: AttackFactor
       value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: DefenceFactor
+      value: 50
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}

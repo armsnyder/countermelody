@@ -35,7 +35,11 @@ public class MelodyUnit : Unit {
 	void Defend(Unit other, int damage, float defenseModifier) {
 		MarkAsDefending(other);
 		HitPoints -= Mathf.Clamp(damage - (int)(DefenceFactor * defenseModifier), 1, damage);
+
 		UpdateHealthBar();
+
+		if (HitPoints < 0)
+			base.OnDestroyed();
 	}
 
 	public void UpdateHealthBar() {
@@ -99,7 +103,7 @@ public class MelodyUnit : Unit {
 
 		MarkAsAttacking(other);
 		ActionPoints--;
-		other.Defend(this, (int) (AttackFactor * attackModifier));
+		other.Defend(this, (int) (AttackFactor * attackModifier), DefenseModifier);
 
 		if (ActionPoints == 0)
 		{
