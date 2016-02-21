@@ -82,17 +82,14 @@ public class Song : MonoBehaviour {
 	private AudioSource[] instrumentPlayers;
 	private Note[] notes;
 	private List<List<List<Note>>> sortedNotes;  // Sorted by instrument, then difficulty, then time
-	private bool startMusicNextMeasure;  // If true, battle is about to begin
 
 	// Use this for initialization
 	void Start () {
 		ServiceFactory.Instance.RegisterSingleton<Song> (this); // Any other class can reference this one
 		MessageRouter = ServiceFactory.Instance.Resolve<MessageRouter> ();
-		MessageRouter.AddHandler<EnterBattleMessage> (OnEnterBattle);
 		MessageRouter.AddHandler<ExitBattleMessage> (OnExitBattle);
 		MessageRouter.AddHandler<NoteHitMessage> (OnNoteHit);
 		MessageRouter.AddHandler<NoteMissMessage> (OnNoteMiss);
-		MessageRouter.AddHandler<BeatCenterMessage> (OnBeatCenterMessage);
 		player = gameObject.AddComponent<AudioSource> ();
 		player.clip = songFile;
 		player.loop = true;
@@ -154,25 +151,9 @@ public class Song : MonoBehaviour {
 		}
 	}
 
-	void OnEnterBattle(EnterBattleMessage m) {
-		startMusicNextMeasure = true;
-	}
-
 	void OnExitBattle(ExitBattleMessage m) {
 		for (int i = 0; i < instrumentPlayers.Length; i++) {
 			instrumentPlayers [i].mute = true;
-		}
-	}
-
-	void OnBeatCenterMessage(BeatCenterMessage m) {
-		if (startMusicNextMeasure) {
-			// If battle about to start and a new measure begins, start playing music
-			if (m.BeatNumber == 0) {
-				startMusicNextMeasure = false;
-				for (int i = 0; i < instrumentPlayers.Length; i++) {
-					instrumentPlayers [i].mute = false;
-				}
-			}
 		}
 	}
 
