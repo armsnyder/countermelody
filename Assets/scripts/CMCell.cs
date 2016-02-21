@@ -4,7 +4,7 @@ using System.Collections;
 public class CMCell : Square {
 
 	void Start() {
-		OffsetCoord = new Vector2 (transform.position.x, transform.position.y);
+		OffsetCoord = new Vector2 (transform.position.x, transform.position.z);
 	}
 
 	public override Vector3 GetCellDimensions()
@@ -14,7 +14,7 @@ public class CMCell : Square {
 
 	public override void MarkAsHighlighted()
 	{
-		GetComponent<Renderer>().material.color = new Color(0.75f, 0.75f, 0.75f); ;
+		GetComponent<Renderer>().material.color = new Color(0.2f, 0.2f, 0.2f); ;
 	}
 
 	public override void MarkAsPath()
@@ -29,7 +29,7 @@ public class CMCell : Square {
 
 	public override void UnMark()
 	{
-		GetComponent<Renderer>().material.color = Color.white;
+		GetComponent<Renderer>().material.color = Color.black;
 	}
 
 	public void SetColor(Color color) {

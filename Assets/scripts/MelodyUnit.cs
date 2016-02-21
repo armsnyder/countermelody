@@ -13,23 +13,23 @@ public class UnitDeathMessage {
 public class MelodyUnit : Unit {
 	public InputButton ColorButton;
 	public Color unitColor;
-    public Color LeadingColor;
-	public GameObject trim;
 	public MessageRouter MessageRouter;
 
     public override void Initialize()
     {
         base.Initialize();
-        transform.position += new Vector3(0, 0, -1);
-        if(PlayerNumber == 0) {
-            LeadingColor = Color.black;
-        }
-        else {
-            LeadingColor = Color.white;
-        }
-        GetComponent<Renderer>().material.color = LeadingColor;
+		// Set Unit Color
+		unitColor.a = 1f; // Override alpha channel
+		GetComponentInChildren<SpriteRenderer> ().material.SetColor("_Color", unitColor);
+		// Invert colors
+		if (PlayerNumber > 0) {
+			GetComponentInChildren<SpriteRenderer> ().material.EnableKeyword ("INVERT_ON");
+		} else {
+			GetComponentInChildren<SpriteRenderer> ().material.EnableKeyword ("INVERT_OFF");
+		}
+
+//        transform.position += new Vector3(0, 0, -1);
         AttackFactor = 20;
-		AddTrim();
         this.UnMark();
 		MessageRouter = ServiceFactory.Instance.Resolve<MessageRouter>();
 	}
@@ -45,16 +45,6 @@ public class MelodyUnit : Unit {
 			GetComponentInChildren<Image>().color = Color.Lerp(Color.red, Color.green,
 				(float)((float)HitPoints / (float)TotalHitPoints));
 		}
-	}
-
-	private void AddTrim() {
-		GameObject Trim = GameObjectUtil.Instantiate(trim);
-		Trim.transform.parent = transform;
-		Trim.transform.localPosition = new Vector3(0, 0, 0);
-		foreach (Renderer i in Trim.GetComponentsInChildren<Renderer>()) {
-			i.material.color = unitColor;
-		}
-		MovementPoints = int.MaxValue;
 	}
 
     public int GetActionPoints() {
@@ -91,17 +81,14 @@ public class MelodyUnit : Unit {
     public override void MarkAsReachableEnemy()
     {
 		//TODO: Do something other than color to mark as reachable
-        GetComponent<Renderer>().material.color =  Color.red ;
     }
 
     public override void MarkAsSelected()
     {
-        GetComponent<Renderer>().material.color = LeadingColor + Color.green;
     }
 
     public override void UnMark()
     {
-        GetComponent<Renderer>().material.color = LeadingColor;
     }
 
 	public void DealDamage(MelodyUnit other, float damagePercent)
@@ -120,5 +107,25 @@ public class MelodyUnit : Unit {
 			SetState(new UnitStateMarkedAsFinished(this));
 			MovementPoints = 0;
 		}  
+	}
+
+	protected override IEnumerator MovementAnimation(List<Cell> path)
+	{
+		isMoving = true;
+
+		path.Reverse();
+		foreach (var cell in path)
+		{
+			while (new Vector2(transform.position.x,transform.position.z) != 
+				new Vector2(cell.transform.position.x,cell.transform.position.z))
+			{
+				transform.position = Vector3.MoveTowards(transform.position, 
+					new Vector3(cell.transform.position.x, transform.position.y, cell.transform.position.z),
+					Time.deltaTime * MovementSpeed);
+				yield return 0;
+			}
+		}
+
+		isMoving = false;
 	}
 }
