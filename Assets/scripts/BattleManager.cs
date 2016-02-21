@@ -86,6 +86,7 @@ public class BattleManager : MonoBehaviour {
 		messageRouter.AddHandler<EnterBattleMessage> (OnStartBattle);
 		messageRouter.AddHandler<ButtonDownMessage> (OnButtonDown);
 		messageRouter.AddHandler<BeatCenterMessage> (OnBeatCenter);
+		messageRouter.AddHandler<ExitBeatWindowMessage> (OnExitBeatWindow);
 		messageRouter.AddHandler<BattleDifficultyChangeMessage> (OnBattleDifficultyChange);
 		targetLine = GameObject.Find ("Temp Battle Target Line").GetComponent<MeshRenderer> ();
 		targetLine.enabled = false;
@@ -199,11 +200,14 @@ public class BattleManager : MonoBehaviour {
 		}
 	}
 
-	void OnBeatCenter(BeatCenterMessage m) {
-		// After the final beat of a battle sequence is played, trigger EndBattle
-		if (isInBattle && m.BeatNumber == 0) {
+	void OnExitBeatWindow(ExitBeatWindowMessage m) {
+		if (isInBattle && m.BeatNumber == m.BeatsPerMeasure - 1) {
 			battleProgressInMeasures++;
 		}
+	}
+
+	void OnBeatCenter(BeatCenterMessage m) {
+		// After the final beat of a battle sequence is played, trigger EndBattle
 		if (isInBattle && m.BeatNumber == m.BeatsPerMeasure - 1 && battleProgressInMeasures == battleMeasures) {
 			// Delay by half beat to allow any final sixteenth notes to be played
 			StartCoroutine(EndBattleCoroutine(60f / m.BeatsPerMinute));
@@ -300,6 +304,10 @@ public class BattleManager : MonoBehaviour {
 			int i = Array.IndexOf(players[player.playerNumber].battleNotes, n);
 			if (i >= 0 && players[player.playerNumber].battleNoteStates[i] != 1) {
 				players[player.playerNumber].battleNoteStates[i] = -1;
+				messageRouter.RaiseMessage (new NoteMissMessage () {
+					PlayerNumber = player.playerNumber,
+					InstrumentID = player.instrumentID
+				});
 			}
 		}
 	}

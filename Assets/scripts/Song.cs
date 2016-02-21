@@ -170,8 +170,7 @@ public class Song : MonoBehaviour {
 			if (m.BeatNumber == 0) {
 				startMusicNextMeasure = false;
 				for (int i = 0; i < instrumentPlayers.Length; i++) {
-					// TODO: when we can detect missed notes, uncomment this line:
-//					instrumentPlayers [i].mute = false;
+					instrumentPlayers [i].mute = false;
 				}
 			}
 		}
@@ -387,7 +386,7 @@ public class Song : MonoBehaviour {
 	/// <param name="instrumentID">Instrument</param>
 	/// <param name="difficulty">Difficulty (0-2)</param>
 	public Note[] GetNextBattleNotes(int numberOfMeasures, int instrumentID, int difficulty) {
-		int startMeasure = (int) Math.Ceiling (player.time / 60f * bpm / beatsPerMeasure);
+		int startMeasure = (int)Math.Round (player.time / 60f * bpm) / beatsPerMeasure + 1;
 		int endMeasure = startMeasure + numberOfMeasures;
 		return GetNotes (instrumentID, difficulty, startMeasure * beatsPerMeasure, endMeasure * beatsPerMeasure);
 	}
