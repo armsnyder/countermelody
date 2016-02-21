@@ -117,13 +117,23 @@ public class UnitManager : MonoBehaviour
 
 
 	void Attack(InputButton color, int playerNumber) {
-		MelodyUnit recipient;
+		MelodyUnit recipient = null;
+		List<Unit> recipients;
 		if (color == InputButton.NONE) {
-			recipient = GameBoard.Units.Find(c => 
+			recipients = GameBoard.Units.FindAll(c => 
 			(c.PlayerNumber != playerNumber) && 
-			(Math.Abs(SelectedUnit[playerNumber].Cell.OffsetCoord[0] - c.Cell.OffsetCoord[0])) + (Math.Abs(SelectedUnit[playerNumber].Cell.OffsetCoord[1] - c.Cell.OffsetCoord[1])) <= SelectedUnit[playerNumber].AttackRange) 
-			as MelodyUnit;
-			Debug.Log(recipient);
+			(Math.Abs(SelectedUnit[playerNumber].Cell.OffsetCoord[0] - c.Cell.OffsetCoord[0])) + (Math.Abs(SelectedUnit[playerNumber].Cell.OffsetCoord[1] - c.Cell.OffsetCoord[1])) <= SelectedUnit[playerNumber].AttackRange);
+            int lowestValue = 1000;
+            if (recipients.Count > 0) {
+            	recipient = recipients[0] as MelodyUnit;
+            	lowestValue = recipient.HitPoints;
+            }
+            foreach(Unit r in recipients) {
+            	if (r.HitPoints < lowestValue) {
+            		recipient = r as MelodyUnit;
+            		lowestValue = r.HitPoints;
+            	}
+            }
 			if (recipient) {
 				MessageRouter.RaiseMessage (new EnterBattleMessage () { 
 					AttackingUnit = SelectedUnit [playerNumber],
