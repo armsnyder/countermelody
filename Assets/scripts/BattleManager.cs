@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Frictionless;
 using System.Linq;
+using System;
 
 /// <summary>
 /// Sent when a player hits a note
@@ -56,6 +57,7 @@ public class BattleManager : MonoBehaviour {
 		public Note[] battleNotes { get; set; }
 		public int[] battleNoteStates { get; set; }
 		public MelodyUnit unit {get; set;}
+		public int playerNumber { get; set; }
 	}
 
 	private Dictionary<int, PlayerBattleData> players;
@@ -124,6 +126,8 @@ public class BattleManager : MonoBehaviour {
 
 	void OnStartBattle(EnterBattleMessage m) {
 
+		Song song = ServiceFactory.Instance.Resolve<Song>();
+
 		float CENTER_MARGIN = Screen.width * 2 / 27f;
 		float UNIT_MARGIN = Screen.width * 3.5f / 27f;
 		float FRET_RANGE = Screen.width / 3f; //TODO: Change based on number of players
@@ -131,12 +135,14 @@ public class BattleManager : MonoBehaviour {
 
 		targetLine.enabled = true;
 		divider.GetComponent<MeshRenderer>().enabled = true;
-		Song song = ServiceFactory.Instance.Resolve<Song>();
 		Debug.Assert (players.ContainsKey (m.AttackingUnit.PlayerNumber));
 		Debug.Assert (players.ContainsKey (m.DefendingUnit.PlayerNumber));
 		// Prepare battle data per player
 		attacker = players [m.AttackingUnit.PlayerNumber];
 		defender = players [m.DefendingUnit.PlayerNumber];
+
+		attacker.playerNumber = m.AttackingUnit.PlayerNumber;
+		defender.playerNumber = m.DefendingUnit.PlayerNumber;
 
 		attacker.unit = m.AttackingUnit;
 		defender.unit = m.DefendingUnit;
@@ -186,6 +192,13 @@ public class BattleManager : MonoBehaviour {
 		battleProgressInMeasures = 0;
 	}
 
+	void Update() {
+		if (isInBattle) {
+			MarkPassedNotes(attacker);
+			MarkPassedNotes(defender);
+		}
+	}
+
 	void OnBeatCenter(BeatCenterMessage m) {
 		// After the final beat of a battle sequence is played, trigger EndBattle
 		if (isInBattle && m.BeatNumber == 0) {
@@ -226,12 +239,12 @@ public class BattleManager : MonoBehaviour {
 		// Check if when the player strums that they actually hit something
 		if (!isInBattle)
 			return;
+
 		switch (m.Button) {
 		case InputButton.STRUM:
 			InputButton[] frets = Interpreter.HeldFrets.ContainsKey (m.PlayerNumber) ? 
 				Interpreter.HeldFrets [m.PlayerNumber].ToArray () : new InputButton[]{ };
-			Note[] hitNotes = ServiceFactory.Instance.Resolve<Song> ()
-				.GetHitNotes (players [m.PlayerNumber].instrumentID, players [m.PlayerNumber].difficulty, frets);
+			Note[] hitNotes = ServiceFactory.Instance.Resolve<Song>().GetHitNotes (players [m.PlayerNumber].instrumentID, players [m.PlayerNumber].difficulty, frets);
 			// TODO: Add support for HOPOs
 			bool noteWasHit = false;
 			// Go through the possible notes that the player could have been trying to hit
@@ -278,5 +291,16 @@ public class BattleManager : MonoBehaviour {
 			players.Add (m.PlayerNumber, new PlayerBattleData ());
 		}
 		players [m.PlayerNumber].difficulty = m.Difficulty;
+	}
+
+	void MarkPassedNotes(PlayerBattleData player) {
+		Note[] passedNotes = ServiceFactory.Instance.Resolve<Song>().GetPassedNotes(player.instrumentID, player.difficulty, Time.deltaTime);
+
+		foreach (Note n in passedNotes) {
+			int i = Array.IndexOf(players[player.playerNumber].battleNotes, n);
+			if (i >= 0 && players[player.playerNumber].battleNoteStates[i] != 1) {
+				players[player.playerNumber].battleNoteStates[i] = -1;
+			}
+		}
 	}
 }

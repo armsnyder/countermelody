@@ -244,9 +244,27 @@ public class Song : MonoBehaviour {
 		}
 		return ret.ToArray ();
 	}
+	/// <summary>
+	///  Gets all notes that have passed out of their battlewindow between the currentTime and WindowSize before the current time.
+	/// </summary>
+	/// <param name="instrumentID">Instrument ID.</param>
+	/// <param name="difficulty">Difficulty.</param>
+	/// <param name="WindowSize">Size of window to check for missed notes. Gets all notes that have been passed since WindowSize before the current time. Defaults to the time since the last frame</param>
+	/// <returns></returns>
+	public Note[] GetPassedNotes(int instrumentID, int difficulty, float WindowSize = float.NaN) {
+		if (WindowSize == float.NaN)
+			WindowSize = Time.deltaTime;
+
+		float now = player.time;
+		float startTime = player.time + (battleWindow / 2f / bpm * 60f);
+		float endTime = startTime + WindowSize;
+		Note[] passedNotes = GetNotes(instrumentID, difficulty, startTime, endTime);
+		return passedNotes;
+	}
 
 	/// <summary>
-	/// Gets a list of notes for a particular part that fall between two timecodes in the song
+	/// Gets a list of notes for a particular part that fall between two timecodes in the 
+	/// 
 	/// </summary>
 	/// <returns>The notes.</returns>
 	/// <param name="instrumentID">Instrument</param>
