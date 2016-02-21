@@ -170,8 +170,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HitPoints: 100
   AttackRange: 1
-  AttackFactor: 10
-  DefenceFactor: 1
+  AttackFactor: 100
+  DefenceFactor: 50
   MovementPoints: 8
   MovementSpeed: 10
   ActionPoints: 1
@@ -273,7 +273,15 @@ Prefab:
   serializedVersion: 2
   m_Modification:
     m_TransformParent: {fileID: 0}
-    m_Modifications: []
+    m_Modifications:
+    - target: {fileID: 0}
+      propertyPath: AttackFactor
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: DefenceFactor
+      value: 50
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 156394}
