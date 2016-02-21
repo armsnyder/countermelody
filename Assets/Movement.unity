@@ -1492,7 +1492,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CellsParent: {fileID: 1548027806}
   cellPrefab: {fileID: 146396, guid: 75df03163c5214b93b24487afe8e7f02, type: 2}
-  gridSize: {x: 12, y: 12}
+  gridSize: {x: 10, y: 10}
   gaps:
   - {x: 6, y: 4}
   - {x: 5, y: 4}
@@ -1605,9 +1605,9 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1855340375}
-  m_LocalRotation: {x: 0.18446602, y: 0, z: 0, w: 0.9828389}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -2, z: 5}
-  m_LocalScale: {x: 8, y: 0.1, z: 1}
+  m_LocalScale: {x: 25, y: 0.1, z: 0.01}
   m_Children: []
   m_Father: {fileID: 1983920732}
   m_RootOrder: 0
