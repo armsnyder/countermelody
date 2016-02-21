@@ -67,6 +67,8 @@ public class BattleManager : MonoBehaviour {
 	private PlayerBattleData defender;
 	private int battleProgressInMeasures; // Number of measures into the battle
 	private MeshRenderer targetLine; // Renderer for note targets. Currently a temporary black line.
+	private MelodyUnit attacker_unit;
+	private MelodyUnit defender_unit;
 	private GameObject divider; // Divider between player's notes
 
 	public int battleMeasures = 1;
@@ -90,6 +92,8 @@ public class BattleManager : MonoBehaviour {
 		targetLine = GameObject.Find ("Temp Battle Target Line").GetComponent<MeshRenderer> ();
 		targetLine.enabled = false;
 		targetLine.transform.localPosition = new Vector3(0, -2, SPAWN_DEPTH);
+		attacker_unit = GameObject.Find ("Attacker").GetComponent<MelodyUnit> ();
+		defender_unit = GameObject.Find ("Defender").GetComponent<MelodyUnit> ();
 
 		//Add the divider
 		divider = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -132,6 +136,14 @@ public class BattleManager : MonoBehaviour {
 		float UNIT_MARGIN = Screen.width * 3.5f / 27f;
 		float FRET_RANGE = Screen.width / 3f; //TODO: Change based on number of players
 		float SPAWN_HEIGHT = Screen.height;
+		//attacker_unit = m.AttackingUnit;
+		//defender_unit = m.DefendingUnit;
+		attacker_unit.enabled = true;
+		defender_unit.enabled = true;		
+		attacker_unit.transform.localPosition = new Vector3(-6, -6, SPAWN_DEPTH);
+		defender_unit.transform.localPosition = new Vector3(6, -6, SPAWN_DEPTH);
+		attacker_unit.transform.localScale = Vector3.Lerp(attacker_unit.transform.localScale, new Vector3(80,80,80), Time.deltaTime*1.0f);
+		defender_unit.transform.localScale = Vector3.Lerp(defender_unit.transform.localScale, new Vector3(80,80,80), Time.deltaTime*1.0f);
 
 		targetLine.enabled = true;
 		divider.GetComponent<MeshRenderer>().enabled = true;
@@ -215,6 +227,10 @@ public class BattleManager : MonoBehaviour {
 		// TODO: Figure out if we can penalize spamming strum to hit every note
 		yield return new WaitForSeconds(delay);
 		targetLine.enabled = false;
+		attacker_unit.enabled = false;
+		defender_unit.enabled = false;
+		attacker_unit.transform.localPosition = new Vector3(-1000, -2, SPAWN_DEPTH);
+		defender_unit.transform.localPosition = new Vector3(-1000, -2, SPAWN_DEPTH);
 		divider.GetComponent<MeshRenderer>().enabled = false;
 		isInBattle = false;
 		int attackerHitCount = 0;
@@ -243,10 +259,10 @@ public class BattleManager : MonoBehaviour {
 		switch (m.Button) {
 		case InputButton.STRUM:
 			InputButton[] frets = Interpreter.HeldFrets.ContainsKey (m.PlayerNumber) ? 
-				Interpreter.HeldFrets [m.PlayerNumber].ToArray () : new InputButton[]{ };
+			Interpreter.HeldFrets [m.PlayerNumber].ToArray () : new InputButton[]{ };
 			Note[] hitNotes = ServiceFactory.Instance.Resolve<Song>().GetHitNotes (players [m.PlayerNumber].instrumentID, players [m.PlayerNumber].difficulty, frets);
 			// TODO: Add support for HOPOs
-			bool noteWasHit = false;
+			bool noteWasHit = true;
 			// Go through the possible notes that the player could have been trying to hit
 			GameObject[] noteObjects = GameObject.FindGameObjectsWithTag("noteObject");
 			foreach (Note n in hitNotes) { // Warning! O(n^2)
