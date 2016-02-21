@@ -206,7 +206,7 @@ public class BattleManager : MonoBehaviour {
 		}
 		if (isInBattle && m.BeatNumber == m.BeatsPerMeasure - 1 && battleProgressInMeasures == battleMeasures) {
 			// Delay by half beat to allow any final sixteenth notes to be played
-			StartCoroutine(EndBattleCoroutine(60f / m.BeatsPerMinute * 7 / 8));
+			StartCoroutine(EndBattleCoroutine(60f / m.BeatsPerMinute));
 		}
 	}
 

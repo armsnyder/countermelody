@@ -256,8 +256,8 @@ public class Song : MonoBehaviour {
 			WindowSize = Time.deltaTime;
 
 		float now = player.time;
-		float startTime = player.time + (battleWindow / 2f / bpm * 60f);
-		float endTime = startTime + WindowSize;
+		float endTime = player.time - (battleWindow / 2f / bpm * 60f);
+		float startTime = endTime - WindowSize;
 		Note[] passedNotes = GetNotes(instrumentID, difficulty, startTime, endTime);
 		return passedNotes;
 	}
