@@ -38,7 +38,11 @@ public class UnitManager : MonoBehaviour
 			SelectedUnit[i] = GameBoard.Units.Find(c => 
 			c.PlayerNumber == i && ((c as MelodyUnit).ColorButton == InputButton.GREEN)) as MelodyUnit;
 
+			//focus a spotlight on the selected unit
+			RefocusSpotlight(SelectedUnit[i], i);
+
 			if (i == GameManager.CurrentPlayer) {
+				TurnOnSpotlight(i);
 				MarkAttackRange();
 			}
 		}
@@ -114,6 +118,7 @@ public class UnitManager : MonoBehaviour
 
 		if (SelectedUnit.ContainsKey(playerNumber)) {
 			MarkAttackRange();
+			RefocusSpotlight(SelectedUnit[playerNumber], playerNumber);
 		}
 	}
 
@@ -236,8 +241,14 @@ public class UnitManager : MonoBehaviour
 		foreach (MelodyUnit cur in SelectedUnit.Values) {
 			UnHighlightAll();
 		}
+
+		foreach (int i in SelectedUnit.Keys) {
+			TurnOffSpotlight(i);
+		}
+
 		if (SelectedUnit.ContainsKey (m.PlayerNumber)) {
 			MarkAttackRange();
+			TurnOnSpotlight(m.PlayerNumber);
 		}
 	}
 
@@ -266,5 +277,27 @@ public class UnitManager : MonoBehaviour
 //		if(m.DefendingUnit.HitPoints <= 0) {
 //
 //		}
+	}
+
+	void RefocusSpotlight(MelodyUnit u, int playerNumber) {
+		MessageRouter.RaiseMessage(new SpotlightChangeMessage() {
+			focusedOnUnit = u,
+			type = ChangeType.SWITCH,
+			PlayerNumber = playerNumber
+		});
+	}
+
+	void TurnOnSpotlight(int playerNumber) {
+		MessageRouter.RaiseMessage(new SpotlightChangeMessage() {
+			type = ChangeType.ON,
+			PlayerNumber = playerNumber
+		});
+	}
+
+	void TurnOffSpotlight(int playerNumber) {
+		MessageRouter.RaiseMessage(new SpotlightChangeMessage() {
+			type = ChangeType.OFF,
+			PlayerNumber = playerNumber
+		});
 	}
 }
