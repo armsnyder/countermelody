@@ -3,6 +3,7 @@ using System.Collections;
 using System;
 using Frictionless;
 using System.Collections.Generic;
+using System.Linq;
 
 public class UnitManager : MonoBehaviour
 {
@@ -41,7 +42,43 @@ public class UnitManager : MonoBehaviour
 				MarkAttackRange();
 			}
 		}
+		CreatePartyViews();
 	}
+
+	void CreatePartyViews() {
+		Dictionary <int, List<Unit>> partyLists = new Dictionary<int, List<Unit>>();
+		foreach(int i in SelectedUnit.Keys) {
+			if (!partyLists.ContainsKey(i)) {
+				partyLists.Add(i, new List<Unit>());
+			}
+
+			partyLists[i] = GameBoard.Units.FindAll(c => c.PlayerNumber == i);
+			partyLists[i].Sort((x, y) => (x as MelodyUnit).ColorButton.CompareTo((y as MelodyUnit).ColorButton));
+		}
+
+		List<int> partys = partyLists.Keys.ToList();
+		partys.Sort();
+		float offset = 0;
+		float UNITCAMERAWIDTH = 0.035f; //TODO: make this not a constant
+
+		int maxPartySize = 0;
+		foreach (int i in partyLists.Keys) {
+			maxPartySize = Math.Max(maxPartySize, partyLists[i].Count);
+		}
+		float margin= (1 - (UNITCAMERAWIDTH*maxPartySize*partys.Count)) / (partys.Count-1);
+
+
+		foreach (int i in partys) {
+			foreach( Unit u in partyLists[i]) {
+				Camera UnitCamera = u.GetComponentInChildren<Camera>();
+
+				UnitCamera.rect = new Rect(offset, 0, UnitCamera.rect.width, UnitCamera.rect.height);
+				offset += UnitCamera.rect.width;
+			}
+			offset += margin;
+		}
+	}
+
 
     public CMCellGrid getGrid() {
     	return GameBoard;
