@@ -28,10 +28,8 @@ public class MelodyUnit : Unit {
 		} else {
 			GetComponentInChildren<SpriteRenderer> ().material.EnableKeyword ("INVERT_OFF");
 		}
-
+		MessageRouter = ServiceFactory.Instance.Resolve<MessageRouter> ();
         this.UnMark();
-		MessageRouter = ServiceFactory.Instance.Resolve<MessageRouter>();
-		MessageRouter.AddHandler<EnterBeatWindowMessage> (OnEnterBeatWindow);
 	}
 
 	void Defend(Unit other, int damage, float defenseModifier) {
@@ -41,7 +39,7 @@ public class MelodyUnit : Unit {
 		UpdateHealthBar();
 
 		if (HitPoints < 0)
-			base.OnDestroyed();
+			OnDestroyed();
 	}
 
 	public void UpdateHealthBar() {
@@ -136,11 +134,5 @@ public class MelodyUnit : Unit {
 		}
 
 		isMoving = false;
-	}
-
-	void OnEnterBeatWindow(EnterBeatWindowMessage m) {
-		// Animate unit's beat animation on every beat
-		// TODO: Account for different lead-in times for different tempos, probably with a coroutine
-		GetComponentInChildren<Animator> ().SetTrigger ("beat");
 	}
 }
