@@ -59,6 +59,14 @@ public class KeyboardInput : ControllerInput {
 			SendButtonDown (InputButton.STRUM);
 		}
 
+		if (Input.GetKeyDown(KeyCode.Equals)) {
+			SendButtonDown (InputButton.PLUS);
+		}
+
+		if (Input.GetKeyDown (KeyCode.Minus)) {
+			SendButtonDown (InputButton.MINUS);
+		}
+
 		// KeyUps
 
 		if (Input.GetKeyUp(KeyCode.A)) {
@@ -99,6 +107,14 @@ public class KeyboardInput : ControllerInput {
 
 		if (Input.GetKeyUp (KeyCode.Space)) {
 			SendButtonUp (InputButton.STRUM);
+		}
+
+		if (Input.GetKeyUp (KeyCode.Equals)) {
+			SendButtonUp (InputButton.PLUS);
+		}
+
+		if (Input.GetKeyUp (KeyCode.Minus)) {
+			SendButtonUp (InputButton.MINUS);
 		}
 	
 	}

@@ -13,14 +13,15 @@ public class dummyGameManager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		ServiceFactory.Instance.Resolve<MessageRouter> ().AddHandler<SwitchPlayerMessage> (LogCurrentPlayer);
-		ServiceFactory.Instance.Resolve<MessageRouter> ().AddHandler<UnitActionMessage> (LogAttack);
-		ServiceFactory.Instance.Resolve<MessageRouter> ().AddHandler<BeatCenterMessage> (OnEnterBeatWindow);
-		ServiceFactory.Instance.Resolve<MessageRouter> ().AddHandler<SwitchPlayerMessage> (OnSwitchPlayer);
-		ServiceFactory.Instance.Resolve<MessageRouter> ().AddHandler<RejectActionMessage> (OnRejectAction);
-		Metronome = GameObject.CreatePrimitive (PrimitiveType.Cube);
-		Metronome.transform.localScale = new Vector3(1000, 1000, 1);
-		Metronome.transform.position = new Vector3(0, 0, 100);
+//		ServiceFactory.Instance.Resolve<MessageRouter> ().AddHandler<SwitchPlayerMessage> (LogCurrentPlayer);
+//		ServiceFactory.Instance.Resolve<MessageRouter> ().AddHandler<UnitActionMessage> (LogAttack);
+//		ServiceFactory.Instance.Resolve<MessageRouter> ().AddHandler<BeatCenterMessage> (OnEnterBeatWindow);
+//		ServiceFactory.Instance.Resolve<MessageRouter> ().AddHandler<SwitchPlayerMessage> (OnSwitchPlayer);
+//		ServiceFactory.Instance.Resolve<MessageRouter> ().AddHandler<RejectActionMessage> (OnRejectAction);
+//		Metronome = GameObject.CreatePrimitive (PrimitiveType.Cube);
+//		Metronome.transform.localScale = new Vector3(1000, 1000, 1);
+//		Metronome.transform.position = new Vector3(0, 0, 100);
+		ServiceFactory.Instance.Resolve<MessageRouter> ().AddHandler<ButtonDownMessage>(OnButtonDown);
 		if (simulateBattles)
 			StartCoroutine (EnterExitBattlesPeriodically ());
 	}
@@ -72,6 +73,30 @@ public class dummyGameManager : MonoBehaviour {
 			ServiceFactory.Instance.Resolve<MessageRouter> ().RaiseMessage (new EnterBattleMessage ());
 			yield return new WaitForSeconds (2f);
 			ServiceFactory.Instance.Resolve<MessageRouter> ().RaiseMessage (new ExitBattleMessage ());
+		}
+	}
+
+	void OnButtonDown(ButtonDownMessage m) {
+		int deltaDifficulty = 0;
+		switch (m.Button) {
+		case InputButton.PLUS:
+			deltaDifficulty = 1;
+			break;
+		case InputButton.MINUS:
+			deltaDifficulty = -1;
+			break;
+		default:
+			break;
+		}
+		if (deltaDifficulty != 0) {
+			int difficulty = ServiceFactory.Instance.Resolve<BattleManager> ().getPlayerDifficulty (m.PlayerNumber);
+			difficulty += deltaDifficulty;
+			if (difficulty < 0 || difficulty > 2)
+				return;
+			ServiceFactory.Instance.Resolve<MessageRouter> ().RaiseMessage (new BattleDifficultyChangeMessage () {
+				Difficulty = difficulty,
+				PlayerNumber = m.PlayerNumber
+			});
 		}
 	}
 }

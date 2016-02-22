@@ -341,4 +341,8 @@ public class BattleManager : MonoBehaviour {
 			}
 		}
 	}
+
+	public int getPlayerDifficulty(int playerNumber) {
+		return players [playerNumber].difficulty;
+	}
 }
