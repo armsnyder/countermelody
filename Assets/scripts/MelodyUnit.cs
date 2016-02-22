@@ -141,6 +141,9 @@ public class MelodyUnit : Unit {
 	void OnEnterBeatWindow(EnterBeatWindowMessage m) {
 		// Animate unit's beat animation on every beat
 		// TODO: Account for different lead-in times for different tempos, probably with a coroutine
-		GetComponentInChildren<Animator> ().SetTrigger ("beat");
+		// TODO: null check unnecessary if we unregister message handlers, like, ever...
+		Animator a = GetComponentInChildren<Animator> ();
+		if (a != null)
+			a.SetTrigger ("beat");
 	}
 }
