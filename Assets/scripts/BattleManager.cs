@@ -68,6 +68,8 @@ public class BattleManager : MonoBehaviour {
 	private int battleProgressInMeasures; // Number of measures into the battle
 	private MeshRenderer targetLine; // Renderer for note targets. Currently a temporary black line.
 	private GameObject divider; // Divider between player's notes
+	public GameObject targetPrefab; // Single target object
+	private GameObject[] targets;
 
 	public int battleMeasures = 1;
 	public Camera parentCam;
@@ -91,13 +93,26 @@ public class BattleManager : MonoBehaviour {
 		messageRouter.AddHandler<BattleDifficultyChangeMessage> (OnBattleDifficultyChange);
 		targetLine = GameObject.Find ("Temp Battle Target Line").GetComponent<MeshRenderer> ();
 		targetLine.enabled = false;
-		targetLine.transform.localPosition = new Vector3(0, -2, SPAWN_DEPTH);
+		targetLine.transform.localPosition = new Vector3(0, -5, SPAWN_DEPTH);
 
 		//Add the divider
 		divider = GameObject.CreatePrimitive(PrimitiveType.Cube);
-		divider.transform.position = parentCam.ScreenToWorldPoint(new Vector3(Screen.width / 2, 0, SPAWN_DEPTH));
 		divider.transform.localScale = new Vector3(0.1f, 100f, 1f);
+		divider.transform.position = parentCam.ScreenToWorldPoint(new Vector3(Screen.width / 2, 0, SPAWN_DEPTH));
 		divider.GetComponent<MeshRenderer>().enabled = false;
+
+		// Add targets
+		targets = new GameObject[10];
+		for (int i = 0; i < 2; i++) {
+			for (int j = 0; j < 5; j++) {
+				GameObject t = GameObjectUtil.Instantiate (targetPrefab);
+				t.transform.parent = targetLine.transform;
+				Target tc = t.GetComponent<Target> ();
+				tc.player = i;
+				tc.color = (InputButton)j;
+				targets [i * 5 + j] = t;
+			}
+		}
 	}
 
 	/// <summary>
@@ -128,12 +143,23 @@ public class BattleManager : MonoBehaviour {
 
 	void OnStartBattle(EnterBattleMessage m) {
 
-		Song song = ServiceFactory.Instance.Resolve<Song>();
-
+		// Constants
 		float CENTER_MARGIN = Screen.width * 2 / 27f;
 		float UNIT_MARGIN = Screen.width * 3.5f / 27f;
 		float FRET_RANGE = Screen.width / 3f; //TODO: Change based on number of players
 		float SPAWN_HEIGHT = Screen.height;
+
+		Song song = ServiceFactory.Instance.Resolve<Song>();
+
+		// Reposition targets
+		float targetXPos = UNIT_MARGIN + FRET_RANGE/10;
+		for (int i = 0; i < 2; i++, targetXPos += CENTER_MARGIN) {
+			for (int j = 0; j < 5; j++, targetXPos += FRET_RANGE/5) {
+				GameObject t = targets [i * 5 + j];
+				Vector3 screenPosition = parentCam.ScreenToWorldPoint (new Vector3 (targetXPos, 0, SPAWN_DEPTH));
+				t.transform.position = new Vector3 (screenPosition.x, targetLine.transform.position.y, screenPosition.z);
+			}
+		}
 
 		targetLine.enabled = true;
 		divider.GetComponent<MeshRenderer>().enabled = true;
@@ -161,7 +187,7 @@ public class BattleManager : MonoBehaviour {
 		List<int> OrderedPlayers = players.Keys.ToList();
 		OrderedPlayers.Sort();
 
-		float PlayerXPos = UNIT_MARGIN;
+		float PlayerXPos = UNIT_MARGIN - FRET_RANGE/10;
 
 		float currentMusicTime = song.playerPosition;
 		// Spawn notes:

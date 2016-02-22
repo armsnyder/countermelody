@@ -1802,6 +1802,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c81aec325714a4812abc5f0ad9a184bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  targetPrefab: {fileID: 158550, guid: 09167beee250c49fa87d9d9077b0ed4d, type: 2}
   battleMeasures: 1
   parentCam: {fileID: 1983920731}
   notePrefab: {fileID: 178400, guid: 385797c46f9444bb49d6a6f54da47041, type: 2}
