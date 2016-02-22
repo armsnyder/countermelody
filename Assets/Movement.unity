@@ -417,7 +417,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 1
 --- !u!114 &343741127
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -700,7 +700,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 400002, guid: 180149b1a35449044a27b451e816d2de, type: 2}
       propertyPath: m_RootOrder
-      value: 11
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 19800002, guid: 180149b1a35449044a27b451e816d2de, type: 2}
       propertyPath: lengthInSec
@@ -1804,7 +1804,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   battleMeasures: 1
   parentCam: {fileID: 1983920731}
-  notePrefab: {fileID: 102260, guid: 1c69d35036871f24f9105e0db867d8fe, type: 2}
+  notePrefab: {fileID: 178400, guid: 385797c46f9444bb49d6a6f54da47041, type: 2}
 --- !u!114 &1471062527
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2075,7 +2075,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 400002, guid: 180149b1a35449044a27b451e816d2de, type: 2}
       propertyPath: m_RootOrder
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 19800002, guid: 180149b1a35449044a27b451e816d2de, type: 2}
       propertyPath: lengthInSec
@@ -2350,7 +2350,7 @@ Transform:
   m_Children:
   - {fileID: 1855340376}
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 11
 --- !u!4 &2005490432 stripped
 Transform:
   m_PrefabParentObject: {fileID: 431022, guid: 90013320bf52c479498b1c1c7ec8bf5e, type: 2}
