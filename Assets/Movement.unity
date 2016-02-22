@@ -1805,6 +1805,7 @@ MonoBehaviour:
   battleMeasures: 1
   parentCam: {fileID: 1983920731}
   notePrefab: {fileID: 178400, guid: 385797c46f9444bb49d6a6f54da47041, type: 2}
+  velocityRange: {x: 0.12, y: 0.2}
 --- !u!114 &1471062527
 MonoBehaviour:
   m_ObjectHideFlags: 0

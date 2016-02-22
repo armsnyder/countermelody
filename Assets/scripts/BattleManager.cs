@@ -72,6 +72,7 @@ public class BattleManager : MonoBehaviour {
 	public int battleMeasures = 1;
 	public Camera parentCam;
 	public GameObject notePrefab;
+	public Vector2 velocityRange = new Vector2 (0.12f, 0.2f);
 
 	//Constants
 	private const float SPAWN_DEPTH = 13f;
@@ -165,6 +166,7 @@ public class BattleManager : MonoBehaviour {
 		float currentMusicTime = song.playerPosition;
 		// Spawn notes:
 		foreach (int playerNumber in OrderedPlayers) {
+			float velocity = Math.Abs (velocityRange.x + (velocityRange.y - velocityRange.x) * players [playerNumber].difficulty / 2);
 			foreach (Note note in players[playerNumber].battleNotes) {
 				GameObject spawnedNote = GameObjectUtil.Instantiate(notePrefab);
 				spawnedNote.transform.parent = parentCam.transform;
@@ -174,6 +176,8 @@ public class BattleManager : MonoBehaviour {
 
 				NoteObject NoteObject = spawnedNote.GetComponent<NoteObject> ();
 				NoteObject.SetNoteColor(note);
+
+				NoteObject.velocity = new Vector3 (0, -velocity, 0);
 
 				float heightOffset = (note.getPositionTime(song.bpm) - currentMusicTime);
 				while (heightOffset < 0) {
