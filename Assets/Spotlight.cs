@@ -30,18 +30,18 @@ public class Spotlight : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (focusedOn != null) {
-			transform.LookAt(focusedOn.transform.position);
+			transform.position = new Vector3(focusedOn.transform.position.x, transform.position.y, focusedOn.transform.position.z);
 		}
 	}
 
 	void turnOff() {
-		GetComponent<Light>().spotAngle = 15;
-		GetComponent<Light>().intensity = .5f;
+		GetComponent<Light>().spotAngle = 4;
+		GetComponent<Light>().intensity = 1f;
 	}
 
 	void turnOn() {
-		GetComponent<Light>().spotAngle = 5;
-		GetComponent<Light>().intensity = 8f;
+		GetComponent<Light>().spotAngle = 4;
+		GetComponent<Light>().intensity = 4f;
 	}
 
 	void OnSpotlightChange(SpotlightChangeMessage m) {
@@ -56,7 +56,6 @@ public class Spotlight : MonoBehaviour {
 				case ChangeType.SWITCH:
 					focusedOn = m.focusedOnUnit;
 					GetComponent<Light>().color = focusedOn.unitColor;
-					transform.LookAt(focusedOn.transform.position);
 					break;
 				default:
 					break;
