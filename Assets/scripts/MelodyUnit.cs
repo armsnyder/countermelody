@@ -14,6 +14,7 @@ public class MelodyUnit : Unit {
 	public InputButton ColorButton;
 	public Color unitColor;
 	public MessageRouter MessageRouter;
+	public float hopHeight = 10;
 
     public override void Initialize()
     {
@@ -30,6 +31,7 @@ public class MelodyUnit : Unit {
 
         this.UnMark();
 		MessageRouter = ServiceFactory.Instance.Resolve<MessageRouter>();
+		MessageRouter.AddHandler<EnterBeatWindowMessage> (OnEnterBeatWindow);
 	}
 
 	void Defend(Unit other, int damage, float defenseModifier) {
@@ -119,16 +121,26 @@ public class MelodyUnit : Unit {
 		path.Reverse();
 		foreach (var cell in path)
 		{
-			while (new Vector2(transform.position.x,transform.position.z) != 
-				new Vector2(cell.transform.position.x,cell.transform.position.z))
-			{
-				transform.position = Vector3.MoveTowards(transform.position, 
-					new Vector3(cell.transform.position.x, transform.position.y, cell.transform.position.z),
-					Time.deltaTime * MovementSpeed);
+			Vector3 startPosition = transform.position;
+			float totalDistance = Vector3.Distance (transform.position, cell.transform.position);
+			float moveProgress = 0;
+			while (moveProgress < totalDistance) {
+				moveProgress += Time.deltaTime * MovementSpeed;
+				if (moveProgress > totalDistance)
+					moveProgress = totalDistance;
+				transform.position = Vector3.Lerp (startPosition, cell.transform.position, moveProgress / totalDistance);
+				transform.position += new Vector3 
+					(0f, (float)Math.Sin (Math.PI * (moveProgress / totalDistance)) * hopHeight, 0f);
 				yield return 0;
 			}
 		}
 
 		isMoving = false;
+	}
+
+	void OnEnterBeatWindow(EnterBeatWindowMessage m) {
+		// Animate unit's beat animation on every beat
+		// TODO: Account for different lead-in times for different tempos, probably with a coroutine
+		GetComponentInChildren<Animator> ().SetTrigger ("beat");
 	}
 }
