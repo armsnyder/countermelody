@@ -58,6 +58,7 @@ public class BattleManager : MonoBehaviour {
 		public int[] battleNoteStates { get; set; }
 		public MelodyUnit unit {get; set;}
 		public int playerNumber { get; set; }
+		public bool hitLastNote { get; set; }
 	}
 
 	private Dictionary<int, PlayerBattleData> players;
@@ -88,6 +89,7 @@ public class BattleManager : MonoBehaviour {
 		messageRouter = ServiceFactory.Instance.Resolve<MessageRouter> ();
 		messageRouter.AddHandler<EnterBattleMessage> (OnStartBattle);
 		messageRouter.AddHandler<ButtonDownMessage> (OnButtonDown);
+		messageRouter.AddHandler<ButtonUpMessage> (OnButtonUp);
 		messageRouter.AddHandler<BeatCenterMessage> (OnBeatCenter);
 		messageRouter.AddHandler<ExitBeatWindowMessage> (OnExitBeatWindow);
 		messageRouter.AddHandler<BattleDifficultyChangeMessage> (OnBattleDifficultyChange);
@@ -273,50 +275,111 @@ public class BattleManager : MonoBehaviour {
 		// Check if when the player strums that they actually hit something
 		if (!isInBattle)
 			return;
-
+		int maxFret = int.MinValue;
 		switch (m.Button) {
 		case InputButton.STRUM:
+			tryHitNote (true, m.PlayerNumber);
+			break;
+		case InputButton.GREEN:
+			maxFret = 0;
+			break;
+		case InputButton.RED:
+			maxFret = 1;
+			break;
+		case InputButton.YELLOW:
+			maxFret = 2;
+			break;
+		case InputButton.BLUE:
+			maxFret = 3;
+			break;
+		case InputButton.ORANGE:
+			maxFret = 4;
+			break;
+		default:
+			break;
+		}
+		if (maxFret >= 0 && players [m.PlayerNumber].hitLastNote) {
 			InputButton[] frets = Interpreter.HeldFrets.ContainsKey (m.PlayerNumber) ? 
 				Interpreter.HeldFrets [m.PlayerNumber].ToArray () : new InputButton[]{ };
-			Note[] hitNotes = ServiceFactory.Instance.Resolve<Song>().GetHitNotes (players [m.PlayerNumber].instrumentID, players [m.PlayerNumber].difficulty, frets);
-			// TODO: Add support for HOPOs
-			bool noteWasHit = false;
-			// Go through the possible notes that the player could have been trying to hit
-			GameObject[] noteObjects = GameObject.FindGameObjectsWithTag("noteObject");
-			foreach (Note n in hitNotes) { // Warning! O(n^2)
-				for (int i = 0; i < players [m.PlayerNumber].battleNotes.Length; i++) {
-					if (n.Equals (players [m.PlayerNumber].battleNotes [i])) {
-						if (players [m.PlayerNumber].battleNoteStates [i] == 0) {
-							players [m.PlayerNumber].battleNoteStates [i] = 1;
-							noteWasHit = true;
-							messageRouter.RaiseMessage (new NoteHitMessage () {
-								PlayerNumber = m.PlayerNumber,
-								InstrumentID = players [m.PlayerNumber].instrumentID
-							});
-							break;
-						}
-					}
-				}
-				if (noteWasHit) {
-					// TODO: Make this less computationally expensive. Bad search.
-					foreach (GameObject no in noteObjects) {
-						NoteObject noc = no.GetComponent<NoteObject> ();
-						if (noc.NoteData.Equals(n)) {
-							GameObjectUtil.Destroy (no);
-						}
-					}
-					break;
+			foreach (InputButton b in frets) {
+				if ((int)b > maxFret) {
+					return;
 				}
 			}
-			if (!noteWasHit) {
-				messageRouter.RaiseMessage (new NoteMissMessage () {
-					PlayerNumber = m.PlayerNumber,
-					InstrumentID = players [m.PlayerNumber].instrumentID
-				});
+			tryHitNote (false, m.PlayerNumber, maxFret);
+		}
+	}
+
+	void OnButtonUp(ButtonUpMessage m) {
+		// Check if when the player strums that they actually hit something
+		if (!isInBattle)
+			return;
+		if (!players [m.PlayerNumber].hitLastNote)
+			return;
+		switch (m.Button) {
+		case InputButton.GREEN:
+		case InputButton.RED:
+		case InputButton.YELLOW:
+		case InputButton.BLUE:
+		case InputButton.ORANGE:
+			int maxFret = int.MinValue;
+			InputButton[] frets = Interpreter.HeldFrets.ContainsKey (m.PlayerNumber) ? 
+				Interpreter.HeldFrets [m.PlayerNumber].ToArray () : new InputButton[]{ };
+			foreach (InputButton b in frets) {
+				if (b != m.Button && (int)b > maxFret) {
+					maxFret = (int)b;
+				}
+			}
+			if (maxFret >= 0) {
+				tryHitNote (false, m.PlayerNumber, maxFret);
 			}
 			break;
 		default:
 			break;
+		}
+	}
+
+	void tryHitNote(bool isStrum, int playerNumber, int hopoValue = -1) {
+		InputButton[] frets = !isStrum ? new InputButton[]{ (InputButton)hopoValue } : Interpreter.HeldFrets.ContainsKey (playerNumber) ? 
+			Interpreter.HeldFrets [playerNumber].ToArray () : new InputButton[]{ };
+		Note[] hitNotes = ServiceFactory.Instance.Resolve<Song>().GetHitNotes (players [playerNumber].instrumentID, players [playerNumber].difficulty, frets);
+		bool noteWasHit = false;
+		// Go through the possible notes that the player could have been trying to hit
+		GameObject[] noteObjects = GameObject.FindGameObjectsWithTag("noteObject");
+		foreach (Note n in hitNotes) { // Warning! O(n^2)
+			for (int i = 0; i < players [playerNumber].battleNotes.Length; i++) {
+				if (n.Equals (players [playerNumber].battleNotes [i])) {
+					if (players [playerNumber].battleNoteStates [i] == 0) {
+						if (!isStrum && !n.isHOPO)
+							continue;
+						players [playerNumber].battleNoteStates [i] = 1;
+						noteWasHit = true;
+						players [playerNumber].hitLastNote = true;
+						messageRouter.RaiseMessage (new NoteHitMessage () {
+							PlayerNumber = playerNumber,
+							InstrumentID = players [playerNumber].instrumentID
+						});
+						break;
+					}
+				}
+			}
+			if (noteWasHit) {
+				// TODO: Make this less computationally expensive. Bad search.
+				foreach (GameObject no in noteObjects) {
+					NoteObject noc = no.GetComponent<NoteObject> ();
+					if (noc.NoteData.Equals(n)) {
+						GameObjectUtil.Destroy (no);
+					}
+				}
+				break;
+			}
+		}
+		if (!noteWasHit && isStrum) {
+			players [playerNumber].hitLastNote = false;
+			messageRouter.RaiseMessage (new NoteMissMessage () {
+				PlayerNumber = playerNumber,
+				InstrumentID = players [playerNumber].instrumentID
+			});
 		}
 	}
 
@@ -331,9 +394,10 @@ public class BattleManager : MonoBehaviour {
 		Note[] passedNotes = ServiceFactory.Instance.Resolve<Song>().GetPassedNotes(player.instrumentID, player.difficulty, Time.deltaTime);
 
 		foreach (Note n in passedNotes) {
-			int i = Array.IndexOf(players[player.playerNumber].battleNotes, n);
-			if (i >= 0 && players[player.playerNumber].battleNoteStates[i] != 1) {
-				players[player.playerNumber].battleNoteStates[i] = -1;
+			int i = Array.IndexOf(player.battleNotes, n);
+			if (i >= 0 && player.battleNoteStates[i] != 1) {
+				player.battleNoteStates[i] = -1;
+				player.hitLastNote = false;
 				messageRouter.RaiseMessage (new NoteMissMessage () {
 					PlayerNumber = player.playerNumber,
 					InstrumentID = player.instrumentID
