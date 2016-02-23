@@ -99,6 +99,7 @@ public class BattleManager : MonoBehaviour {
 
 		//Add the divider
 		divider = GameObject.CreatePrimitive(PrimitiveType.Cube);
+		divider.layer = LayerMask.NameToLayer ("BattleLayer");
 		divider.transform.localScale = new Vector3(0.1f, 100f, 1f);
 		divider.transform.position = parentCam.ScreenToWorldPoint(new Vector3(Screen.width / 2, 0, SPAWN_DEPTH));
 		divider.GetComponent<MeshRenderer>().enabled = false;
