@@ -306,7 +306,9 @@ public class BattleManager : MonoBehaviour {
 					return;
 				}
 			}
-			tryHitNote (false, m.PlayerNumber, maxFret);
+			if (!tryHitNote (false, m.PlayerNumber, maxFret)) {
+				players [m.PlayerNumber].hitLastNote = false;
+			}
 		}
 	}
 
@@ -339,7 +341,7 @@ public class BattleManager : MonoBehaviour {
 		}
 	}
 
-	void tryHitNote(bool isStrum, int playerNumber, int hopoValue = -1) {
+	bool tryHitNote(bool isStrum, int playerNumber, int hopoValue = -1) {
 		InputButton[] frets = !isStrum ? new InputButton[]{ (InputButton)hopoValue } : Interpreter.HeldFrets.ContainsKey (playerNumber) ? 
 			Interpreter.HeldFrets [playerNumber].ToArray () : new InputButton[]{ };
 		Note[] hitNotes = ServiceFactory.Instance.Resolve<Song>().GetHitNotes (players [playerNumber].instrumentID, players [playerNumber].difficulty, frets);
@@ -381,6 +383,7 @@ public class BattleManager : MonoBehaviour {
 				InstrumentID = players [playerNumber].instrumentID
 			});
 		}
+		return noteWasHit;
 	}
 
 	void OnBattleDifficultyChange(BattleDifficultyChangeMessage m) {
