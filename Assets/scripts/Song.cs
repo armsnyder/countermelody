@@ -281,6 +281,8 @@ public class Song : MonoBehaviour {
 			x.CopyTo (ret, 0);
 			y.CopyTo (ret, x.Length);
 			return ret;
+		} else if (startTime > totalSeconds) {
+			return GetNotes (instrumentID, difficulty, startTime - totalSeconds, endTime - totalSeconds);
 		} else {
 			Note[] x = GetNotes (instrumentID, difficulty, startTime, totalSeconds);
 			Note[] y = GetNotes (instrumentID, difficulty, 0, endTime - totalSeconds);
@@ -329,6 +331,8 @@ public class Song : MonoBehaviour {
 			x.CopyTo (ret, 0);
 			y.CopyTo (ret, x.Length);
 			return ret;
+		} else if (startBeat > totalBeats) {
+			return GetNotes (instrumentID, difficulty, startBeat - totalBeats, endBeat - totalBeats);
 		} else {
 			Note[] x = GetNotes (instrumentID, difficulty, startBeat, totalBeats);
 			Note[] y = GetNotes (instrumentID, difficulty, 0, endBeat - totalBeats);
