@@ -68,8 +68,8 @@ public class BattleManager : MonoBehaviour {
 	private PlayerBattleData defender;
 	private int battleProgressInMeasures; // Number of measures into the battle
 	private MeshRenderer targetLine; // Renderer for note targets. Currently a temporary black line.
-	private MelodyUnit attacker_unit;
-	private MelodyUnit defender_unit;
+	private GameObject attacker_unit;
+	private GameObject defender_unit;
 	private GameObject divider; // Divider between player's notes
 
 	public int battleMeasures = 1;
@@ -95,8 +95,8 @@ public class BattleManager : MonoBehaviour {
 		targetLine = GameObject.Find ("Temp Battle Target Line").GetComponent<MeshRenderer> ();
 		targetLine.enabled = false;
 		targetLine.transform.localPosition = new Vector3(0, -2, SPAWN_DEPTH);
-		attacker_unit = GameObject.Find ("Attacker").GetComponent<MelodyUnit> ();
-		defender_unit = GameObject.Find ("Defender").GetComponent<MelodyUnit> ();
+		attacker_unit = GameObject.Find ("Attacker");
+		defender_unit = GameObject.Find ("Defender");
 
 		//Add the divider
 		divider = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -130,7 +130,6 @@ public class BattleManager : MonoBehaviour {
 
 	}
 
-
 	void OnStartBattle(EnterBattleMessage m) {
 
 		Song song = ServiceFactory.Instance.Resolve<Song>();
@@ -139,14 +138,12 @@ public class BattleManager : MonoBehaviour {
 		float UNIT_MARGIN = Screen.width * 3.5f / 27f;
 		float FRET_RANGE = Screen.width / 3f; //TODO: Change based on number of players
 		float SPAWN_HEIGHT = Screen.height;
-		//attacker_unit = m.AttackingUnit;
-		//defender_unit = m.DefendingUnit;
-		attacker_unit.enabled = true;
-		defender_unit.enabled = true;		
+		SpriteRenderer attack_renderer = attacker_unit.AddComponent<SpriteRenderer>();
+		attack_renderer.sprite = m.AttackingUnit.GetComponentInChildren<SpriteRenderer>().sprite;;
+		SpriteRenderer defender_renderer = defender_unit.AddComponent<SpriteRenderer>();
+		defender_renderer.sprite = m.DefendingUnit.GetComponentInChildren<SpriteRenderer>().sprite;	
 		attacker_unit.transform.localPosition = new Vector3(-6, -6, SPAWN_DEPTH);
 		defender_unit.transform.localPosition = new Vector3(6, -6, SPAWN_DEPTH);
-		//attacker_unit.transform.localScale = Vector3.Lerp(attacker_unit.transform.localScale, new Vector3(80,80,80), Time.deltaTime*1.0f);
-		//defender_unit.transform.localScale = Vector3.Lerp(defender_unit.transform.localScale, new Vector3(80,80,80), Time.deltaTime*1.0f);
 		attacker_unit.transform.localScale += new Vector3(3F, 3F, .5F);
 		defender_unit.transform.localScale += new Vector3(3F, 3F, .5F);
 
@@ -237,9 +234,9 @@ public class BattleManager : MonoBehaviour {
 		// Delay by half beat to allow any final eigth notes to be played
 		// TODO: Figure out if we can penalize spamming strum to hit every note
 		yield return new WaitForSeconds(delay);
-		targetLine.enabled = false;
-		attacker_unit.enabled = false;
-		defender_unit.enabled = false;
+		targetLine.enabled = false;	
+		Destroy(attacker_unit.GetComponent<SpriteRenderer>());
+		Destroy(defender_unit.GetComponent<SpriteRenderer>());
 		attacker_unit.transform.localPosition = new Vector3(-1000, -2, SPAWN_DEPTH);
 		defender_unit.transform.localPosition = new Vector3(-1000, -2, SPAWN_DEPTH);		
 		attacker_unit.transform.localScale -= new Vector3(3F, 3F, .5F);
