@@ -97,7 +97,7 @@ public class BattleManager : MonoBehaviour {
 		messageRouter.AddHandler<BattleDifficultyChangeMessage> (OnBattleDifficultyChange);
 		targetLine = GameObject.Find ("Temp Battle Target Line").GetComponent<MeshRenderer> ();
 		targetLine.enabled = false;
-		targetLine.transform.localPosition = new Vector3(0, -5, SPAWN_DEPTH);
+		targetLine.transform.localPosition = new Vector3(0, -4, SPAWN_DEPTH);
 		attacker_unit = GameObject.Find ("Attacker");
 		defender_unit = GameObject.Find ("Defender");
 
