@@ -16,8 +16,10 @@ public class NoteObject : MonoBehaviour {
 			_NoteData.fretNumber == 2 ? Color.yellow :
 			_NoteData.fretNumber == 3 ? Color.blue : 
 			new Color(1, 0.5f, 0, 1);
-
-		GetComponent<Renderer>().material.color = color;
+		gameObject.transform.FindChild ("Color").GetComponent<Renderer> ().material.color = color;
+		Material rimMaterial = note.isHOPO ? gameObject.transform.FindChild ("Cap").GetComponent<Renderer> ().material : 
+			gameObject.transform.FindChild ("Border").GetComponent<Renderer> ().material;
+		gameObject.transform.FindChild ("Rim").GetComponent<Renderer> ().material = rimMaterial;
 	}
 
 	void Update() {

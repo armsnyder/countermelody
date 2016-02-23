@@ -5,7 +5,7 @@ using Frictionless;
 
 public class dummyGameManager : MonoBehaviour {
 
-//	private GameObject Metronome;
+	private GameObject Metronome;
 	private int CurrentPlayer;
 
 	public bool simulateBattles = false;
@@ -18,9 +18,9 @@ public class dummyGameManager : MonoBehaviour {
 		ServiceFactory.Instance.Resolve<MessageRouter> ().AddHandler<BeatCenterMessage> (OnEnterBeatWindow);
 		ServiceFactory.Instance.Resolve<MessageRouter> ().AddHandler<SwitchPlayerMessage> (OnSwitchPlayer);
 		ServiceFactory.Instance.Resolve<MessageRouter> ().AddHandler<RejectActionMessage> (OnRejectAction);
-//		Metronome = GameObject.CreatePrimitive (PrimitiveType.Cube);
-//		Metronome.transform.localScale = new Vector3(1000, 1000, 1);
-//		Metronome.transform.position = new Vector3(0, 0, 100);
+		Metronome = GameObject.CreatePrimitive (PrimitiveType.Cube);
+		Metronome.transform.localScale = new Vector3(1000, 1000, 1);
+		Metronome.transform.position = new Vector3(0, 0, 100);
 		if (simulateBattles)
 			StartCoroutine (EnterExitBattlesPeriodically ());
 	}
@@ -55,7 +55,7 @@ public class dummyGameManager : MonoBehaviour {
 
 	IEnumerator OnExitBeatWindow() {
 		yield return new WaitForSeconds (0.05f);
-//		Metronome.GetComponent<Renderer> ().material.color = CurrentPlayer == 1 ? new Color (0.7f, 0.8f, 0.75f) : new Color (0.1f, 0.1f, 0.1f);
+		Metronome.GetComponent<Renderer> ().material.color = CurrentPlayer == 1 ? new Color (0.7f, 0.8f, 0.75f) : new Color (0.1f, 0.1f, 0.1f);
 	}
 
 	void OnSwitchPlayer(SwitchPlayerMessage m) {

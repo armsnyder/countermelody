@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 3a256ceb7ded44e1f8cfda91133015c2
-timeCreated: 1455944553
+guid: aca8da3abcd9342ed8ad09fa4c9303f1
+timeCreated: 1456100767
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName: {}
@@ -9,9 +9,9 @@ TextureImporter:
     mipMapMode: 0
     enableMipMap: 1
     linearTexture: 0
-    correctGamma: 1
+    correctGamma: 0
     fadeOut: 0
-    borderMipMap: 1
+    borderMipMap: 0
     mipMapFadeDistanceStart: 1
     mipMapFadeDistanceEnd: 3
   bumpmap:
@@ -19,7 +19,7 @@ TextureImporter:
     externalNormalMap: 0
     heightScale: 0.25
     normalMapFilter: 0
-  isReadable: 1
+  isReadable: 0
   grayScaleToAlpha: 0
   generateCubemap: 0
   cubemapConvolution: 0
@@ -29,7 +29,7 @@ TextureImporter:
   textureFormat: -1
   maxTextureSize: 2048
   textureSettings:
-    filterMode: 0
+    filterMode: 1
     aniso: 16
     mipBias: -1
     wrapMode: 1
@@ -51,7 +51,7 @@ TextureImporter:
   spriteSheet:
     sprites: []
     outline: []
-  spritePackingTag: 
+  spritePackingTag: elvis_dance
   userData: 
   assetBundleName: 
   assetBundleVariant: 

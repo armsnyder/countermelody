@@ -3,11 +3,11 @@ using System.Collections;
 using System;
 
 public enum InputButton {
-    GREEN,
-    RED,
-    YELLOW,
-    BLUE,
-    ORANGE,
+    GREEN = 0,
+    RED = 1,
+    YELLOW = 2,
+    BLUE = 3,
+    ORANGE = 4,
 	STRUM,
     WHAMMY,
     PLUS,

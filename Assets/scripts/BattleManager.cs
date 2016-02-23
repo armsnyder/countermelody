@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 using Frictionless;
@@ -77,6 +78,7 @@ public class BattleManager : MonoBehaviour {
 
 	//Constants
 	private const float SPAWN_DEPTH = 13f;
+	public Vector2 velocityRange = new Vector2 (0.12f, 0.2f);
 
 	void Awake() {
 		players = new Dictionary<int, PlayerBattleData> ();
@@ -88,6 +90,7 @@ public class BattleManager : MonoBehaviour {
 		messageRouter.AddHandler<EnterBattleMessage> (OnStartBattle);
 		messageRouter.AddHandler<ButtonDownMessage> (OnButtonDown);
 		messageRouter.AddHandler<BeatCenterMessage> (OnBeatCenter);
+		messageRouter.AddHandler<ExitBeatWindowMessage> (OnExitBeatWindow);
 		messageRouter.AddHandler<BattleDifficultyChangeMessage> (OnBattleDifficultyChange);
 		targetLine = GameObject.Find ("Temp Battle Target Line").GetComponent<MeshRenderer> ();
 		targetLine.enabled = false;
@@ -142,8 +145,10 @@ public class BattleManager : MonoBehaviour {
 		defender_unit.enabled = true;		
 		attacker_unit.transform.localPosition = new Vector3(-6, -6, SPAWN_DEPTH);
 		defender_unit.transform.localPosition = new Vector3(6, -6, SPAWN_DEPTH);
-		attacker_unit.transform.localScale = Vector3.Lerp(attacker_unit.transform.localScale, new Vector3(80,80,80), Time.deltaTime*1.0f);
-		defender_unit.transform.localScale = Vector3.Lerp(defender_unit.transform.localScale, new Vector3(80,80,80), Time.deltaTime*1.0f);
+		//attacker_unit.transform.localScale = Vector3.Lerp(attacker_unit.transform.localScale, new Vector3(80,80,80), Time.deltaTime*1.0f);
+		//defender_unit.transform.localScale = Vector3.Lerp(defender_unit.transform.localScale, new Vector3(80,80,80), Time.deltaTime*1.0f);
+		attacker_unit.transform.localScale += new Vector3(3F, 3F, .5F);
+		defender_unit.transform.localScale += new Vector3(3F, 3F, .5F);
 
 		targetLine.enabled = true;
 		divider.GetComponent<MeshRenderer>().enabled = true;
@@ -176,6 +181,7 @@ public class BattleManager : MonoBehaviour {
 		float currentMusicTime = song.playerPosition;
 		// Spawn notes:
 		foreach (int playerNumber in OrderedPlayers) {
+			float velocity = Math.Abs (velocityRange.x + (velocityRange.y - velocityRange.x) * players [playerNumber].difficulty / 2);
 			foreach (Note note in players[playerNumber].battleNotes) {
 				GameObject spawnedNote = GameObjectUtil.Instantiate(notePrefab);
 				spawnedNote.transform.parent = parentCam.transform;
@@ -185,6 +191,8 @@ public class BattleManager : MonoBehaviour {
 
 				NoteObject NoteObject = spawnedNote.GetComponent<NoteObject> ();
 				NoteObject.SetNoteColor(note);
+
+				NoteObject.velocity = new Vector3 (0, -velocity, 0);
 
 				float heightOffset = (note.getPositionTime(song.bpm) - currentMusicTime);
 				while (heightOffset < 0) {
@@ -211,14 +219,17 @@ public class BattleManager : MonoBehaviour {
 		}
 	}
 
-	void OnBeatCenter(BeatCenterMessage m) {
-		// After the final beat of a battle sequence is played, trigger EndBattle
-		if (isInBattle && m.BeatNumber == 0) {
+	void OnExitBeatWindow(ExitBeatWindowMessage m) {
+		if (isInBattle && m.BeatNumber == m.BeatsPerMeasure - 1) {
 			battleProgressInMeasures++;
 		}
+	}
+
+	void OnBeatCenter(BeatCenterMessage m) {
+		// After the final beat of a battle sequence is played, trigger EndBattle
 		if (isInBattle && m.BeatNumber == m.BeatsPerMeasure - 1 && battleProgressInMeasures == battleMeasures) {
 			// Delay by half beat to allow any final sixteenth notes to be played
-			StartCoroutine(EndBattleCoroutine(60f / m.BeatsPerMinute * 7 / 8));
+			StartCoroutine(EndBattleCoroutine(60f / m.BeatsPerMinute));
 		}
 	}
 
@@ -230,7 +241,9 @@ public class BattleManager : MonoBehaviour {
 		attacker_unit.enabled = false;
 		defender_unit.enabled = false;
 		attacker_unit.transform.localPosition = new Vector3(-1000, -2, SPAWN_DEPTH);
-		defender_unit.transform.localPosition = new Vector3(-1000, -2, SPAWN_DEPTH);
+		defender_unit.transform.localPosition = new Vector3(-1000, -2, SPAWN_DEPTH);		
+		attacker_unit.transform.localScale -= new Vector3(3F, 3F, .5F);
+		defender_unit.transform.localScale -= new Vector3(3F, 3F, .5F);
 		divider.GetComponent<MeshRenderer>().enabled = false;
 		isInBattle = false;
 		int attackerHitCount = 0;
@@ -316,6 +329,10 @@ public class BattleManager : MonoBehaviour {
 			int i = Array.IndexOf(players[player.playerNumber].battleNotes, n);
 			if (i >= 0 && players[player.playerNumber].battleNoteStates[i] != 1) {
 				players[player.playerNumber].battleNoteStates[i] = -1;
+				messageRouter.RaiseMessage (new NoteMissMessage () {
+					PlayerNumber = player.playerNumber,
+					InstrumentID = player.instrumentID
+				});
 			}
 		}
 	}

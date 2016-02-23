@@ -82,17 +82,14 @@ public class Song : MonoBehaviour {
 	private AudioSource[] instrumentPlayers;
 	private Note[] notes;
 	private List<List<List<Note>>> sortedNotes;  // Sorted by instrument, then difficulty, then time
-	private bool startMusicNextMeasure;  // If true, battle is about to begin
 
 	// Use this for initialization
 	void Start () {
 		ServiceFactory.Instance.RegisterSingleton<Song> (this); // Any other class can reference this one
 		MessageRouter = ServiceFactory.Instance.Resolve<MessageRouter> ();
-		MessageRouter.AddHandler<EnterBattleMessage> (OnEnterBattle);
 		MessageRouter.AddHandler<ExitBattleMessage> (OnExitBattle);
 		MessageRouter.AddHandler<NoteHitMessage> (OnNoteHit);
 		MessageRouter.AddHandler<NoteMissMessage> (OnNoteMiss);
-		MessageRouter.AddHandler<BeatCenterMessage> (OnBeatCenterMessage);
 		player = gameObject.AddComponent<AudioSource> ();
 		player.clip = songFile;
 		player.loop = true;
@@ -154,26 +151,9 @@ public class Song : MonoBehaviour {
 		}
 	}
 
-	void OnEnterBattle(EnterBattleMessage m) {
-		startMusicNextMeasure = true;
-	}
-
 	void OnExitBattle(ExitBattleMessage m) {
 		for (int i = 0; i < instrumentPlayers.Length; i++) {
 			instrumentPlayers [i].mute = true;
-		}
-	}
-
-	void OnBeatCenterMessage(BeatCenterMessage m) {
-		if (startMusicNextMeasure) {
-			// If battle about to start and a new measure begins, start playing music
-			if (m.BeatNumber == 0) {
-				startMusicNextMeasure = false;
-				for (int i = 0; i < instrumentPlayers.Length; i++) {
-					// TODO: when we can detect missed notes, uncomment this line:
-//					instrumentPlayers [i].mute = false;
-				}
-			}
 		}
 	}
 
@@ -256,8 +236,8 @@ public class Song : MonoBehaviour {
 			WindowSize = Time.deltaTime;
 
 		float now = player.time;
-		float startTime = player.time + (battleWindow / 2f / bpm * 60f);
-		float endTime = startTime + WindowSize;
+		float endTime = player.time - (battleWindow / 2f / bpm * 60f);
+		float startTime = endTime - WindowSize;
 		Note[] passedNotes = GetNotes(instrumentID, difficulty, startTime, endTime);
 		return passedNotes;
 	}
@@ -387,7 +367,7 @@ public class Song : MonoBehaviour {
 	/// <param name="instrumentID">Instrument</param>
 	/// <param name="difficulty">Difficulty (0-2)</param>
 	public Note[] GetNextBattleNotes(int numberOfMeasures, int instrumentID, int difficulty) {
-		int startMeasure = (int) Math.Ceiling (player.time / 60f * bpm / beatsPerMeasure);
+		int startMeasure = (int)Math.Round (player.time / 60f * bpm) / beatsPerMeasure + 1;
 		int endMeasure = startMeasure + numberOfMeasures;
 		return GetNotes (instrumentID, difficulty, startMeasure * beatsPerMeasure, endMeasure * beatsPerMeasure);
 	}

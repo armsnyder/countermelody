@@ -5,6 +5,7 @@ using Frictionless;
 public class BoardInterpreter : Interpreter {
 
 	private bool IsAcceptingActions;
+	private const bool SWITCH_UNIT_ON_END_BEAT = false;
 
 	protected override void Start() {
 		base.Start ();
@@ -94,7 +95,8 @@ public class BoardInterpreter : Interpreter {
 	private void OnExitBeatWindow(ExitBeatWindowMessage m) {
 		if (!enabled)
 			return;
-		if (HeldFrets.ContainsKey(CurrentPlayer) && HeldFrets[CurrentPlayer].Count > 0 && IsAcceptingActions) {
+		if (HeldFrets.ContainsKey(CurrentPlayer) && HeldFrets[CurrentPlayer].Count > 0 && IsAcceptingActions 
+			&& SWITCH_UNIT_ON_END_BEAT) {
 			MessageRouter.RaiseMessage(new UnitActionMessage() {
 				ActionType = UnitActionMessageType.SELECT,
 				PlayerNumber = CurrentPlayer,

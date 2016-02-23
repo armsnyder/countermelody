@@ -14,6 +14,7 @@ public class MelodyUnit : Unit {
 	public InputButton ColorButton;
 	public Color unitColor;
 	public MessageRouter MessageRouter;
+	public float hopHeight = 10;
 
     public override void Initialize()
     {
@@ -27,16 +28,27 @@ public class MelodyUnit : Unit {
 		} else {
 			GetComponentInChildren<SpriteRenderer> ().material.EnableKeyword ("INVERT_OFF");
 		}
-
-//        transform.position += new Vector3(0, 0, -1);
-        AttackFactor = 20;
+		MessageRouter = ServiceFactory.Instance.Resolve<MessageRouter> ();
         this.UnMark();
-		MessageRouter = ServiceFactory.Instance.Resolve<MessageRouter>();
 	}
 
-	protected override void Defend(Unit other, int damage) {
-		base.Defend(other, damage);
+	void Defend(Unit other, int damage, float defenseModifier) {
+		MarkAsDefending(other);
+		HitPoints -= Mathf.Clamp(damage - (int)(DefenceFactor * defenseModifier), 1, damage);
+		Text damage_display = GameObject.Find ("Damage").GetComponent<Text> ();
+		damage_display.text = Mathf.Clamp(damage - (int)(DefenceFactor * defenseModifier), 1, damage).ToString();
+		StartCoroutine("DisplayDamage");	
+
 		UpdateHealthBar();
+
+		if (HitPoints < 0)
+			OnDestroyed();
+	}
+
+	private IEnumerator DisplayDamage() {
+		yield return new WaitForSeconds(0.5F);
+		Text damage_display = GameObject.Find ("Damage").GetComponent<Text> ();
+		damage_display.text = "";
 	}
 
 	public void UpdateHealthBar() {
@@ -91,7 +103,7 @@ public class MelodyUnit : Unit {
     {
     }
 
-	public void DealDamage(MelodyUnit other, float damagePercent)
+	public void DealDamage(MelodyUnit other, float attackModifier, float DefenseModifier)
 	{
 		if (isMoving)
 			return;
@@ -100,7 +112,7 @@ public class MelodyUnit : Unit {
 
 		MarkAsAttacking(other);
 		ActionPoints--;
-		other.Defend(this, (int) (AttackFactor * damagePercent));
+		other.Defend(this, (int) (AttackFactor * attackModifier), DefenseModifier);
 
 		if (ActionPoints == 0)
 		{
@@ -116,12 +128,16 @@ public class MelodyUnit : Unit {
 		path.Reverse();
 		foreach (var cell in path)
 		{
-			while (new Vector2(transform.position.x,transform.position.z) != 
-				new Vector2(cell.transform.position.x,cell.transform.position.z))
-			{
-				transform.position = Vector3.MoveTowards(transform.position, 
-					new Vector3(cell.transform.position.x, transform.position.y, cell.transform.position.z),
-					Time.deltaTime * MovementSpeed);
+			Vector3 startPosition = transform.position;
+			float totalDistance = Vector3.Distance (transform.position, cell.transform.position);
+			float moveProgress = 0;
+			while (moveProgress < totalDistance) {
+				moveProgress += Time.deltaTime * MovementSpeed;
+				if (moveProgress > totalDistance)
+					moveProgress = totalDistance;
+				transform.position = Vector3.Lerp (startPosition, cell.transform.position, moveProgress / totalDistance);
+				transform.position += new Vector3 
+					(0f, (float)Math.Sin (Math.PI * (moveProgress / totalDistance)) * hopHeight, 0f);
 				yield return 0;
 			}
 		}

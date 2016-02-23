@@ -3,6 +3,7 @@ using System.Collections;
 using System;
 using Frictionless;
 using System.Collections.Generic;
+using System.Linq;
 
 public class UnitManager : MonoBehaviour
 {
@@ -24,6 +25,7 @@ public class UnitManager : MonoBehaviour
 		MessageRouter.AddHandler<UnitDeathMessage>(OnUnitDeath);
 		MessageRouter.AddHandler<StateChangeMessage>(OnStateChange);
 		MessageRouter.AddHandler<ExitBattleMessage> (OnExitBattle);
+		MessageRouter.AddHandler<EnterBeatWindowMessage> (OnEnterBeatWindow);
 		GameManager = ServiceFactory.Instance.Resolve<GameManager>();
 		StartCoroutine("GetGameBoard");
     }
@@ -37,11 +39,51 @@ public class UnitManager : MonoBehaviour
 			SelectedUnit[i] = GameBoard.Units.Find(c => 
 			c.PlayerNumber == i && ((c as MelodyUnit).ColorButton == InputButton.GREEN)) as MelodyUnit;
 
+			//focus a spotlight on the selected unit
+			RefocusSpotlight(SelectedUnit[i], i);
+
 			if (i == GameManager.CurrentPlayer) {
+				TurnOnSpotlight(i);
 				MarkAttackRange();
 			}
 		}
+		CreatePartyViews();
 	}
+
+	void CreatePartyViews() {
+		Dictionary <int, List<Unit>> partyLists = new Dictionary<int, List<Unit>>();
+		foreach(int i in SelectedUnit.Keys) {
+			if (!partyLists.ContainsKey(i)) {
+				partyLists.Add(i, new List<Unit>());
+			}
+
+			partyLists[i] = GameBoard.Units.FindAll(c => c.PlayerNumber == i);
+			partyLists[i].Sort((x, y) => (x as MelodyUnit).ColorButton.CompareTo((y as MelodyUnit).ColorButton));
+		}
+
+		List<int> partys = partyLists.Keys.ToList();
+		partys.Sort();
+		float offset = 0;
+		float UNITCAMERAWIDTH = 0.035f; //TODO: make this not a constant
+
+		int maxPartySize = 0;
+		foreach (int i in partyLists.Keys) {
+			maxPartySize = Math.Max(maxPartySize, partyLists[i].Count);
+		}
+		float margin= (1 - (UNITCAMERAWIDTH*maxPartySize*partys.Count)) / (partys.Count-1);
+
+
+		foreach (int i in partys) {
+			foreach( Unit u in partyLists[i]) {
+				Camera UnitCamera = u.GetComponentInChildren<Camera>();
+
+				UnitCamera.rect = new Rect(offset, 0, UnitCamera.rect.width, UnitCamera.rect.height);
+				offset += UnitCamera.rect.width;
+			}
+			offset += margin;
+		}
+	}
+
 
     public CMCellGrid getGrid() {
     	return GameBoard;
@@ -65,12 +107,19 @@ public class UnitManager : MonoBehaviour
 		if (SelectedUnit.ContainsKey(playerNumber) && SelectedUnit[playerNumber]) {
 			UnHighlightAll();
 		}
-		
-		SelectedUnit[playerNumber] = (GameBoard.Units.Find(c => (c.PlayerNumber == playerNumber) && 
-			((c as MelodyUnit).ColorButton == color)) as MelodyUnit);
+
+		MelodyUnit selection = (GameBoard.Units.Find(c => (c.PlayerNumber == playerNumber) && ((c as MelodyUnit).ColorButton == color)) as MelodyUnit);
+		if (selection != null)
+			SelectedUnit[playerNumber] = selection;
+		else
+			MessageRouter.RaiseMessage(new RejectActionMessage () {
+				ActionType = UnitActionMessageType.SELECT,
+				PlayerNumber = playerNumber
+			});
 
 		if (SelectedUnit.ContainsKey(playerNumber)) {
 			MarkAttackRange();
+			RefocusSpotlight(SelectedUnit[playerNumber], playerNumber);
 		}
 	}
 
@@ -193,14 +242,21 @@ public class UnitManager : MonoBehaviour
 		foreach (MelodyUnit cur in SelectedUnit.Values) {
 			UnHighlightAll();
 		}
+
+		foreach (int i in SelectedUnit.Keys) {
+			TurnOffSpotlight(i);
+		}
+
 		if (SelectedUnit.ContainsKey (m.PlayerNumber)) {
 			MarkAttackRange();
+			TurnOnSpotlight(m.PlayerNumber);
 		}
 	}
 
 	void OnUnitDeath(UnitDeathMessage m) {
 		UnHighlightAll();
 		SelectedUnit[m.unit.PlayerNumber] = GameBoard.Units.Find(c => c.PlayerNumber == m.unit.PlayerNumber) as MelodyUnit;
+		RefocusSpotlight(SelectedUnit[m.unit.PlayerNumber], m.unit.PlayerNumber);
 	}
 
 	void OnStateChange(StateChangeMessage m) {
@@ -219,12 +275,42 @@ public class UnitManager : MonoBehaviour
 			return;
 			// TODO: Figure out why this is ever null. Ignored for demo purposes only.
 		}
-		float attackPower = m.AttackerHitPercent - m.DefenderHitPercent / 2;
-		if (attackPower > 0) {
-			m.AttackingUnit.DealDamage(m.DefendingUnit, attackPower);
-		}
+		m.AttackingUnit.DealDamage(m.DefendingUnit, m.AttackerHitPercent, m.DefenderHitPercent);
 //		if(m.DefendingUnit.HitPoints <= 0) {
 //
 //		}
+	}
+
+	void RefocusSpotlight(MelodyUnit u, int playerNumber) {
+		MessageRouter.RaiseMessage(new SpotlightChangeMessage() {
+			focusedOnUnit = u,
+			type = ChangeType.SWITCH,
+			PlayerNumber = playerNumber
+		});
+	}
+
+	void TurnOnSpotlight(int playerNumber) {
+		MessageRouter.RaiseMessage(new SpotlightChangeMessage() {
+			type = ChangeType.ON,
+			PlayerNumber = playerNumber
+		});
+	}
+
+	void TurnOffSpotlight(int playerNumber) {
+		MessageRouter.RaiseMessage(new SpotlightChangeMessage() {
+			type = ChangeType.OFF,
+			PlayerNumber = playerNumber
+		});
+	}
+
+	void OnEnterBeatWindow(EnterBeatWindowMessage m) {
+		// Animate unit's beat animation on every beat
+		// TODO: Account for different lead-in times for different tempos, probably with a coroutine
+		foreach (MelodyUnit u in GameBoard.Units) {
+			if (u != null) {
+				// TODO: Why are there null objects in the GameBoard.Units?
+				u.GetComponentInChildren<Animator>().SetTrigger("beat");
+			}
+		}
 	}
 }
