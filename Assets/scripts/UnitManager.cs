@@ -254,6 +254,7 @@ public class UnitManager : MonoBehaviour
 	}
 
 	void OnUnitDeath(UnitDeathMessage m) {
+		GameBoard.Units.Remove (m.unit);
 		UnHighlightAll();
 		SelectedUnit[m.unit.PlayerNumber] = GameBoard.Units.Find(c => c.PlayerNumber == m.unit.PlayerNumber) as MelodyUnit;
 		RefocusSpotlight(SelectedUnit[m.unit.PlayerNumber], m.unit.PlayerNumber);
