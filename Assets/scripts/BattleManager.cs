@@ -158,11 +158,11 @@ public class BattleManager : MonoBehaviour {
 		Song song = ServiceFactory.Instance.Resolve<Song>();
 
 		SpriteRenderer attack_renderer = attacker_unit.AddComponent<SpriteRenderer>();
-		attack_renderer.sprite = m.AttackingUnit.GetComponentInChildren<SpriteRenderer>().sprite;;
+		attack_renderer.sprite = m.AttackingUnit.GetComponentInChildren<SpriteRenderer>().sprite;
+		attack_renderer.flipX = true
 		SpriteRenderer defender_renderer = defender_unit.AddComponent<SpriteRenderer>();
 		defender_renderer.sprite = m.DefendingUnit.GetComponentInChildren<SpriteRenderer>().sprite;	
-		Debug.Log(Screen.width);
-		Debug.Log(Screen.height);
+		defender_renderer.flipX = true;
 		attacker_unit.transform.localPosition = new Vector3(-Screen.width/46, 0, SPAWN_DEPTH);
 		defender_unit.transform.localPosition = new Vector3(Screen.width/46, 0, SPAWN_DEPTH);
 		attacker_unit.transform.localScale += new Vector3(1F, 1F, .2F);
@@ -241,13 +241,16 @@ public class BattleManager : MonoBehaviour {
 	}
 
 	void Update() {
-		if (isInBattle) {
+		if (isInBattle) {			
 			MarkPassedNotes(attacker);
 			MarkPassedNotes(defender);
 		}
 	}
 
 	void OnExitBeatWindow(ExitBeatWindowMessage m) {
+		//this is where we will make a sprite in the fighting scene dance
+		//attacker_unit.GetComponentInChildren<Animator>().SetTrigger("beat");
+		//defender_unit.GetComponentInChildren<Animator>().SetTrigger("beat");
 		if (isInBattle && m.BeatNumber == m.BeatsPerMeasure - 1) {
 			battleProgressInMeasures++;
 		}
