@@ -159,7 +159,7 @@ public class BattleManager : MonoBehaviour {
 
 		SpriteRenderer attack_renderer = attacker_unit.AddComponent<SpriteRenderer>();
 		attack_renderer.sprite = m.AttackingUnit.GetComponentInChildren<SpriteRenderer>().sprite;
-		attack_renderer.flipX = true
+		attack_renderer.flipX = true;
 		SpriteRenderer defender_renderer = defender_unit.AddComponent<SpriteRenderer>();
 		defender_renderer.sprite = m.DefendingUnit.GetComponentInChildren<SpriteRenderer>().sprite;	
 		defender_renderer.flipX = true;
