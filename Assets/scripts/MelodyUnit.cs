@@ -35,11 +35,24 @@ public class MelodyUnit : Unit {
 	void Defend(Unit other, int damage, float defenseModifier) {
 		MarkAsDefending(other);
 		HitPoints -= Mathf.Clamp(damage - (int)(DefenceFactor * defenseModifier), 1, damage);
+		Vector2 viewportPoint = Camera.main.WorldToViewportPoint(new Vector3((float)other.transform.position.x, (float)(other.transform.position.y + 3), (float)other.transform.position.z));
+		Text damage_display = GameObject.Find ("Damage").GetComponent<Text> ();
+		damage_display.rectTransform.anchorMin = viewportPoint;  
+ 		damage_display.rectTransform.anchorMax = viewportPoint; 
+		damage_display.alignment = TextAnchor.MiddleCenter;
+		damage_display.text = Mathf.Clamp(damage - (int)(DefenceFactor * defenseModifier), 1, damage).ToString();
+		StartCoroutine("DisplayDamage");	
 
 		UpdateHealthBar();
 
 		if (HitPoints < 0)
 			OnDestroyed();
+	}
+
+	private IEnumerator DisplayDamage() {
+		yield return new WaitForSeconds(0.5F);
+		Text damage_display = GameObject.Find ("Damage").GetComponent<Text> ();
+		damage_display.text = "";
 	}
 
 	public void UpdateHealthBar() {

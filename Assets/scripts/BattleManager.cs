@@ -71,6 +71,8 @@ public class BattleManager : MonoBehaviour {
 	private GameObject divider; // Divider between player's notes
 	public GameObject targetPrefab; // Single target object
 	private GameObject[] targets;
+	private GameObject attacker_unit;
+	private GameObject defender_unit;
 
 	public int battleMeasures = 1;
 	public Camera parentCam;
@@ -95,7 +97,9 @@ public class BattleManager : MonoBehaviour {
 		messageRouter.AddHandler<BattleDifficultyChangeMessage> (OnBattleDifficultyChange);
 		targetLine = GameObject.Find ("Temp Battle Target Line").GetComponent<MeshRenderer> ();
 		targetLine.enabled = false;
-		targetLine.transform.localPosition = new Vector3(0, -5, SPAWN_DEPTH);
+		targetLine.transform.localPosition = new Vector3(0, -4, SPAWN_DEPTH);
+		attacker_unit = GameObject.Find ("Attacker");
+		defender_unit = GameObject.Find ("Defender");
 
 		//Add the divider
 		divider = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -152,6 +156,17 @@ public class BattleManager : MonoBehaviour {
 		float SPAWN_HEIGHT = Screen.height;
 
 		Song song = ServiceFactory.Instance.Resolve<Song>();
+
+		SpriteRenderer attack_renderer = attacker_unit.AddComponent<SpriteRenderer>();
+		attack_renderer.sprite = m.AttackingUnit.GetComponentInChildren<SpriteRenderer>().sprite;;
+		SpriteRenderer defender_renderer = defender_unit.AddComponent<SpriteRenderer>();
+		defender_renderer.sprite = m.DefendingUnit.GetComponentInChildren<SpriteRenderer>().sprite;	
+		Debug.Log(Screen.width);
+		Debug.Log(Screen.height);
+		attacker_unit.transform.localPosition = new Vector3(-Screen.width/46, 0, SPAWN_DEPTH);
+		defender_unit.transform.localPosition = new Vector3(Screen.width/46, 0, SPAWN_DEPTH);
+		attacker_unit.transform.localScale += new Vector3(1F, 1F, .2F);
+		defender_unit.transform.localScale += new Vector3(1F, 1F, .2F);
 
 		// Reposition targets
 		float targetXPos = UNIT_MARGIN + FRET_RANGE/10;
@@ -251,6 +266,12 @@ public class BattleManager : MonoBehaviour {
 		// TODO: Figure out if we can penalize spamming strum to hit every note
 		yield return new WaitForSeconds(delay);
 		targetLine.enabled = false;
+		Destroy(attacker_unit.GetComponent<SpriteRenderer>());
+		Destroy(defender_unit.GetComponent<SpriteRenderer>());
+		attacker_unit.transform.localPosition = new Vector3(-1000, -2, SPAWN_DEPTH);
+		defender_unit.transform.localPosition = new Vector3(-1000, -2, SPAWN_DEPTH);		
+		attacker_unit.transform.localScale -= new Vector3(1F, 1F, .2F);
+		defender_unit.transform.localScale -= new Vector3(1F, 1F, .5F);
 		divider.GetComponent<MeshRenderer>().enabled = false;
 		isInBattle = false;
 		int attackerHitCount = 0;
