@@ -161,8 +161,10 @@ public class BattleManager : MonoBehaviour {
 		attack_renderer.sprite = m.AttackingUnit.GetComponentInChildren<SpriteRenderer>().sprite;;
 		SpriteRenderer defender_renderer = defender_unit.AddComponent<SpriteRenderer>();
 		defender_renderer.sprite = m.DefendingUnit.GetComponentInChildren<SpriteRenderer>().sprite;	
-		attacker_unit.transform.localPosition = new Vector3(-6, -6, SPAWN_DEPTH);
-		defender_unit.transform.localPosition = new Vector3(6, -6, SPAWN_DEPTH);
+		Debug.Log(Screen.width);
+		Debug.Log(Screen.height);
+		attacker_unit.transform.localPosition = new Vector3(-Screen.width/46, 0, SPAWN_DEPTH);
+		defender_unit.transform.localPosition = new Vector3(Screen.width/46, 0, SPAWN_DEPTH);
 		attacker_unit.transform.localScale += new Vector3(1F, 1F, .2F);
 		defender_unit.transform.localScale += new Vector3(1F, 1F, .2F);
 
