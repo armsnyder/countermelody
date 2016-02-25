@@ -119,6 +119,12 @@ public class MelodyUnit : Unit {
 		path.Reverse();
 		foreach (var cell in path)
 		{
+			// Set sprite facing direction
+			float MIN_DELTA_X = 0.1f;
+			if (Math.Abs(transform.position.x - cell.transform.position.x) > MIN_DELTA_X) {
+				GetComponentInChildren<SpriteRenderer> ().flipX = (transform.position - cell.transform.position).x > 0;
+			}
+
 			Vector3 startPosition = transform.position;
 			float totalDistance = Vector3.Distance (transform.position, cell.transform.position);
 			float moveProgress = 0;
