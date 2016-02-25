@@ -71,6 +71,8 @@ public class BattleManager : MonoBehaviour {
 	private GameObject divider; // Divider between player's notes
 	public GameObject targetPrefab; // Single target object
 	private GameObject[] targets;
+	private GameObject attacker_unit;
+	private GameObject defender_unit;
 
 	public int battleMeasures = 1;
 	public Camera parentCam;
@@ -96,6 +98,8 @@ public class BattleManager : MonoBehaviour {
 		targetLine = GameObject.Find ("Temp Battle Target Line").GetComponent<MeshRenderer> ();
 		targetLine.enabled = false;
 		targetLine.transform.localPosition = new Vector3(0, -5, SPAWN_DEPTH);
+		attacker_unit = GameObject.Find ("Attacker");
+		defender_unit = GameObject.Find ("Defender");
 
 		//Add the divider
 		divider = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -153,6 +157,18 @@ public class BattleManager : MonoBehaviour {
 		float SPAWN_HEIGHT = Screen.height;
 
 		Song song = ServiceFactory.Instance.Resolve<Song>();
+
+		float sprite_offset = (float)(Screen.width / 2.3);
+		Vector3 attacker_pos = parentCam.ScreenToWorldPoint (new Vector3 (Screen.width / 2 + sprite_offset, Screen.height / 2, SPAWN_DEPTH));
+		Vector3 defender_pos = parentCam.ScreenToWorldPoint (new Vector3 (Screen.width / 2 - sprite_offset, Screen.height / 2, SPAWN_DEPTH));
+		SpriteRenderer attack_renderer = attacker_unit.AddComponent<SpriteRenderer>();
+		attack_renderer.sprite = m.AttackingUnit.GetComponentInChildren<SpriteRenderer>().sprite;
+		attack_renderer.flipX = true;
+		SpriteRenderer defender_renderer = defender_unit.AddComponent<SpriteRenderer>();
+		defender_renderer.sprite = m.DefendingUnit.GetComponentInChildren<SpriteRenderer>().sprite;	
+		defender_renderer.flipX = true;
+		attacker_unit.transform.position = new Vector3 (attacker_pos.x, attacker_pos.y, attacker_pos.z);
+		defender_unit.transform.position = new Vector3 (defender_pos.x, defender_pos.y, defender_pos.z);		
 
 		// Reposition targets
 		float targetXPos = UNIT_MARGIN + FRET_RANGE/10;
@@ -234,6 +250,9 @@ public class BattleManager : MonoBehaviour {
 	}
 
 	void OnExitBeatWindow(ExitBeatWindowMessage m) {
+		//this is where we will make a sprite in the fighting scene dance
+		//attacker_unit.GetComponentInChildren<Animator>().SetTrigger("beat");
+		//defender_unit.GetComponentInChildren<Animator>().SetTrigger("beat");
 		if (isInBattle && m.BeatNumber == m.BeatsPerMeasure - 1) {
 			battleProgressInMeasures++;
 		}
@@ -253,6 +272,8 @@ public class BattleManager : MonoBehaviour {
 		yield return new WaitForSeconds(delay);
 		targetLine.enabled = false;
 		divider.GetComponent<MeshRenderer>().enabled = false;
+		Destroy(attacker_unit.GetComponent<SpriteRenderer>());
+		Destroy(defender_unit.GetComponent<SpriteRenderer>());
 		isInBattle = false;
 		int attackerHitCount = 0;
 		foreach (int i in attacker.battleNoteStates) {
