@@ -12,7 +12,8 @@ public class UnitActionMessage {
 public enum UnitActionMessageType {
 	MOVE,
 	ATTACK,
-	SELECT
+	SELECT,
+	SPECIAL
 }
 
 public class RejectActionMessage {
