@@ -58,6 +58,19 @@ public class BoardInterpreter : Interpreter {
 					});
 				}
 				break;
+			case InputButton.WHAMMY:
+				if (m.PlayerNumber == CurrentPlayer && IsAcceptingActions) {
+					MessageRouter.RaiseMessage(new UnitActionMessage() {
+						ActionType = UnitActionMessageType.SPECIAL,
+						PlayerNumber = CurrentPlayer
+					});
+				} else {
+					MessageRouter.RaiseMessage(new RejectActionMessage() {
+						ActionType = UnitActionMessageType.SPECIAL,
+						PlayerNumber = CurrentPlayer
+					});
+				}
+				break;
 			default:
 				break;
 		}
