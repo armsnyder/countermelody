@@ -50,7 +50,7 @@ public class GameManager : MonoBehaviour {
 
 	private void OnExitBeatWindow(ExitBeatWindowMessage m) {
 		// Gets info about turn length / whose turn it is from Song.cs (helps game remain in sync)
-		if (isInBattle) return; // Do not change player if in battle
+		if (isInBattle || isInSpecial) return; // Do not change player if in battle
 		int BeatsPerTurn = m.BeatsPerMeasure * MeasuresPerTurn;
 		if (m.BeatNumber % BeatsPerTurn == BeatsPerTurn - 1) { // If it's the last beat of a player's turn...
 			_CurrentPlayer = (_CurrentPlayer + 1) % NumberOfPlayers;
@@ -79,7 +79,5 @@ public class GameManager : MonoBehaviour {
 
 	void OnEndSpecial(EndSpecialMoveMessage m) {
 		isInSpecial = false;
-		_CurrentPlayer = (_CurrentPlayer + 1) % NumberOfPlayers;
-		StartCoroutine(SwitchPlayerCoroutine());
 	}
 }

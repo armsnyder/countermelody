@@ -511,12 +511,12 @@ public class Song : MonoBehaviour {
 		return ret;
 	}
 
-	void OnStartSpecial(EndSpecialMoveMessage m) {
+	void OnStartSpecial(StartSpecialMoveMessage m) {
 		PauseSong();
 	}
 
 	void OnEndSpecial(EndSpecialMoveMessage m) {
-		StartSong(true);
+		StartSong();
 	}
 
 	public void PauseSong() {
