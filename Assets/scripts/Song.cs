@@ -88,6 +88,8 @@ public class Song : MonoBehaviour {
 		ServiceFactory.Instance.RegisterSingleton<Song> (this); // Any other class can reference this one
 		MessageRouter = ServiceFactory.Instance.Resolve<MessageRouter> ();
 		MessageRouter.AddHandler<ExitBattleMessage> (OnExitBattle);
+		MessageRouter.AddHandler<StartSpecialMoveMessage>(OnStartSpecial);
+		MessageRouter.AddHandler<EndSpecialMoveMessage>(OnEndSpecial);
 		MessageRouter.AddHandler<NoteHitMessage> (OnNoteHit);
 		MessageRouter.AddHandler<NoteMissMessage> (OnNoteMiss);
 		player = gameObject.AddComponent<AudioSource> ();
@@ -507,5 +509,28 @@ public class Song : MonoBehaviour {
 			ret [n.instrumentID] [n.difficulty].Add (n);
 		}
 		return ret;
+	}
+
+	void OnStartSpecial(EndSpecialMoveMessage m) {
+		PauseSong();
+	}
+
+	void OnEndSpecial(EndSpecialMoveMessage m) {
+		StartSong(true);
+	}
+
+	public void PauseSong() {
+		player.Pause();
+	}
+
+	public void StartSong(bool startAtNextMeasure=false) {
+		//starts the song
+		// If startAtNextMeasure is true, start the song at the next measure beginning.
+		player.UnPause();
+
+		if (startAtNextMeasure) {
+			player.time = player.time + (bpm * beatsPerMeasure);
+			player.time -= player.time % (bpm * beatsPerMeasure);
+		}
 	}
 }

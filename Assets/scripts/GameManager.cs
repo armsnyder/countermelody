@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour {
 	private int _CurrentPlayer;
 	public int CurrentPlayer { get { return _CurrentPlayer; } }
 	private bool isInBattle;
+	private bool isInSpecial;
 
 	private MessageRouter MessageRouter;
 
@@ -33,6 +34,8 @@ public class GameManager : MonoBehaviour {
 		MessageRouter.AddHandler<ExitBeatWindowMessage> (OnExitBeatWindow);
 		MessageRouter.AddHandler<EnterBattleMessage> (OnEnterBattle);
 		MessageRouter.AddHandler<ExitBattleMessage> (OnExitBattle);
+		MessageRouter.AddHandler<StartSpecialMoveMessage>(OnStartSpecial);
+		MessageRouter.AddHandler<EndSpecialMoveMessage>(OnEndSpecial);
 		StartCoroutine (FirstFrameCoroutine ());
 	}
 
@@ -68,5 +71,15 @@ public class GameManager : MonoBehaviour {
 		isInBattle = false;
 		_CurrentPlayer = (_CurrentPlayer + 1) % NumberOfPlayers;
 		StartCoroutine ("SwitchPlayerCoroutine");
+	}
+
+	void OnStartSpecial(StartSpecialMoveMessage m) {
+		isInSpecial = true;
+	}
+
+	void OnEndSpecial(EndSpecialMoveMessage m) {
+		isInSpecial = false;
+		_CurrentPlayer = (_CurrentPlayer + 1) % NumberOfPlayers;
+		StartCoroutine(SwitchPlayerCoroutine());
 	}
 }

@@ -100,7 +100,16 @@ public class UnitManager : MonoBehaviour
 			case UnitActionMessageType.ATTACK:
 				Attack(m.Color, m.PlayerNumber);
 				break;
+			case UnitActionMessageType.SPECIAL:
+				UseSpecial(m.PlayerNumber);
+				break;
 		}
+	}
+
+	void UseSpecial(int playerNumber) {
+		MessageRouter.RaiseMessage(new StartSpecialMoveMessage {
+			unit = SelectedUnit[playerNumber]
+		});
 	}
 
 	void SwitchSelection(InputButton color, int playerNumber) {
