@@ -95,7 +95,6 @@ public class BattleManager : MonoBehaviour {
 		messageRouter.AddHandler<ButtonUpMessage> (OnButtonUp);
 		messageRouter.AddHandler<BeatCenterMessage> (OnBeatCenter);
 		messageRouter.AddHandler<ExitBeatWindowMessage> (OnExitBeatWindow);
-		messageRouter.AddHandler<EnterBeatWindowMessage>(OnEnterBeatWindow);
 		messageRouter.AddHandler<BattleDifficultyChangeMessage> (OnBattleDifficultyChange);
 		targetLine = GameObject.Find ("Temp Battle Target Line").GetComponent<MeshRenderer> ();
 		targetLine.enabled = false;
