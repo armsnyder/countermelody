@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Collections;
 using Frictionless;
+using UnityEngine.UI;
 
 public class UnitDeathMessage {
 	public MelodyUnit unit;
@@ -34,14 +34,15 @@ public class MelodyUnit : Unit {
 
 	void Defend(Unit other, int damage, float defenseModifier) {
 		MarkAsDefending(other);
-		HitPoints -= Mathf.Clamp(damage - (int)(DefenceFactor * defenseModifier), 1, damage);
+		int damageTaken = Mathf.Max(damage - (int)(DefenceFactor * defenseModifier), 0);
+		HitPoints -= damageTaken;
 
 		UpdateHealthBar();
 
 		if (HitPoints < 0)
 			OnDestroyed();
 	}
-
+	
 	public void UpdateHealthBar() {
 		if (GetComponentInChildren<Image>() != null) {
 			GetComponentInChildren<Image>().transform.localScale = new Vector3((float)((float)HitPoints / (float)TotalHitPoints), 1, 1);
