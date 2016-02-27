@@ -59,6 +59,7 @@ public class BattleManager : MonoBehaviour {
 		public MelodyUnit unit {get; set;}
 		public int playerNumber { get; set; }
 		public bool hitLastNote { get; set; }
+		public GameObject battleSprite { get; set; }
 	}
 
 	private Dictionary<int, PlayerBattleData> players;
@@ -69,10 +70,10 @@ public class BattleManager : MonoBehaviour {
 	private int battleProgressInMeasures; // Number of measures into the battle
 	private MeshRenderer targetLine; // Renderer for note targets. Currently a temporary black line.
 	private GameObject divider; // Divider between player's notes
-	public GameObject targetPrefab; // Single target object
+	public  GameObject targetPrefab; // Single target object
 	private GameObject[] targets;
-	private GameObject attacker_unit;
-	private GameObject defender_unit;
+
+	private float UNIT_MARGIN;
 
 	public int battleMeasures = 1;
 	public Camera parentCam;
@@ -94,12 +95,11 @@ public class BattleManager : MonoBehaviour {
 		messageRouter.AddHandler<ButtonUpMessage> (OnButtonUp);
 		messageRouter.AddHandler<BeatCenterMessage> (OnBeatCenter);
 		messageRouter.AddHandler<ExitBeatWindowMessage> (OnExitBeatWindow);
+		messageRouter.AddHandler<EnterBeatWindowMessage>(OnEnterBeatWindow);
 		messageRouter.AddHandler<BattleDifficultyChangeMessage> (OnBattleDifficultyChange);
 		targetLine = GameObject.Find ("Temp Battle Target Line").GetComponent<MeshRenderer> ();
 		targetLine.enabled = false;
 		targetLine.transform.localPosition = new Vector3(0, -5, SPAWN_DEPTH);
-		attacker_unit = GameObject.Find ("Attacker");
-		defender_unit = GameObject.Find ("Defender");
 
 		//Add the divider
 		divider = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -152,23 +152,11 @@ public class BattleManager : MonoBehaviour {
 
 		// Constants
 		float CENTER_MARGIN = Screen.width * 2 / 27f;
-		float UNIT_MARGIN = Screen.width * 3.5f / 27f;
+		UNIT_MARGIN = Screen.width * 3.5f / 27f;
 		float FRET_RANGE = Screen.width / 3f; //TODO: Change based on number of players
 		float SPAWN_HEIGHT = Screen.height;
 
-		Song song = ServiceFactory.Instance.Resolve<Song>();
-
-		float sprite_offset = (float)(Screen.width / 2.3);
-		Vector3 attacker_pos = parentCam.ScreenToWorldPoint (new Vector3 (Screen.width / 2 + sprite_offset, Screen.height / 2, SPAWN_DEPTH));
-		Vector3 defender_pos = parentCam.ScreenToWorldPoint (new Vector3 (Screen.width / 2 - sprite_offset, Screen.height / 2, SPAWN_DEPTH));
-		SpriteRenderer attack_renderer = attacker_unit.AddComponent<SpriteRenderer>();
-		attack_renderer.sprite = m.AttackingUnit.GetComponentInChildren<SpriteRenderer>().sprite;
-		attack_renderer.flipX = true;
-		SpriteRenderer defender_renderer = defender_unit.AddComponent<SpriteRenderer>();
-		defender_renderer.sprite = m.DefendingUnit.GetComponentInChildren<SpriteRenderer>().sprite;	
-		defender_renderer.flipX = true;
-		attacker_unit.transform.position = new Vector3 (attacker_pos.x, attacker_pos.y, attacker_pos.z);
-		defender_unit.transform.position = new Vector3 (defender_pos.x, defender_pos.y, defender_pos.z);		
+		Song song = ServiceFactory.Instance.Resolve<Song>();	
 
 		// Reposition targets
 		float targetXPos = UNIT_MARGIN + FRET_RANGE/10;
@@ -197,6 +185,8 @@ public class BattleManager : MonoBehaviour {
 		attacker.instrumentID = 0; // Edgy synth
 		defender.instrumentID = 1; // Smoother synth
 
+		RenderBattleSprites(m.AttackingUnit, m.DefendingUnit);
+		
 		attacker.battleNotes = song.GetNextBattleNotes (battleMeasures, attacker.instrumentID, attacker.difficulty);
 		defender.battleNotes = song.GetNextBattleNotes (battleMeasures, defender.instrumentID, defender.difficulty);
 
@@ -272,8 +262,8 @@ public class BattleManager : MonoBehaviour {
 		yield return new WaitForSeconds(delay);
 		targetLine.enabled = false;
 		divider.GetComponent<MeshRenderer>().enabled = false;
-		Destroy(attacker_unit.GetComponent<SpriteRenderer>());
-		Destroy(defender_unit.GetComponent<SpriteRenderer>());
+		GameObjectUtil.Destroy(attacker.battleSprite);
+		GameObjectUtil.Destroy(defender.battleSprite);
 		isInBattle = false;
 		int attackerHitCount = 0;
 		foreach (int i in attacker.battleNoteStates) {
@@ -433,5 +423,23 @@ public class BattleManager : MonoBehaviour {
 
 	public int getPlayerDifficulty(int playerNumber) {
 		return players [playerNumber].difficulty;
+	}
+	
+	void RenderBattleSprites(MelodyUnit AttackingUnit, MelodyUnit DefendingUnit) {
+		attacker.battleSprite = GameObjectUtil.Instantiate(AttackingUnit.transform.FindChild("RotatedVisual").gameObject);
+		defender.battleSprite = GameObjectUtil.Instantiate(DefendingUnit.transform.FindChild("RotatedVisual").gameObject);
+
+		attacker.battleSprite.layer = LayerMask.NameToLayer("BattleLayer");
+		defender.battleSprite.layer = LayerMask.NameToLayer("BattleLayer");
+
+		attacker.battleSprite.transform.parent = parentCam.transform;
+		defender.battleSprite.transform.parent = parentCam.transform;
+
+		attacker.battleSprite.transform.position = parentCam.ScreenToWorldPoint(new Vector3(UNIT_MARGIN / 2, Screen.height / 2, SPAWN_DEPTH/2));
+		defender.battleSprite.transform.position = parentCam.ScreenToWorldPoint(new Vector3(Screen.width - (UNIT_MARGIN / 2), Screen.height / 2, SPAWN_DEPTH/2));
+
+		attacker.battleSprite.transform.eulerAngles = new Vector3(0, 180);
+		defender.battleSprite.transform.eulerAngles = new Vector3(0, 180);
+
 	}
 }
