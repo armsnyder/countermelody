@@ -6,7 +6,7 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: elvis_thegreatestmusicianofalltime
+  m_Name: Unit Material
   m_Shader: {fileID: 4800000, guid: c9a8a27b90c4f4d3b8dbaf17974f2bd0, type: 3}
   m_ShaderKeywords: _ALPHATEST_ON
   m_LightmapFlags: 5

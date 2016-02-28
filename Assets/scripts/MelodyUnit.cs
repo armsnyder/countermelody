@@ -15,6 +15,7 @@ public class MelodyUnit : Unit {
 	public Color unitColor;
 	public MessageRouter MessageRouter;
 	public float hopHeight = 10;
+	public UnitChar character;
 
     public override void Initialize()
     {
@@ -28,6 +29,9 @@ public class MelodyUnit : Unit {
 		} else {
 			GetComponentInChildren<SpriteRenderer> ().material.EnableKeyword ("INVERT_OFF");
 		}
+		// Set the character
+		RuntimeAnimatorController r = UnitCharManager.ToAnimator(character);
+		GetComponentInChildren<Animator>().runtimeAnimatorController = UnitCharManager.ToAnimator(character);
 		MessageRouter = ServiceFactory.Instance.Resolve<MessageRouter> ();
         this.UnMark();
 	}
