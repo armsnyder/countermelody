@@ -17,6 +17,8 @@ public class UnitCharManager {
 			return Resources.Load<RuntimeAnimatorController> ("controllers/elvis");
 		case UnitChar.JACKSON:
 			return Resources.Load<RuntimeAnimatorController> ("controllers/jackson");
+		case UnitChar.MILEY:
+			return Resources.Load<RuntimeAnimatorController> ("controllers/miley");
 		default:
 			return null;
 		}
@@ -29,6 +31,8 @@ public class UnitCharManager {
 	/// <param name="unitChar">Unit char.</param>
 	public static float GetDanceEaseIn(UnitChar unitChar) {
 		switch (unitChar) {
+		case UnitChar.MILEY:
+			return 2f / 16;
 		default:
 			return 1f / 12; // assumes 1 frame at 12 fps
 		}
