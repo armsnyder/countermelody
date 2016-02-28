@@ -15,6 +15,7 @@ public class MelodyUnit : Unit {
 	public Color unitColor;
 	public MessageRouter MessageRouter;
 	public float hopHeight = 10;
+	public UnitChar character;
 
     public override void Initialize()
     {
@@ -28,7 +29,10 @@ public class MelodyUnit : Unit {
 		} else {
 			GetComponentInChildren<SpriteRenderer> ().material.EnableKeyword ("INVERT_OFF");
 		}
+		// Set the character
+		GetComponentInChildren<Animator>().runtimeAnimatorController = UnitCharManager.ToAnimator(character);
 		MessageRouter = ServiceFactory.Instance.Resolve<MessageRouter> ();
+		MessageRouter.AddHandler<BeatCenterMessage> (OnBeatCenter);
         this.UnMark();
 	}
 
@@ -95,6 +99,20 @@ public class MelodyUnit : Unit {
     {
     }
 
+	protected override void OnDestroyed()
+	{
+		Cell.IsTaken = false;
+		MarkAsDestroyed();
+		StartCoroutine (QueuedDestroy ());
+	}
+
+	IEnumerator QueuedDestroy() {
+		// Delay destroy until next frame to ensure we are not within a MessageRouter raised message loop
+		yield return null;
+		MessageRouter.RemoveHandler<BeatCenterMessage> (OnBeatCenter);
+		GameObjectUtil.Destroy(gameObject);
+	}
+
 	public void DealDamage(MelodyUnit other, float attackModifier, float DefenseModifier)
 	{
 		if (isMoving)
@@ -141,5 +159,19 @@ public class MelodyUnit : Unit {
 		}
 
 		isMoving = false;
+	}
+
+	void OnBeatCenter(BeatCenterMessage m) {
+		// Animate unit's beat animation on every beat
+		float whenStartAnimate = 60f / m.BeatsPerMinute - UnitCharManager.GetDanceEaseIn(character);
+		if (whenStartAnimate < 0)
+			whenStartAnimate = 0f;
+		StartCoroutine (QueuedDance (whenStartAnimate));
+	}
+
+	IEnumerator QueuedDance(float whenStartAnimate) {
+		// Delay destroy until next frame to ensure we are not within a MessageRouter raised message loop
+		yield return new WaitForSeconds(whenStartAnimate);
+		GetComponentInChildren<Animator> ().SetTrigger ("beat");
 	}
 }
