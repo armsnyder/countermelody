@@ -30,7 +30,6 @@ public class MelodyUnit : Unit {
 			GetComponentInChildren<SpriteRenderer> ().material.EnableKeyword ("INVERT_OFF");
 		}
 		// Set the character
-		RuntimeAnimatorController r = UnitCharManager.ToAnimator(character);
 		GetComponentInChildren<Animator>().runtimeAnimatorController = UnitCharManager.ToAnimator(character);
 		MessageRouter = ServiceFactory.Instance.Resolve<MessageRouter> ();
         this.UnMark();
