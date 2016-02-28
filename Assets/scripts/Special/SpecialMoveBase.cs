@@ -26,12 +26,20 @@ public abstract class SpecialMoveBase : MonoBehaviour {
 	}
 
 	protected virtual void OnTriggerSpecial(TriggerSpecialMoveMessage m) {
-		if(m.unit.Equals(gameObject.GetComponent<MelodyUnit>()) && NumPerformed < NumPerGame) {
-			isActive = true;
-			NumPerformed++;
-			MessageRouter.RaiseMessage(new StartSpecialMoveMessage());
-			StartCoroutine(DoSpecialMove());
-		}
+		if(m.unit.Equals(gameObject.GetComponent<MelodyUnit>())) {
+			if (NumPerformed < NumPerGame) {
+				isActive = true;
+				NumPerformed++;
+				MessageRouter.RaiseMessage(new StartSpecialMoveMessage());
+				StartCoroutine(DoSpecialMove());
+			} else {
+				MessageRouter.RaiseMessage(new RejectActionMessage() {
+					PlayerNumber = m.unit.PlayerNumber,
+					ActionType = UnitActionMessageType.SPECIAL
+				});
+			}
+
+		} 
 	}
 
 	protected virtual IEnumerator DoSpecialMove() {
