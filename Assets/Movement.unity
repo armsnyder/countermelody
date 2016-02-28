@@ -845,6 +845,23 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 49fa89db59a4c4c8fa663ab01d30e70d, type: 2}
   m_IsPrefabParent: 0
+--- !u!1 &576059487 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 156394, guid: 90013320bf52c479498b1c1c7ec8bf5e, type: 2}
+  m_PrefabInternal: {fileID: 1374229884}
+--- !u!114 &576059488
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 576059487}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d24c4413c92fb64297372a1991c9af3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DisableTurns: 5
+  JailPrefab: {fileID: 152296, guid: 965e326b5f1c17f428dd5dbe5d1b0c92, type: 2}
 --- !u!1 &640341017
 GameObject:
   m_ObjectHideFlags: 0
@@ -864,6 +881,23 @@ GameObject:
 Transform:
   m_PrefabParentObject: {fileID: 431022, guid: 90013320bf52c479498b1c1c7ec8bf5e, type: 2}
   m_PrefabInternal: {fileID: 263364883}
+--- !u!1 &725955843 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 156394, guid: 90013320bf52c479498b1c1c7ec8bf5e, type: 2}
+  m_PrefabInternal: {fileID: 1505471345}
+--- !u!114 &725955844
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 725955843}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d24c4413c92fb64297372a1991c9af3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DisableTurns: 5
+  JailPrefab: {fileID: 152296, guid: 965e326b5f1c17f428dd5dbe5d1b0c92, type: 2}
 --- !u!4 &736630218 stripped
 Transform:
   m_PrefabParentObject: {fileID: 431022, guid: 90013320bf52c479498b1c1c7ec8bf5e, type: 2}
@@ -2328,7 +2362,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d24c4413c92fb64297372a1991c9af3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DisableTurns: 2
+  DisableTurns: 5
   JailPrefab: {fileID: 152296, guid: 965e326b5f1c17f428dd5dbe5d1b0c92, type: 2}
 --- !u!1 &1928432110 stripped
 GameObject:
@@ -2345,7 +2379,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d24c4413c92fb64297372a1991c9af3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DisableTurns: 2
+  DisableTurns: 5
   JailPrefab: {fileID: 152296, guid: 965e326b5f1c17f428dd5dbe5d1b0c92, type: 2}
 --- !u!1 &1983920727
 GameObject:
