@@ -155,7 +155,7 @@ public class BattleManager : MonoBehaviour {
 		float FRET_RANGE = Screen.width / 3f; //TODO: Change based on number of players
 		float SPAWN_HEIGHT = Screen.height;
 
-		Song song = ServiceFactory.Instance.Resolve<Song>();	
+		Song song = ServiceFactory.Instance.Resolve<Song>();
 
 		// Reposition targets
 		float targetXPos = UNIT_MARGIN + FRET_RANGE/10;
