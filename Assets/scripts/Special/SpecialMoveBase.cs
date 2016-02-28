@@ -7,7 +7,7 @@ public class StartSpecialMoveMessage {
 }
 public class EndSpecialMoveMessage { }
 
-public class SpecialMoveBase : MonoBehaviour {
+public abstract class SpecialMoveBase : MonoBehaviour {
 
 	protected MessageRouter MessageRouter;
 	protected Song Song;
