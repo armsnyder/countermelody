@@ -25,7 +25,6 @@ public class UnitManager : MonoBehaviour
 		MessageRouter.AddHandler<UnitDeathMessage>(OnUnitDeath);
 		MessageRouter.AddHandler<StateChangeMessage>(OnStateChange);
 		MessageRouter.AddHandler<ExitBattleMessage> (OnExitBattle);
-		MessageRouter.AddHandler<EnterBeatWindowMessage> (OnEnterBeatWindow);
 		GameManager = ServiceFactory.Instance.Resolve<GameManager>();
 		StartCoroutine("GetGameBoard");
     }
@@ -302,16 +301,5 @@ public class UnitManager : MonoBehaviour
 			type = ChangeType.OFF,
 			PlayerNumber = playerNumber
 		});
-	}
-
-	void OnEnterBeatWindow(EnterBeatWindowMessage m) {
-		// Animate unit's beat animation on every beat
-		// TODO: Account for different lead-in times for different tempos, probably with a coroutine
-		foreach (MelodyUnit u in GameBoard.Units) {
-			if (u != null) {
-				// TODO: Why are there null objects in the GameBoard.Units?
-				u.GetComponentInChildren<Animator>().SetTrigger("beat");
-			}
-		}
 	}
 }
