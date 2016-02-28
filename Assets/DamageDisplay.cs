@@ -5,7 +5,6 @@ using UnityEngine.UI;
 public class DamageDisplay : MonoBehaviour {
 
 	private IEnumerator display(int damage) {
-
 		GetComponent<Text>().text = "-"+ damage.ToString();
 		yield return new WaitForSeconds(1);
 		GameObjectUtil.Destroy(gameObject);
