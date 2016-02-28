@@ -16,6 +16,7 @@ public enum InputButton {
     DOWN,
     LEFT,
     RIGHT,
+	TILT,
 	NONE
 }
 

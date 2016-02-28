@@ -67,6 +67,10 @@ public class KeyboardInput : ControllerInput {
 			SendButtonDown (InputButton.MINUS);
 		}
 
+		if (Input.GetKeyDown (KeyCode.Return)) {
+			SendButtonDown(InputButton.WHAMMY);
+		}
+
 		// KeyUps
 
 		if (Input.GetKeyUp(KeyCode.A)) {
@@ -116,7 +120,11 @@ public class KeyboardInput : ControllerInput {
 		if (Input.GetKeyUp (KeyCode.Minus)) {
 			SendButtonUp (InputButton.MINUS);
 		}
-	
+
+		if (Input.GetKeyDown(KeyCode.Return)) {
+			SendButtonUp(InputButton.WHAMMY);
+		}
+
 	}
 
 	void SendButtonPress(InputButton button) {
