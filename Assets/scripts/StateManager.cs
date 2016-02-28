@@ -28,6 +28,8 @@ public class StateManager : MonoBehaviour {
 		MessageRouter.AddHandler<SwitchPlayerMessage> (OnSwitchPlayer);
 		MessageRouter.AddHandler<EnterBattleMessage> (OnEnterBattle);
 		MessageRouter.AddHandler<ExitBattleMessage> (OnExitBattle);
+		MessageRouter.AddHandler<StartSpecialMoveMessage>(OnStartSpecial);
+		MessageRouter.AddHandler<EndSpecialMoveMessage>(OnEndSpecial);
 
 		BoardInterpreter = gameObject.AddComponent<BoardInterpreter> ();
 		DefaultInterpreter = gameObject.AddComponent<Interpreter> ();
@@ -66,5 +68,13 @@ public class StateManager : MonoBehaviour {
 	void ChangeState(State newState) {
 		MessageRouter.RaiseMessage(new StateChangeMessage() { State = newState, PrevState = _CurrentState });
 		_CurrentState = newState;
+	}
+
+	void OnStartSpecial(StartSpecialMoveMessage m) {
+		LoadDefaultInterpreter();
+	}
+
+	void OnEndSpecial(EndSpecialMoveMessage m) {
+		LoadBoardInterpreter();
 	}
 }
