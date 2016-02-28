@@ -6,6 +6,11 @@ using System.Collections;
 using Frictionless;
 using UnityEngine.UI;
 
+public class ExitHealMessage {
+	public int Replenish{ get; set; }
+	public MelodyUnit Recipient{ get; set; }
+}
+
 public class UnitDeathMessage {
 	public MelodyUnit unit;
 }
@@ -40,6 +45,22 @@ public class MelodyUnit : Unit {
 		MarkAsDefending(other);
 		int damageTaken = Mathf.Max(damage - (int)(DefenceFactor * defenseModifier), 0);
 		HitPoints -= damageTaken;
+
+		UpdateHealthBar();
+
+		if (HitPoints < 0)
+			OnDestroyed();
+	}
+
+	void Replenish(Unit other, int damage, float defenseModifier) {
+		MarkAsDefending(other);
+		Debug.Log(Mathf.Max(damage - (int)(DefenceFactor * defenseModifier), 0));
+		int replenish_amount = Mathf.Min(20, 100 - HitPoints);
+		HitPoints += replenish_amount;
+		MessageRouter.RaiseMessage (new ExitHealMessage () {
+			Replenish = replenish_amount,
+			Recipient = this
+		});
 
 		UpdateHealthBar();
 
@@ -123,6 +144,24 @@ public class MelodyUnit : Unit {
 		MarkAsAttacking(other);
 		ActionPoints--;
 		other.Defend(this, (int) (AttackFactor * attackModifier), DefenseModifier);
+
+		if (ActionPoints == 0)
+		{
+			SetState(new UnitStateMarkedAsFinished(this));
+			MovementPoints = 0;
+		}  
+	}
+
+	public void Heal(MelodyUnit other, float attackModifier, float DefenseModifier)
+	{
+		if (isMoving)
+			return;
+		if (ActionPoints == 0)
+			return;
+
+		MarkAsAttacking(other);
+		ActionPoints--;
+		other.Replenish(this, (int) (AttackFactor * attackModifier), DefenseModifier);
 
 		if (ActionPoints == 0)
 		{
