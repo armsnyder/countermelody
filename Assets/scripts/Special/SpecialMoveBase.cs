@@ -9,26 +9,21 @@ public class EndSpecialMoveMessage { }
 
 public class SpecialMoveBase : MonoBehaviour {
 
-	private MessageRouter MessageRouter;
-	private Song Song;
+	protected MessageRouter MessageRouter;
+	protected Song Song;
 
-	void Start () {
+	protected virtual void Start () {
 		MessageRouter = ServiceFactory.Instance.Resolve<MessageRouter>();
 		MessageRouter.AddHandler<StartSpecialMoveMessage>(OnStartSpecial);
 	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
 
-	void OnStartSpecial(StartSpecialMoveMessage m) {
+	protected virtual void OnStartSpecial(StartSpecialMoveMessage m) {
 		if(m.unit.Equals(gameObject.GetComponent<MelodyUnit>())) {
 			StartCoroutine(DoSpecialMove());
 		}
 	}
 
-	IEnumerator DoSpecialMove() {
+	protected virtual IEnumerator DoSpecialMove() {
 		yield return new WaitForSeconds(2);
 		MessageRouter.RaiseMessage(new EndSpecialMoveMessage());
 	}
