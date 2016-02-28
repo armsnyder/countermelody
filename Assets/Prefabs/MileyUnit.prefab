@@ -258,17 +258,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f627d936eeccb402985988debdfe19d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HitPoints: 0
-  AttackRange: 0
-  AttackFactor: 0
-  DefenceFactor: 0
-  MovementPoints: 0
-  MovementSpeed: 0
-  ActionPoints: 0
+  HitPoints: 100
+  AttackRange: 3
+  AttackFactor: 100
+  DefenceFactor: 50
+  MovementPoints: 4
+  MovementSpeed: 8
+  ActionPoints: 1
   PlayerNumber: 1
   ColorButton: 4
   unitColor: {r: 0.99264705, g: 0.62619317, b: 0, a: 0.978}
-  hopHeight: 10
+  hopHeight: 1
   character: 2
 --- !u!124 &12448930
 Behaviour:

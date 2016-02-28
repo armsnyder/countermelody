@@ -294,6 +294,12 @@ public class UnitManager : MonoBehaviour
 		}
 
 		if (SelectedUnit.ContainsKey (m.PlayerNumber)) {
+
+			if (!GameBoard.Units.Contains(SelectedUnit[m.PlayerNumber])){
+				SelectedUnit[m.PlayerNumber] = GameBoard.Units.Find(c => c.PlayerNumber == m.PlayerNumber) as MelodyUnit;
+				RefocusSpotlight(SelectedUnit[m.PlayerNumber], m.PlayerNumber);
+			}
+
 			MarkAttackRange();
 			TurnOnSpotlight(m.PlayerNumber);
 		}
