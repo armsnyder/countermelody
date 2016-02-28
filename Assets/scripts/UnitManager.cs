@@ -106,7 +106,7 @@ public class UnitManager : MonoBehaviour
 	}
 
 	void UseSpecial(int playerNumber) {
-		MessageRouter.RaiseMessage(new StartSpecialMoveMessage {
+		MessageRouter.RaiseMessage(new TriggerSpecialMoveMessage {
 			unit = SelectedUnit[playerNumber]
 		});
 	}
