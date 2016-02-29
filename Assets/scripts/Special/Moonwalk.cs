@@ -19,6 +19,9 @@ public class Moonwalk : SpecialMoveBase {
 		if (m.PlayerNumber != GetComponent<MelodyUnit>().PlayerNumber)
 			return;
 
+		if (isMoving)
+			return;
+
 		switch (m.Button) {
 			case InputButton.UP:
 			case InputButton.DOWN:
@@ -30,6 +33,11 @@ public class Moonwalk : SpecialMoveBase {
 	}
 
 	protected override IEnumerator DoSpecialMove() {
+
+		ServiceFactory.Instance.Resolve<UnitManager>().UnHighlightAll();
+		foreach (Cell c in GetComponent<MelodyUnit>().Cell.GetNeighbours(ServiceFactory.Instance.Resolve<CellGrid>().Cells)) {
+			c.MarkAsReachable();
+		}
 
 		yield return new WaitForSeconds(2);
 
@@ -43,7 +51,7 @@ public class Moonwalk : SpecialMoveBase {
 
 	protected IEnumerator MovementAnimation(Vector2 direction) {
 		isMoving = true;
-
+		ServiceFactory.Instance.Resolve<UnitManager>().UnHighlightAll();
 		// If moving horizontally, set sprite facing opposite direction
 		if (direction.x != 0) {
 			GetComponentInChildren<SpriteRenderer>().flipX = direction.x > 0;

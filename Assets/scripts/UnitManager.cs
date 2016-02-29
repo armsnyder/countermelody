@@ -19,6 +19,7 @@ public class UnitManager : MonoBehaviour
 	
     void Start()
     {
+		ServiceFactory.Instance.RegisterSingleton<UnitManager>(this);
 		MessageRouter = ServiceFactory.Instance.Resolve<MessageRouter>();
 		MessageRouter.AddHandler<UnitActionMessage>(OnUnitAction);
 		MessageRouter.AddHandler<SwitchPlayerMessage>(OnSwitchPlayer);
@@ -107,7 +108,6 @@ public class UnitManager : MonoBehaviour
 	}
 
 	void UseSpecial(int playerNumber) {
-		UnHighlightAll();
 		MessageRouter.RaiseMessage(new TriggerSpecialMoveMessage {
 			unit = SelectedUnit[playerNumber]
 		});
@@ -277,7 +277,7 @@ public class UnitManager : MonoBehaviour
 		}
 	}
 
-	void UnHighlightAll() {
+	public void UnHighlightAll() {
 		foreach(Cell c in GameBoard.Cells) {
 			c.UnMark();
 		}
