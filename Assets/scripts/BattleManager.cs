@@ -434,8 +434,14 @@ public class BattleManager : MonoBehaviour {
 		attacker.battleSprite.transform.parent = parentCam.transform;
 		defender.battleSprite.transform.parent = parentCam.transform;
 
-		attacker.battleSprite.transform.position = parentCam.ScreenToWorldPoint(new Vector3(UNIT_MARGIN / 2, Screen.height / 2, SPAWN_DEPTH/2));
-		defender.battleSprite.transform.position = parentCam.ScreenToWorldPoint(new Vector3(Screen.width - (UNIT_MARGIN / 2), Screen.height / 2, SPAWN_DEPTH/2));
+		if (AttackingUnit.PlayerNumber < DefendingUnit.PlayerNumber) {
+			attacker.battleSprite.transform.position = parentCam.ScreenToWorldPoint(new Vector3(UNIT_MARGIN / 2, Screen.height / 2, SPAWN_DEPTH/2));
+			defender.battleSprite.transform.position = parentCam.ScreenToWorldPoint(new Vector3(Screen.width - (UNIT_MARGIN / 2), Screen.height / 2, SPAWN_DEPTH/2));
+		}
+		else {
+			defender.battleSprite.transform.position = parentCam.ScreenToWorldPoint(new Vector3(UNIT_MARGIN / 2, Screen.height / 2, SPAWN_DEPTH/2));
+			attacker.battleSprite.transform.position = parentCam.ScreenToWorldPoint(new Vector3(Screen.width - (UNIT_MARGIN / 2), Screen.height / 2, SPAWN_DEPTH/2));
+		}
 
 		attacker.battleSprite.transform.eulerAngles = new Vector3(0, 180);
 		defender.battleSprite.transform.eulerAngles = new Vector3(0, 180);
