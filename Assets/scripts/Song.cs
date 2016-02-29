@@ -521,16 +521,25 @@ public class Song : MonoBehaviour {
 
 	public void PauseSong() {
 		player.Pause();
+		foreach( AudioSource p in instrumentPlayers) {
+			p.Pause();
+		}
 	}
 
 	public void StartSong(bool startAtNextMeasure=false) {
 		//starts the song
 		// If startAtNextMeasure is true, start the song at the next measure beginning.
 		player.UnPause();
-
 		if (startAtNextMeasure) {
 			player.time = player.time + (bpm * beatsPerMeasure);
 			player.time -= player.time % (bpm * beatsPerMeasure);
+		}
+
+		foreach (AudioSource p in instrumentPlayers){
+			p.UnPause();
+
+			if (startAtNextMeasure)
+				p.time = player.time;
 		}
 	}
 }
