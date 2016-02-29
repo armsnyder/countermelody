@@ -6,6 +6,7 @@ using System;
 public class WreckingBall : SpecialMoveBase {
 
 	private bool isAnimating;
+	private bool hasSwung = false;
 	private float MOVEMENT_TIME = .5f;
 	[SerializeField]
 	private GameObject WreckingBallSprite;
@@ -24,7 +25,7 @@ public class WreckingBall : SpecialMoveBase {
 		if (m.PlayerNumber != GetComponent<MelodyUnit>().PlayerNumber)
 			return;
 
-		if (isAnimating)
+		if (hasSwung)
 			return;
 
 		switch (m.Button) {
@@ -32,6 +33,7 @@ public class WreckingBall : SpecialMoveBase {
 			case InputButton.DOWN:
 			case InputButton.LEFT:
 			case InputButton.RIGHT:
+				hasSwung = true;
 				StartCoroutine(SwingWreckingBall(BoardInterpreter.DirectionToVector(m.Button)));
 				break;
 		}
