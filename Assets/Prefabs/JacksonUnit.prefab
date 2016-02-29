@@ -9,6 +9,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 423374}
   - 114: {fileID: 11477704}
+  - 114: {fileID: 11481162}
   m_Layer: 8
   m_Name: JacksonUnit
   m_TagString: Untagged
@@ -270,6 +271,18 @@ MonoBehaviour:
   unitColor: {r: 1, g: 0.9831643, b: 0.3897059, a: 0.984}
   hopHeight: 1
   character: 1
+--- !u!114 &11481162
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 108014}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9dfe28f3a6cabf4b8d0509f1f4f35ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NumPerGame: 1
 --- !u!124 &12463386
 Behaviour:
   m_ObjectHideFlags: 1

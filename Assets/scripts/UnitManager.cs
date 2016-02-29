@@ -25,6 +25,7 @@ public class UnitManager : MonoBehaviour
 		MessageRouter.AddHandler<UnitDeathMessage>(OnUnitDeath);
 		MessageRouter.AddHandler<StateChangeMessage>(OnStateChange);
 		MessageRouter.AddHandler<ExitBattleMessage> (OnExitBattle);
+		MessageRouter.AddHandler<EndSpecialMoveMessage>(OnEndSpecial);
 		GameManager = ServiceFactory.Instance.Resolve<GameManager>();
 		StartCoroutine("GetGameBoard");
     }
@@ -106,6 +107,7 @@ public class UnitManager : MonoBehaviour
 	}
 
 	void UseSpecial(int playerNumber) {
+		UnHighlightAll();
 		MessageRouter.RaiseMessage(new TriggerSpecialMoveMessage {
 			unit = SelectedUnit[playerNumber]
 		});
@@ -354,5 +356,9 @@ public class UnitManager : MonoBehaviour
 			type = ChangeType.OFF,
 			PlayerNumber = playerNumber
 		});
+	}
+
+	void OnEndSpecial(EndSpecialMoveMessage m) {
+		MarkAttackRange();
 	}
 }
