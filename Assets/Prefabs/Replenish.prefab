@@ -11,6 +11,7 @@ GameObject:
   - 222: {fileID: 22254910}
   - 114: {fileID: 11425886}
   - 114: {fileID: 11422712}
+  - 114: {fileID: 11434788}
   m_Layer: 5
   m_Name: Replenish
   m_TagString: Untagged
@@ -64,7 +65,7 @@ MonoBehaviour:
   m_Text: 
 --- !u!114 &11434788
 MonoBehaviour:
-  m_ObjectHideFlags: 1
+  m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 125692}

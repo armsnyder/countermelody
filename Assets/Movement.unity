@@ -1846,6 +1846,10 @@ Prefab:
       propertyPath: PlayerNumber
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 11404160, guid: 040b9e551f2374ff1ad4f5a96287e146, type: 2}
+      propertyPath: WreckingBallSprite
+      value: 
+      objectReference: {fileID: 101030, guid: d4ec8621268ad144e8b67a37d7e5c2eb, type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 040b9e551f2374ff1ad4f5a96287e146, type: 2}
   m_IsPrefabParent: 0
@@ -2077,6 +2081,10 @@ Prefab:
       propertyPath: m_Name
       value: MileyUnit (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 11404160, guid: 040b9e551f2374ff1ad4f5a96287e146, type: 2}
+      propertyPath: WreckingBallSprite
+      value: 
+      objectReference: {fileID: 101030, guid: d4ec8621268ad144e8b67a37d7e5c2eb, type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 040b9e551f2374ff1ad4f5a96287e146, type: 2}
   m_IsPrefabParent: 0
