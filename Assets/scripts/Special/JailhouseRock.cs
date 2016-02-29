@@ -21,6 +21,11 @@ public class JailhouseRock : SpecialMoveBase {
 		MessageRouter.AddHandler<ButtonDownMessage>(OnButtonDown);
 	}
 	protected override IEnumerator DoSpecialMove() {
+		ServiceFactory.Instance.Resolve<UnitManager>().UnHighlightAll();
+		foreach (Unit u in ServiceFactory.Instance.Resolve<CellGrid>().Units.FindAll(c => c.PlayerNumber != GetComponent<MelodyUnit>().PlayerNumber)) {
+			u.Cell.MarkAsReachable();
+		}
+
 		return base.DoSpecialMove();
 	}
 
@@ -56,6 +61,7 @@ public class JailhouseRock : SpecialMoveBase {
 				recipient = GameBoard.Units.Find(c => (c.PlayerNumber!=m.PlayerNumber) && ((c as MelodyUnit).ColorButton == m.Button));
 				if (recipient) {
 					DisableUnit(recipient);
+					ServiceFactory.Instance.Resolve<UnitManager>().UnHighlightAll();
 				}
 				break;
 		}
