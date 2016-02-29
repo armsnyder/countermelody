@@ -6,9 +6,9 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: Unit Material
-  m_Shader: {fileID: 4800000, guid: c9a8a27b90c4f4d3b8dbaf17974f2bd0, type: 3}
-  m_ShaderKeywords: INVERT_OFF INVERT_ON _ALPHATEST_ON
+  m_Name: Unit Material Inverted
+  m_Shader: {fileID: 4800000, guid: 5a748585f29b44a43811b395e7f31cab, type: 3}
+  m_ShaderKeywords: INVERT_OFF _ALPHATEST_ON
   m_LightmapFlags: 5
   m_CustomRenderQueue: 3000
   stringTagMap:
@@ -162,7 +162,7 @@ Material:
       data:
         first:
           name: _Color
-        second: {r: 1, g: 1, b: 1, a: 1}
+        second: {r: 0, g: 0, b: 0, a: 1}
       data:
         first:
           name: _TintColor

@@ -29,6 +29,8 @@ public class GuitarInput : ControllerInput {
 		public bool plus;
 		public bool minus;
 		public bool strum;
+		public bool strum_down;
+		public bool strum_up;
 		public bool up;
 		public bool down;
 		public bool left;
@@ -88,6 +90,8 @@ public class GuitarInput : ControllerInput {
 		ThisFrameData.minus = guitar.minus;
 		ThisFrameData.plus = guitar.plus;
 		ThisFrameData.strum = guitar.strum;
+		ThisFrameData.strum_down = guitar.strum_down;
+		ThisFrameData.strum_up = guitar.strum_up;
 		ThisFrameData.up = wiimote.Button.d_right || stick[1] < 0.5 - stickThreshold;
 		ThisFrameData.down = wiimote.Button.d_left || stick[1] > 0.5 + stickThreshold;
 		ThisFrameData.left = wiimote.Button.d_up || stick[0] < 0.5 - stickThreshold;
@@ -153,6 +157,12 @@ public class GuitarInput : ControllerInput {
 		// strum
 		if (ThisFrameData.strum && !LastFrameData.strum) {
 			MessageRouter.RaiseMessage(new ButtonDownMessage() { Button = InputButton.STRUM, PlayerNumber = PlayerNumber });
+		}
+		if (ThisFrameData.strum_down && !LastFrameData.strum_down) {
+			MessageRouter.RaiseMessage(new ButtonDownMessage() { Button = InputButton.STRUM_DOWN, PlayerNumber = PlayerNumber });
+		}
+		if (ThisFrameData.strum_up && !LastFrameData.strum_up) {
+			MessageRouter.RaiseMessage(new ButtonDownMessage() { Button = InputButton.STRUM_UP, PlayerNumber = PlayerNumber });
 		}
 
 		// up

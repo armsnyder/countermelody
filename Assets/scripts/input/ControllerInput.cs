@@ -9,6 +9,8 @@ public enum InputButton {
     BLUE = 3,
     ORANGE = 4,
 	STRUM,
+	STRUM_UP,
+	STRUM_DOWN,
     WHAMMY,
     PLUS,
     MINUS,
