@@ -15,6 +15,11 @@ public class UnitDeathMessage {
 	public MelodyUnit unit;
 }
 
+public class TakeDamageMessage {
+	public int damage;
+	public MelodyUnit Recipient;
+}
+
 public class MelodyUnit : Unit {
 	public InputButton ColorButton;
 	public Color unitColor;
@@ -49,7 +54,10 @@ public class MelodyUnit : Unit {
 		MarkAsDefending(other);
 		int damageTaken = Mathf.Max(damage - (int)(DefenceFactor * defenseModifier), 0);
 		HitPoints -= damageTaken;
-
+		MessageRouter.RaiseMessage(new TakeDamageMessage() {
+			damage = damageTaken,
+			Recipient = this
+		});
 		UpdateHealthBar();
 
 		if (HitPoints < 0)

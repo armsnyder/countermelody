@@ -12,22 +12,19 @@ public class DamageDisplayManager : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		MessageRouter = ServiceFactory.Instance.Resolve<MessageRouter>();
-		MessageRouter.AddHandler<ExitBattleMessage>(OnExitBattle);
+		MessageRouter.AddHandler<TakeDamageMessage>(OnTakeDamage);
 		MessageRouter.AddHandler<ExitHealMessage>(OnExitHeal);
 	}
 
-	void OnExitBattle(ExitBattleMessage m) {
-		int damage = Math.Max((int)(m.AttackingUnit.AttackFactor * m.AttackerHitPercent) - 
-			(int)(m.DefendingUnit.DefenceFactor * m.DefenderHitPercent), 0);
-
+	void OnTakeDamage(TakeDamageMessage m) {
 		// Find position to display the damage number. Should be above the unit.
 		//TODO: use math to figure out where the damage numbers should go.
 		float height_offset = 0.1f;
 		float width_offset = -0.02f;
-		Vector3 viewportPoint = Camera.main.WorldToViewportPoint(m.DefendingUnit.transform.position);
+		Vector3 viewportPoint = Camera.main.WorldToViewportPoint(m.Recipient.transform.position);
 		viewportPoint += new Vector3(width_offset, height_offset);
 
-		DisplayDamage(damage, viewportPoint);
+		DisplayDamage(m.damage, viewportPoint);
 	}
 
 	void OnExitHeal(ExitHealMessage m) {
