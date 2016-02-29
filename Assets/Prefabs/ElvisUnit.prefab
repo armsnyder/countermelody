@@ -238,9 +238,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 813fb0e327e8047a985198d4de57843d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HitPoints: 100
-  AttackRange: 3
-  AttackFactor: 100
+  HitPoints: 150
+  AttackRange: 1
+  AttackFactor: 150
   DefenceFactor: 50
   MovementPoints: 4
   MovementSpeed: 8
@@ -386,7 +386,23 @@ Prefab:
   serializedVersion: 2
   m_Modification:
     m_TransformParent: {fileID: 0}
-    m_Modifications: []
+    m_Modifications:
+    - target: {fileID: 0}
+      propertyPath: AttackRange
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: AttackFactor
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: DefenceFactor
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: HitPoints
+      value: 150
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 163780}

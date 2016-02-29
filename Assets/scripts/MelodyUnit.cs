@@ -21,10 +21,14 @@ public class MelodyUnit : Unit {
 	public MessageRouter MessageRouter;
 	public float hopHeight = 10;
 	public UnitChar character;
+	private int maxHitPoints;
 
     public override void Initialize()
     {
         base.Initialize();
+
+		maxHitPoints = HitPoints;
+
 		// Set Unit Color
 		unitColor.a = 1f; // Override alpha channel
 		GetComponentInChildren<SpriteRenderer> ().material.SetColor("_Color", unitColor);
@@ -54,8 +58,7 @@ public class MelodyUnit : Unit {
 
 	void Replenish(Unit other, int damage, float defenseModifier) {
 		MarkAsDefending(other);
-		Debug.Log(Mathf.Max(damage - (int)(DefenceFactor * defenseModifier), 0));
-		int replenish_amount = Mathf.Min(20, 100 - HitPoints);
+		int replenish_amount = Mathf.Min(20, maxHitPoints - HitPoints);
 		HitPoints += replenish_amount;
 		MessageRouter.RaiseMessage (new ExitHealMessage () {
 			Replenish = replenish_amount,

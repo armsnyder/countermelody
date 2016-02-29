@@ -5,8 +5,14 @@ using UnityEngine.UI;
 public class ReplenishDisplay : MonoBehaviour {
 
 	private IEnumerator displayHeal(int replenish) {
-		GetComponent<Text>().text = "+"+ replenish.ToString();
-		yield return new WaitForSeconds(1);
+		if (replenish > 0) {
+			GetComponent<Text>().text = "+"+ replenish.ToString();
+			yield return new WaitForSeconds(1);
+		}
+		else if (replenish == 0) {
+			GetComponent<Text>().text = replenish.ToString();
+			yield return new WaitForSeconds(1);
+		}
 		GameObjectUtil.Destroy(gameObject);
 	}
 
