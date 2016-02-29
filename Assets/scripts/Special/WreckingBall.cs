@@ -82,11 +82,19 @@ public class WreckingBall : SpecialMoveBase {
 
 		float i = 0;
 		float rate = 1.0f / MOVEMENT_TIME;
+
+		wreckingBallSprite.transform.GetChild(0).eulerAngles += new Vector3(20 * Math.Abs(direction.y), 0, -60 * Math.Abs(direction.x));
+
+		Vector3 startRotation = new Vector3();
+		Vector3 endRotation = new Vector3(-120 * Math.Abs(direction.y), 0, 120 * Math.Abs(direction.x));
+		Vector3 rotationperFrame = Vector3.Slerp(startRotation, endRotation, Time.deltaTime * rate);
+
 		while (i < 1) { 
 			i += Time.deltaTime * rate;
 			wreckingBallSprite.transform.position = Vector3.Lerp(startPos, endPos, i);
-			wreckingBallSprite.transform.GetChild(0).eulerAngles = Vector3.Lerp(new Vector3(60, wreckingBallSprite.transform.GetChild(0).rotation.y, -60),
-				new Vector3(60, wreckingBallSprite.transform.GetChild(0).rotation.y, 60), i);
+
+			wreckingBallSprite.transform.GetChild(0).eulerAngles += rotationperFrame;
+
 			yield return 0;
 		}
 
