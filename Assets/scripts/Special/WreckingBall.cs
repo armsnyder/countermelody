@@ -6,7 +6,7 @@ using System;
 public class WreckingBall : SpecialMoveBase {
 
 	private bool isAnimating;
-	private float MOVEMENT_SPEED = 2;
+	private float MOVEMENT_TIME = .5f;
 	[SerializeField]
 	private GameObject WreckingBallSprite;
 	[SerializeField]
@@ -57,39 +57,37 @@ public class WreckingBall : SpecialMoveBase {
 
 	protected IEnumerator SwingWreckingBall(Vector2 direction) {
 		isAnimating = true;
-		//ServiceFactory.Instance.Resolve<UnitManager>().UnHighlightAll();
-		//GameObject wreckingBallSprite = GameObjectUtil.Instantiate(WreckingBallSprite);
 
-		//CMCellGrid grid = ServiceFactory.Instance.Resolve<CellGrid>() as CMCellGrid;
+		GameObject wreckingBallSprite = GameObjectUtil.Instantiate(WreckingBallSprite);
 
-		//Vector3 startPos = transform.position;
-		//while (startPos.x >= grid.transform.position.x && startPos.y >= grid.transform.position.y) {
-		//		startPos -= new Vector3(Math.Abs(direction.x), Math.Abs(direction.y));
-		//}
+		CMCellGrid grid = ServiceFactory.Instance.Resolve<CellGrid>() as CMCellGrid;
 
-		//wreckingBallSprite.transform.position = startPos;
+		Vector3 startPos = transform.position;
+		while (startPos.x >= grid.transform.position.x && startPos.z >= grid.transform.position.z) {
+				startPos -= new Vector3(Math.Abs(direction.x), 0, Math.Abs(direction.y));
+		}
+		// Grid offset
+		startPos -= new Vector3(0, 0, 0.5f);
 
-		//Vector3 endPos = new Vector3();
-		//float totalDistance = 0;
-		//if (direction.x != 0) {
-		//	endPos.x = grid.GetComponent<CMCellGridGenerator>().gridSize.x;
-		//	totalDistance = endPos.x;
-		//} else if (direction.y != 0) {
-		//	endPos.y = grid.GetComponent<CMCellGridGenerator>().gridSize.y;
-		//	totalDistance = endPos.y;
-		//} else {
-		//	Debug.LogError("Wrecking ball direction must be 1 in x or y");
-		//}
+		wreckingBallSprite.transform.position += startPos;
 
-		//float moveProgress = 0;
-		//Vector3 MovementEachFrame = Vector3.Lerp(wreckingBallSprite.transform.position, endPos, MOVEMENT_SPEED * Time.deltaTime / totalDistance);
-		//while (moveProgress < totalDistance) { 
-		//	moveProgress += MovementEachFrame.magnitude;
-		//	if (moveProgress > totalDistance)
-		//		moveProgress = totalDistance;
-		//	wreckingBallSprite.transform.position += MovementEachFrame;
-		//	yield return 0;
-		//}
+		Vector3 endPos = startPos;
+		if (direction.x != 0) {
+			endPos.x = grid.GetComponent<CMCellGridGenerator>().gridSize.x;
+		} else if (direction.y != 0) {
+			endPos.z = grid.GetComponent<CMCellGridGenerator>().gridSize.y;
+		} else {
+			Debug.LogError("Wrecking ball direction must be 1 in x or y");
+		}
+
+		float i = 0;
+		float rate = 1.0f / MOVEMENT_TIME;
+		while (i < 1) { 
+			i += Time.deltaTime * rate;
+			wreckingBallSprite.transform.position = Vector3.Lerp(startPos, endPos, i);
+			yield return 0;
+		}
+
 		isAnimating = false;
 		DealDamageInDirection(direction);
 		ServiceFactory.Instance.Resolve<UnitManager>().UnHighlightAll();
