@@ -90,7 +90,7 @@ public class WreckingBall : SpecialMoveBase {
 
 		isAnimating = false;
 		DealDamageInDirection(direction);
-		GameObjectUtil.Destroy(WreckingBallSprite);
+		GameObjectUtil.Destroy(wreckingBallSprite);
 		ServiceFactory.Instance.Resolve<UnitManager>().UnHighlightAll();
 
 		yield return null;
