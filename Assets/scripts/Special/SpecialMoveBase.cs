@@ -2,27 +2,44 @@
 using System.Collections;
 using Frictionless;
 
-public class StartSpecialMoveMessage {
+public class TriggerSpecialMoveMessage {
 	public MelodyUnit unit;
 }
+
+public class StartSpecialMoveMessage { };
+
 public class EndSpecialMoveMessage { }
 
 public abstract class SpecialMoveBase : MonoBehaviour {
 
+	[SerializeField]
+	protected int NumPerGame = 1;
+
+	protected int NumPerformed = 0;
 	protected MessageRouter MessageRouter;
 	protected Song Song;
 	protected bool isActive;
 
 	protected virtual void Start () {
 		MessageRouter = ServiceFactory.Instance.Resolve<MessageRouter>();
-		MessageRouter.AddHandler<StartSpecialMoveMessage>(OnStartSpecial);
+		MessageRouter.AddHandler<TriggerSpecialMoveMessage>(OnTriggerSpecial);
 	}
 
-	protected virtual void OnStartSpecial(StartSpecialMoveMessage m) {
+	protected virtual void OnTriggerSpecial(TriggerSpecialMoveMessage m) {
 		if(m.unit.Equals(gameObject.GetComponent<MelodyUnit>())) {
-			isActive = true;
-			StartCoroutine(DoSpecialMove());
-		}
+			if (NumPerformed < NumPerGame) {
+				isActive = true;
+				NumPerformed++;
+				MessageRouter.RaiseMessage(new StartSpecialMoveMessage());
+				StartCoroutine(DoSpecialMove());
+			} else {
+				MessageRouter.RaiseMessage(new RejectActionMessage() {
+					PlayerNumber = m.unit.PlayerNumber,
+					ActionType = UnitActionMessageType.SPECIAL
+				});
+			}
+
+		} 
 	}
 
 	protected virtual IEnumerator DoSpecialMove() {

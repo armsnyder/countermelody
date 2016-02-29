@@ -126,7 +126,7 @@ public class BoardInterpreter : Interpreter {
 		IsAcceptingActions = false;
 	}
 
-	private Vector2 DirectionToVector(InputButton b) {
+	public static Vector2 DirectionToVector(InputButton b) {
 		switch (b) {
 			case InputButton.LEFT:
 				return new Vector2 (-1, 0); // Left

@@ -641,7 +641,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &457917103
 Transform:
   m_ObjectHideFlags: 0
@@ -656,7 +656,7 @@ Transform:
   - {fileID: 750659916}
   - {fileID: 1909461390}
   m_Father: {fileID: 0}
-  m_RootOrder: 12
+  m_RootOrder: 11
 --- !u!1 &462539786
 GameObject:
   m_ObjectHideFlags: 0
@@ -1112,7 +1112,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damageDisplayPrefab: {fileID: 160320, guid: b6d8e912a30a6b044b72e489c0e886e1, type: 2}
-  replenishDisplayPrefab: {fileID: 125692, guid: b903d807748ae4a42bcdd37bf929ebc8,
+  replenishDisplayPrefab: {fileID: 147250, guid: b903d807748ae4a42bcdd37bf929ebc8,
     type: 2}
 --- !u!95 &926716507
 Animator:
@@ -1448,7 +1448,7 @@ Transform:
   m_Children:
   - {fileID: 106455376}
   m_Father: {fileID: 0}
-  m_RootOrder: 11
+  m_RootOrder: 12
 --- !u!1 &1471062518
 GameObject:
   m_ObjectHideFlags: 0
