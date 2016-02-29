@@ -48,6 +48,9 @@ public class JailhouseRock : SpecialMoveBase {
 		if (m.PlayerNumber != GetComponent<MelodyUnit>().PlayerNumber)
 			return;
 
+		if (DisabledUnit != null)
+			return;
+
 		GameBoard = ServiceFactory.Instance.Resolve<CellGrid>() as CMCellGrid;
 
 		Unit recipient;
