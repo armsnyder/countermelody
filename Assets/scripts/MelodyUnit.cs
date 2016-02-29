@@ -54,7 +54,6 @@ public class MelodyUnit : Unit {
 
 	void Replenish(Unit other, int damage, float defenseModifier) {
 		MarkAsDefending(other);
-		Debug.Log(Mathf.Max(damage - (int)(DefenceFactor * defenseModifier), 0));
 		int replenish_amount = Mathf.Min(20, 100 - HitPoints);
 		HitPoints += replenish_amount;
 		MessageRouter.RaiseMessage (new ExitHealMessage () {

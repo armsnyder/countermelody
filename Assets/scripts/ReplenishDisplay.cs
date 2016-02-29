@@ -9,6 +9,10 @@ public class ReplenishDisplay : MonoBehaviour {
 			GetComponent<Text>().text = "+"+ replenish.ToString();
 			yield return new WaitForSeconds(1);
 		}
+		else if (replenish == 0) {
+			GetComponent<Text>().text = replenish.ToString();
+			yield return new WaitForSeconds(1);
+		}
 		GameObjectUtil.Destroy(gameObject);
 	}
 

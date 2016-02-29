@@ -179,6 +179,7 @@ public class UnitManager : MonoBehaviour
 		if (SelectedUnit[playerNumber].character == UnitChar.MILEY) {
 			if (color == InputButton.NONE) {
 				recipients = GameBoard.Units.FindAll(c => 
+				(c != SelectedUnit[playerNumber]) &&
 				(c.PlayerNumber == playerNumber) && 
 				(Math.Abs(SelectedUnit[playerNumber].Cell.OffsetCoord[0] - c.Cell.OffsetCoord[0])) + (Math.Abs(SelectedUnit[playerNumber].Cell.OffsetCoord[1] - c.Cell.OffsetCoord[1])) <= SelectedUnit[playerNumber].AttackRange);
 	            int lowestValue = int.MaxValue;
