@@ -62,6 +62,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 491698}
   - 114: {fileID: 11470696}
+  - 114: {fileID: 11404160}
   m_Layer: 8
   m_Name: MileyUnit
   m_TagString: Untagged
@@ -204,6 +205,19 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
+--- !u!114 &11404160
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 161762}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83ae0aa5d52f84f4e85539a02d4d6d13, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NumPerGame: 1
+  WreckingBallSprite: {fileID: 191406, guid: a2ac7e0ef64f11a48bc2637776d2d0e1, type: 2}
 --- !u!114 &11446364
 MonoBehaviour:
   m_ObjectHideFlags: 1

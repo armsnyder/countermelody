@@ -41,7 +41,7 @@ public class MelodyUnit : Unit {
         this.UnMark();
 	}
 
-	void Defend(Unit other, int damage, float defenseModifier) {
+	public void Defend(Unit other, int damage, float defenseModifier) {
 		MarkAsDefending(other);
 		int damageTaken = Mathf.Max(damage - (int)(DefenceFactor * defenseModifier), 0);
 		HitPoints -= damageTaken;
