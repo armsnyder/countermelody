@@ -85,6 +85,8 @@ public class WreckingBall : SpecialMoveBase {
 		while (i < 1) { 
 			i += Time.deltaTime * rate;
 			wreckingBallSprite.transform.position = Vector3.Lerp(startPos, endPos, i);
+			wreckingBallSprite.transform.GetChild(0).eulerAngles = Vector3.Lerp(new Vector3(60, wreckingBallSprite.transform.GetChild(0).rotation.y, -60),
+				new Vector3(60, wreckingBallSprite.transform.GetChild(0).rotation.y, 60), i);
 			yield return 0;
 		}
 
