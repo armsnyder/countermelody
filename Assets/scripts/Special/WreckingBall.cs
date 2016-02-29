@@ -40,7 +40,7 @@ public class WreckingBall : SpecialMoveBase {
 	protected override IEnumerator DoSpecialMove() {
 
 		ServiceFactory.Instance.Resolve<UnitManager>().UnHighlightAll();
-		foreach (Cell c in GetComponent<MelodyUnit>().Cell.GetNeighbours(ServiceFactory.Instance.Resolve<CellGrid>().Cells)) {
+		foreach (Cell c in ServiceFactory.Instance.Resolve<CellGrid>().Cells.FindAll(c => c.OffsetCoord.x == GetComponent<MelodyUnit>().Cell.OffsetCoord.x || c.OffsetCoord.y == GetComponent<MelodyUnit>().Cell.OffsetCoord.y)) {
 			c.MarkAsReachable();
 		}
 
@@ -92,6 +92,7 @@ public class WreckingBall : SpecialMoveBase {
 		//}
 		isAnimating = false;
 		DealDamageInDirection(direction);
+		ServiceFactory.Instance.Resolve<UnitManager>().UnHighlightAll();
 
 		yield return null;
 	}
