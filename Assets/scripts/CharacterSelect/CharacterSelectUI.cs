@@ -6,8 +6,7 @@ using UnityEngine.UI;
 
 public class CharacterSelectUI : MonoBehaviour {
 
-	public Material player0Material;
-	public Material player1Material;
+	public Material spriteMat;
 
 	CharacterSelectManager manager;
 	MessageRouter messageRouter;
@@ -51,13 +50,14 @@ public class CharacterSelectUI : MonoBehaviour {
 	void LoadUI() {
 		for (int i = 0; i < manager.unitPrefabs.Length; i++) {
 			MelodyUnit unit = manager.unitPrefabs[i].GetComponent<MelodyUnit> ();
-			Image image = transform.FindChild ("UnitList0").FindChild ("Unit" + i).FindChild ("Panel").GetComponent<Image> ();
 			SpriteRenderer spriteRenderer = unit.GetComponentInChildren<SpriteRenderer> ();
-			image.sprite = spriteRenderer.sprite;
-			image.material = player0Material;
-			image = transform.FindChild ("UnitList1").FindChild ("Unit" + i).FindChild ("Panel").GetComponent<Image> ();
-			image.sprite = spriteRenderer.sprite;
-			image.material = player1Material;
+			for (int j = 0; j < 2; j++) {
+				Image image = transform.FindChild ("UnitList"+j).FindChild ("Unit" + i).FindChild ("Panel").GetComponent<Image> ();
+				image.sprite = spriteRenderer.sprite;
+				image.material = Instantiate(spriteMat) as Material;
+				image.material.EnableKeyword (j == 0 ? "INVERT_OFF" : "INVERT_ON");
+				image.material.color = (j == 0 ? Color.white : Color.black);
+			}
 		}
 	}
 
@@ -83,7 +83,9 @@ public class CharacterSelectUI : MonoBehaviour {
 			SpriteRenderer fromR = manager.unitPrefabs [index].GetComponentInChildren<SpriteRenderer> ();
 			SpriteRenderer toR = GameObject.Find ("Unit" + playerNumber + "Sprite").GetComponent<SpriteRenderer> ();
 			toR.sprite = fromR.sprite;
-			toR.material = playerNumber == 0 ? player0Material : player1Material;
+			toR.material = fromR.sharedMaterial;
+			toR.material.EnableKeyword (playerNumber == 0 ? "INVERT_OFF" : "INVERT_ON");
+			toR.material.color = (playerNumber == 0 ? Color.white : Color.black);
 		}
 	}
 
