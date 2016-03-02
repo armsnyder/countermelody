@@ -10,15 +10,14 @@ public class JailhouseRock : SpecialMoveBase {
 	private Material prevMaterial;
 	private GameObject JailCell;
 
-	[SerializeField]
-	private int DisableTurns = 5;
-	[SerializeField]
+	public int DisableTurns = 5;
 	private GameObject JailPrefab;
 
 	protected override void Start() {
 		base.Start();
 		MessageRouter.AddHandler<SwitchPlayerMessage>(OnSwitchPlayer);
 		MessageRouter.AddHandler<ButtonDownMessage>(OnButtonDown);
+		JailPrefab = Resources.Load<GameObject> ("JailSprite"); // Needed to load as resource to avoid crash
 	}
 	protected override IEnumerator DoSpecialMove() {
 		ServiceFactory.Instance.Resolve<UnitManager>().UnHighlightAll();

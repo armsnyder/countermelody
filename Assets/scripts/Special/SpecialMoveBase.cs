@@ -12,8 +12,7 @@ public class EndSpecialMoveMessage { }
 
 public abstract class SpecialMoveBase : MonoBehaviour {
 
-	[SerializeField]
-	protected int NumPerGame = 1;
+	public int NumPerGame = 1;
 
 	protected int NumPerformed = 0;
 	protected MessageRouter MessageRouter;
