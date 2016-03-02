@@ -63,15 +63,15 @@ public class CMUnitGenerator : MonoBehaviour, IUnitGenerator
 				continue;
 			GameObject replacement = characterSelectManager.chosen [unit.PlayerNumber, (int)unit.ColorButton];
 			MelodyUnit replacementUnit = replacement.GetComponent<MelodyUnit> ();
-			PropertyInfo[] properties = unit.GetType ().GetProperties ();
+			FieldInfo[] properties = unit.GetType ().GetFields ();
 			// Copy unit values from prefab:
 			List<string> skip = new List<string> { "playernumber", "unitcolor", "colorbutton" };
-			foreach (PropertyInfo property in properties) {
+			foreach (FieldInfo property in properties) {
 				if (skip.Contains (property.Name.ToLower ()))
 					continue;
-				if (!property.CanRead || !property.CanWrite) // If not public, skip
+				if (!property.IsPublic) // If not public, skip
 					continue;
-				property.SetValue (unit, property.GetValue (replacementUnit, null), null);
+				property.SetValue (unit, property.GetValue (replacementUnit));
 			}
 			// Replace animator:
 			UnitsParent.GetChild (i).GetComponentInChildren<Animator> ().runtimeAnimatorController = 
@@ -79,6 +79,20 @@ public class CMUnitGenerator : MonoBehaviour, IUnitGenerator
 			// Replace material:
 			UnitsParent.GetChild (i).GetComponentInChildren<SpriteRenderer> ().material = 
 				Instantiate (replacement.GetComponentInChildren<SpriteRenderer> ().sharedMaterial);
+			// Replace special move:
+			Destroy(UnitsParent.GetChild (i).gameObject.GetComponent<SpecialMoveBase>());
+			SpecialMoveBase replacementSpecial = replacement.GetComponent<SpecialMoveBase> ();
+			if (replacementSpecial == null)
+				continue;
+			Debug.Log (replacementSpecial.GetType ().ToString ());
+			UnitsParent.GetChild (i).gameObject.AddComponent (replacementSpecial.GetType ());
+			SpecialMoveBase addedSpecial = UnitsParent.GetChild (i).GetComponent<SpecialMoveBase> ();
+			properties = replacementSpecial.GetType ().GetFields ();
+			foreach (FieldInfo property in properties) {
+				if (!property.IsPublic) // If not public, skip
+					continue;
+				property.SetValue (addedSpecial, property.GetValue (replacementSpecial));
+			}
 		}
 	}
 }
