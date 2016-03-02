@@ -284,6 +284,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   NumPerGame: 1
+  music: {fileID: 8300000, guid: 4bf9a389a9d1144108e2f5edaef821a3, type: 3}
+  musicVolume: 0.2
+  moonwalkSpeed: 3
 --- !u!124 &12463386
 Behaviour:
   m_ObjectHideFlags: 1
@@ -390,8 +393,6 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: AttackRange
       value: 2
-      propertyPath: m_Controller
-      value: 
       objectReference: {fileID: 9100000, guid: 1db58803e8a17478bb30e8760bae99ec, type: 2}
     - target: {fileID: 0}
       propertyPath: m_Sprite
@@ -405,6 +406,18 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: description
       value: Ranged
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: music
+      value: 
+      objectReference: {fileID: 8300000, guid: 4bf9a389a9d1144108e2f5edaef821a3, type: 3}
+    - target: {fileID: 0}
+      propertyPath: moonwalkSpeed
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: musicVolume
+      value: 0.2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}

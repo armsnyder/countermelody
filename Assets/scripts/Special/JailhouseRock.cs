@@ -26,7 +26,13 @@ public class JailhouseRock : SpecialMoveBase {
 			u.Cell.MarkAsReachable();
 		}
 
-		return base.DoSpecialMove();
+		yield return new WaitForSeconds(2);
+
+		while (audioSource.isPlaying) {
+			yield return null;
+		}
+		isActive = false;
+		MessageRouter.RaiseMessage(new EndSpecialMoveMessage());
 	}
 
 	void OnSwitchPlayer(SwitchPlayerMessage m) {
@@ -66,6 +72,7 @@ public class JailhouseRock : SpecialMoveBase {
 					DisableUnit(recipient);
 					ServiceFactory.Instance.Resolve<UnitManager>().UnHighlightAll();
 				}
+				audioSource.Play ();
 				break;
 		}
 	}

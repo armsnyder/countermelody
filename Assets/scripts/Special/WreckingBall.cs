@@ -7,7 +7,7 @@ public class WreckingBall : SpecialMoveBase {
 
 	private bool isAnimating;
 	private bool hasSwung = false;
-	private float MOVEMENT_TIME = .5f;
+	private readonly int MUSIC_INTRO_SAMPLES = 56006;
 	[SerializeField]
 	private GameObject WreckingBallSprite;
 	[SerializeField]
@@ -35,6 +35,7 @@ public class WreckingBall : SpecialMoveBase {
 			case InputButton.RIGHT:
 				hasSwung = true;
 				StartCoroutine(SwingWreckingBall(BoardInterpreter.DirectionToVector(m.Button)));
+				audioSource.Play ();
 				break;
 		}
 	}
@@ -60,6 +61,12 @@ public class WreckingBall : SpecialMoveBase {
 	protected IEnumerator SwingWreckingBall(Vector2 direction) {
 		isAnimating = true;
 
+		while (audioSource.timeSamples < MUSIC_INTRO_SAMPLES) {
+			yield return null; // Wait for "I came in like a--" to pass before swinging ball
+		}
+
+		float swingTime = audioSource.clip.length - audioSource.time;
+
 		GameObject wreckingBallSprite = GameObjectUtil.Instantiate(WreckingBallSprite);
 
 		CMCellGrid grid = ServiceFactory.Instance.Resolve<CellGrid>() as CMCellGrid;
@@ -83,7 +90,7 @@ public class WreckingBall : SpecialMoveBase {
 		}
 
 		float i = 0;
-		float rate = 1.0f / MOVEMENT_TIME;
+		float rate = 1.0f / swingTime;
 
 		wreckingBallSprite.transform.GetChild(0).eulerAngles += new Vector3(20 * Math.Abs(direction.y), 0, -60 * Math.Abs(direction.x));
 

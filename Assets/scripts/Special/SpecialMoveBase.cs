@@ -13,15 +13,21 @@ public class EndSpecialMoveMessage { }
 public abstract class SpecialMoveBase : MonoBehaviour {
 
 	public int NumPerGame = 1;
+	public AudioClip music;
+	public float musicVolume;
 
 	protected int NumPerformed = 0;
 	protected MessageRouter MessageRouter;
 	protected Song Song;
 	protected bool isActive;
+	protected AudioSource audioSource;
 
 	protected virtual void Start () {
 		MessageRouter = ServiceFactory.Instance.Resolve<MessageRouter>();
 		MessageRouter.AddHandler<TriggerSpecialMoveMessage>(OnTriggerSpecial);
+		audioSource = gameObject.AddComponent<AudioSource> ();
+		audioSource.clip = music;
+		audioSource.volume = musicVolume;
 	}
 
 	protected virtual void OnTriggerSpecial(TriggerSpecialMoveMessage m) {

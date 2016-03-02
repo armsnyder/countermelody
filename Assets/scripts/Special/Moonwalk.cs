@@ -7,10 +7,13 @@ using System;
 public class Moonwalk : SpecialMoveBase {
 	protected bool isMoving = false;
 	private bool hasMoved = false;
+	public float moonwalkSpeed = 3;
+	private readonly float MUSIC_FADE_OUT_TIME = 0.1f;
 
 	protected override void Start() {
 		base.Start();
 		MessageRouter.AddHandler<ButtonDownMessage>(OnButtonDown);
+		audioSource.loop = true;
 	}
 
 	void OnButtonDown(ButtonDownMessage m) {
@@ -30,8 +33,24 @@ public class Moonwalk : SpecialMoveBase {
 			case InputButton.RIGHT:
 				hasMoved = true;
 				StartCoroutine(MovementAnimation(BoardInterpreter.DirectionToVector(m.Button)));
+				StartCoroutine (PlayMusic ());
 				break;
 		}
+	}
+
+	IEnumerator PlayMusic() {
+		audioSource.Play ();
+		while (isMoving) {
+			yield return null;
+		}
+		float elapsedFade = 0;
+		while (elapsedFade < MUSIC_FADE_OUT_TIME) {
+			audioSource.volume = (1 - elapsedFade / MUSIC_FADE_OUT_TIME) * musicVolume;
+			elapsedFade += Time.deltaTime;
+			yield return null;
+		}
+		audioSource.Stop ();
+		audioSource.volume = musicVolume;
 	}
 
 	protected override IEnumerator DoSpecialMove() {
@@ -41,7 +60,7 @@ public class Moonwalk : SpecialMoveBase {
 
 		yield return new WaitForSeconds(2);
 
-		while (isMoving) {
+		while (isMoving || audioSource.isPlaying) {
 			yield return null;
 		}
 		
@@ -80,7 +99,7 @@ public class Moonwalk : SpecialMoveBase {
 			float totalDistance = Vector3.Distance(transform.position, neighbor.transform.position);
 			float moveProgress = 0;
 			while (moveProgress < totalDistance) {
-				moveProgress += Time.deltaTime * GetComponent<MelodyUnit>().MovementSpeed;
+				moveProgress += Time.deltaTime * moonwalkSpeed;
 				if (moveProgress > totalDistance)
 					moveProgress = totalDistance;
 				transform.position = Vector3.Lerp(startPosition, neighbor.transform.position, moveProgress / totalDistance);
