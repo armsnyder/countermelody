@@ -8,13 +8,14 @@ public class WreckingBall : SpecialMoveBase {
 	private bool isAnimating;
 	private bool hasSwung = false;
 	private float MOVEMENT_TIME = .5f;
+	[SerializeField]
 	private GameObject WreckingBallSprite;
-	public int damage = 50;
+	[SerializeField]
+	private int damage = 50;
 
 	protected override void Start() {
 		base.Start();
 		MessageRouter.AddHandler<ButtonDownMessage>(OnButtonDown);
-		WreckingBallSprite = Resources.Load<GameObject> ("WreckingBallPrefab"); // Needed to load as resource to avoid crash
 	}
 
 	void OnButtonDown(ButtonDownMessage m) {

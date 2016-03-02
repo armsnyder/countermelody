@@ -283,6 +283,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d24c4413c92fb64297372a1991c9af3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  NumPerGame: 1
   DisableTurns: 5
   JailPrefab: {fileID: 152296, guid: 965e326b5f1c17f428dd5dbe5d1b0c92, type: 2}
 --- !u!124 &12441814
@@ -403,8 +404,6 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: HitPoints
       value: 150
-      propertyPath: m_Sprite
-      value: 
       objectReference: {fileID: 21300000, guid: 2e1380bfdc4434e1ea8c0837b370c2f2,
         type: 3}
     - target: {fileID: 0}
@@ -415,6 +414,10 @@ Prefab:
       propertyPath: description
       value: Melee
       objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: JailPrefab
+      value: 
+      objectReference: {fileID: 152296, guid: 965e326b5f1c17f428dd5dbe5d1b0c92, type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 163780}
