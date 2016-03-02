@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using Frictionless;
 using UnityEngine.SceneManagement;
 
@@ -24,15 +25,17 @@ public class SceneChangeMessage {
 /// Character select manager. This is the controller for all character select logic. If you're looking for view code,
 /// check CharacterSelectUI.cs
 /// </summary>
-public class CharacterSelectManager : MonoBehaviour {
+public class CharacterSelectManager : MonoBehaviour, IMultiSceneSingleton {
 
 	public GameObject[] unitPrefabs;
 
 	private MessageRouter messageRouter;
 	private int[] selected;
-	private GameObject[,] chosen;
+
+	public GameObject[,] chosen;
 
 	void Awake() {
+		DontDestroyOnLoad(transform.gameObject); // because we need to access public chosen array in next scene
 		ServiceFactory.Instance.RegisterSingleton<MessageRouter> ();
 		ServiceFactory.Instance.RegisterSingleton<CharacterSelectManager> (this);
 		selected = new int[2];
@@ -124,5 +127,9 @@ public class CharacterSelectManager : MonoBehaviour {
 		yield return null;
 		yield return null;
 		SceneManager.LoadScene (nextScene);
+	}
+
+	public IEnumerator HandleNewSceneLoaded() {
+		return null;
 	}
 }

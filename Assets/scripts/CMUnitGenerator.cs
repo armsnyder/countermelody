@@ -2,17 +2,25 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Frictionless;
+using System.Reflection;
 
 
 public class CMUnitGenerator : MonoBehaviour, IUnitGenerator
 {
     public Transform UnitsParent;
 
+	void Start() {
+		ServiceFactory.Instance.RegisterSingleton<CMUnitGenerator> (this);
+	}
+
     /// <summary>
     /// Returns units that are already children of UnitsParent object.
     /// </summary>
     public List<Unit> SpawnUnits(List<Cell> cells)
     {
+		ReplaceDefaultUnitsWithChosenUnits ();
+
         List<Unit> ret = new List<Unit>();
         for (int i = 0; i < UnitsParent.childCount; i++)
         {
@@ -41,4 +49,36 @@ public class CMUnitGenerator : MonoBehaviour, IUnitGenerator
         }
         return ret;
     }
+
+	/// <summary>
+	/// Replaces the pre-placed units in the scene with units chosen by the player in the Character Select screen.
+	/// </summary>
+	void ReplaceDefaultUnitsWithChosenUnits () {
+		CharacterSelectManager characterSelectManager = ServiceFactory.Instance.Resolve<CharacterSelectManager> ();
+		if (characterSelectManager == null)
+			return; // If the Movement scene is started first and no characters have been properly chosen, abort!
+		for (int i = 0; i < UnitsParent.childCount; i++) {
+			MelodyUnit unit = UnitsParent.GetChild (i).GetComponent<MelodyUnit> ();
+			if (unit == null)
+				continue;
+			GameObject replacement = characterSelectManager.chosen [unit.PlayerNumber, (int)unit.ColorButton];
+			MelodyUnit replacementUnit = replacement.GetComponent<MelodyUnit> ();
+			PropertyInfo[] properties = unit.GetType ().GetProperties ();
+			// Copy unit values from prefab:
+			List<string> skip = new List<string> { "playernumber", "unitcolor", "colorbutton" };
+			foreach (PropertyInfo property in properties) {
+				if (skip.Contains (property.Name.ToLower ()))
+					continue;
+				if (!property.CanRead || !property.CanWrite) // If not public, skip
+					continue;
+				property.SetValue (unit, property.GetValue (replacementUnit, null), null);
+			}
+			// Replace animator:
+			UnitsParent.GetChild (i).GetComponentInChildren<Animator> ().runtimeAnimatorController = 
+				replacement.GetComponentInChildren<Animator> ().runtimeAnimatorController;
+			// Replace material:
+			UnitsParent.GetChild (i).GetComponentInChildren<SpriteRenderer> ().material = 
+				Instantiate (replacement.GetComponentInChildren<SpriteRenderer> ().sharedMaterial);
+		}
+	}
 }
