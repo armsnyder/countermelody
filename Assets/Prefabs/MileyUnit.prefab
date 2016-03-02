@@ -217,8 +217,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   NumPerGame: 1
-  WreckingBallSprite: {fileID: 101030, guid: d4ec8621268ad144e8b67a37d7e5c2eb, type: 2}
-  damage: 50
 --- !u!114 &11446364
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -406,10 +404,6 @@ Prefab:
       propertyPath: description
       value: Healer
       objectReference: {fileID: 0}
-    - target: {fileID: 0}
-      propertyPath: WreckingBallSprite
-      value: 
-      objectReference: {fileID: 101030, guid: d4ec8621268ad144e8b67a37d7e5c2eb, type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 161762}
