@@ -5,7 +5,12 @@ using Frictionless;
 public class BoardInterpreter : Interpreter {
 
 	private bool IsAcceptingActions;
-	private const bool SWITCH_UNIT_ON_END_BEAT = false;
+	private const bool SWITCH_UNIT_ON_END_BEAT = true;
+	public static Dictionary<int, List<InputButton>> HeldThisBeat;
+
+	protected virtual void Awake() {
+		HeldThisBeat = new Dictionary<int, List<InputButton>> ();
+	}
 
 	protected override void Start() {
 		base.Start ();
@@ -71,6 +76,19 @@ public class BoardInterpreter : Interpreter {
 					});
 				}
 				break;
+		case InputButton.GREEN:
+		case InputButton.RED:
+		case InputButton.YELLOW:
+		case InputButton.BLUE:
+		case InputButton.ORANGE:
+			// Add color fret to frets held during this beat:
+			if (IsAcceptingActions) {
+				if (!HeldThisBeat.ContainsKey (m.PlayerNumber)) {
+					HeldThisBeat.Add (m.PlayerNumber, new List<InputButton> ());
+				}
+				HeldThisBeat [m.PlayerNumber].Add (m.Button);
+			}
+			break;
 			default:
 				break;
 		}
@@ -108,13 +126,14 @@ public class BoardInterpreter : Interpreter {
 	private void OnExitBeatWindow(ExitBeatWindowMessage m) {
 		if (!enabled)
 			return;
-		if (HeldFrets.ContainsKey(CurrentPlayer) && HeldFrets[CurrentPlayer].Count > 0 && IsAcceptingActions 
+		if (HeldThisBeat.ContainsKey(CurrentPlayer) && HeldThisBeat[CurrentPlayer].Count > 0 && IsAcceptingActions 
 			&& SWITCH_UNIT_ON_END_BEAT) {
 			MessageRouter.RaiseMessage(new UnitActionMessage() {
 				ActionType = UnitActionMessageType.SELECT,
 				PlayerNumber = CurrentPlayer,
-				Color = HeldFrets[CurrentPlayer][HeldFrets[CurrentPlayer].Count - 1]
+				Color = HeldThisBeat[CurrentPlayer][HeldThisBeat[CurrentPlayer].Count - 1]
 			});
+			HeldThisBeat.Clear ();
 		}
 
 		IsAcceptingActions = false;
