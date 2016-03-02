@@ -25,8 +25,10 @@ public class MelodyUnit : Unit {
 	public Color unitColor;
 	public MessageRouter MessageRouter;
 	public float hopHeight = 10;
-	public UnitChar character;
 	private int maxHitPoints;
+	public string characterName;
+	public string description;
+	protected float danceAnimationEaseIn = 1f / 12; // assumes 1 frame at 12 fps
 
     public override void Initialize()
     {
@@ -43,8 +45,6 @@ public class MelodyUnit : Unit {
 		} else {
 			GetComponentInChildren<SpriteRenderer> ().material.EnableKeyword ("INVERT_OFF");
 		}
-		// Set the character
-		GetComponentInChildren<Animator>().runtimeAnimatorController = UnitCharManager.ToAnimator(character);
 		MessageRouter = ServiceFactory.Instance.Resolve<MessageRouter> ();
 		MessageRouter.AddHandler<BeatCenterMessage> (OnBeatCenter);
         this.UnMark();
@@ -213,7 +213,7 @@ public class MelodyUnit : Unit {
 
 	void OnBeatCenter(BeatCenterMessage m) {
 		// Animate unit's beat animation on every beat
-		float whenStartAnimate = 60f / m.BeatsPerMinute - UnitCharManager.GetDanceEaseIn(character);
+		float whenStartAnimate = 60f / m.BeatsPerMinute - danceAnimationEaseIn;
 		if (whenStartAnimate < 0)
 			whenStartAnimate = 0f;
 		StartCoroutine (QueuedDance (whenStartAnimate));

@@ -249,7 +249,8 @@ MonoBehaviour:
   ColorButton: 3
   unitColor: {r: 0.12282246, g: 0.007298882, b: 0.99264705, a: 0.991}
   hopHeight: 1
-  character: 0
+  characterName: Elvis Presley
+  description: Melee
 --- !u!114 &11448352
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -317,7 +318,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: 2e1380bfdc4434e1ea8c0837b370c2f2, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -402,6 +403,17 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: HitPoints
       value: 150
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 2e1380bfdc4434e1ea8c0837b370c2f2,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: characterName
+      value: Elvis Presley
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: description
+      value: Melee
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}

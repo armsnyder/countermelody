@@ -178,7 +178,7 @@ public class UnitManager : MonoBehaviour
 	void Attack(InputButton color, int playerNumber) {
 		MelodyUnit recipient = null;
 		List<Unit> recipients;
-		if (SelectedUnit[playerNumber].character == UnitChar.MILEY) {
+		if (SelectedUnit[playerNumber].GetComponent<MelodyUnit>() is MileyUnit) {
 			if (color == InputButton.NONE) {
 				recipients = GameBoard.Units.FindAll(c => 
 				(c != SelectedUnit[playerNumber]) &&

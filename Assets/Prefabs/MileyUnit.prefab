@@ -176,7 +176,7 @@ Animator:
   m_GameObject: {fileID: 195746}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 83e2db8b02bcf470c865f02f5e25c973, type: 2}
+  m_Controller: {fileID: 9100000, guid: daa47443a84174d9fbb9b6acc377e74f, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -283,7 +283,8 @@ MonoBehaviour:
   ColorButton: 4
   unitColor: {r: 0.99264705, g: 0.62619317, b: 0, a: 0.978}
   hopHeight: 1
-  character: 2
+  characterName: Miley Cyrus
+  description: Healer
 --- !u!124 &12448930
 Behaviour:
   m_ObjectHideFlags: 1
@@ -317,7 +318,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: de5bf7e4575184ca5bee3552b350acf6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -386,7 +387,24 @@ Prefab:
   serializedVersion: 2
   m_Modification:
     m_TransformParent: {fileID: 0}
-    m_Modifications: []
+    m_Modifications:
+    - target: {fileID: 0}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: de5bf7e4575184ca5bee3552b350acf6,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: daa47443a84174d9fbb9b6acc377e74f, type: 2}
+    - target: {fileID: 0}
+      propertyPath: characterName
+      value: Miley Cyrus
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: description
+      value: Healer
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 161762}

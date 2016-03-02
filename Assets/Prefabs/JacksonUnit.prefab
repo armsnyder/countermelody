@@ -176,7 +176,7 @@ Animator:
   m_GameObject: {fileID: 139980}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 83e2db8b02bcf470c865f02f5e25c973, type: 2}
+  m_Controller: {fileID: 9100000, guid: 1db58803e8a17478bb30e8760bae99ec, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -270,7 +270,8 @@ MonoBehaviour:
   ColorButton: 2
   unitColor: {r: 1, g: 0.9831643, b: 0.3897059, a: 0.984}
   hopHeight: 1
-  character: 1
+  characterName: Michael Jackson
+  description: Ranged
 --- !u!114 &11481162
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -316,7 +317,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: aacc82c229ba2435e9e645a6d23b9d26, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -389,6 +390,21 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: AttackRange
       value: 2
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 1db58803e8a17478bb30e8760bae99ec, type: 2}
+    - target: {fileID: 0}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: aacc82c229ba2435e9e645a6d23b9d26,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: characterName
+      value: Michael Jackson
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: description
+      value: Ranged
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
