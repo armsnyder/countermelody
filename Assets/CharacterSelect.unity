@@ -422,7 +422,6 @@ GameObject:
   - 92: {fileID: 428337805}
   - 124: {fileID: 428337804}
   - 81: {fileID: 428337803}
-  - 114: {fileID: 428337813}
   - 114: {fileID: 428337812}
   - 114: {fileID: 428337811}
   - 114: {fileID: 428337810}
@@ -551,19 +550,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PlayerNumber: 0
   WhammyThreshold: 20
---- !u!114 &428337813
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 428337802}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 44ea31939cd2c4b31a828e3b96b8c14f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  updateInterval: 1
-  findWiimotesOnEnable: 1
 --- !u!1 &697782509
 GameObject:
   m_ObjectHideFlags: 0
@@ -689,6 +675,47 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 4b0455f9d9ab9431eaef2d00cf548d7f, type: 2}
   m_IsPrefabParent: 0
+--- !u!1 &824962358
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 824962360}
+  - 114: {fileID: 824962359}
+  m_Layer: 0
+  m_Name: GuitarConnectionManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &824962359
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 824962358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44ea31939cd2c4b31a828e3b96b8c14f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  updateInterval: 1
+  findWiimotesOnEnable: 1
+--- !u!4 &824962360
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 824962358}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 5.8, z: -53.88}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 9
 --- !u!1 &919692876
 GameObject:
   m_ObjectHideFlags: 0

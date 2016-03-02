@@ -65,7 +65,7 @@ public class GuitarInput : ControllerInput {
 	}
 
 	void OnDisable() {
-		MessageRouter.RaiseMessage(new UnregisterGuitarInputMessage() { PlayerNumber = PlayerNumber });
+//		MessageRouter.RaiseMessage(new UnregisterGuitarInputMessage() { PlayerNumber = PlayerNumber });
 	}
 
 	void Update() {

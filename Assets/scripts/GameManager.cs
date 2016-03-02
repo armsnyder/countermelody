@@ -23,7 +23,8 @@ public class GameManager : MonoBehaviour {
 
 	void Awake() {
 		// Register MessageRouter (the event BUS) as a singleton so that it can be referenced anywhere
-		ServiceFactory.Instance.RegisterSingleton<MessageRouter> ();
+		if (ServiceFactory.Instance.Resolve<MessageRouter> () == null)
+			ServiceFactory.Instance.RegisterSingleton<MessageRouter> ();
 		// Register GameManager as a singleton so we can get access to things like Number of Players elsewhere
 		ServiceFactory.Instance.RegisterSingleton<GameManager>(this);
 		_CurrentPlayer = 0;

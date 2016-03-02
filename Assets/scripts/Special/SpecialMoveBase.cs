@@ -48,6 +48,8 @@ public abstract class SpecialMoveBase : MonoBehaviour {
 	}
 
 	void OnDestroy() {
-		MessageRouter.RemoveHandler<TriggerSpecialMoveMessage> (OnTriggerSpecial);
+		if (MessageRouter != null) {
+			MessageRouter.RemoveHandler<TriggerSpecialMoveMessage> (OnTriggerSpecial);
+		}
 	}
 }

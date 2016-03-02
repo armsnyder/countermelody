@@ -84,7 +84,6 @@ public class CMUnitGenerator : MonoBehaviour, IUnitGenerator
 			SpecialMoveBase replacementSpecial = replacement.GetComponent<SpecialMoveBase> ();
 			if (replacementSpecial == null)
 				continue;
-			Debug.Log (replacementSpecial.GetType ().ToString ());
 			UnitsParent.GetChild (i).gameObject.AddComponent (replacementSpecial.GetType ());
 			SpecialMoveBase addedSpecial = UnitsParent.GetChild (i).GetComponent<SpecialMoveBase> ();
 			properties = replacementSpecial.GetType ().GetFields ();

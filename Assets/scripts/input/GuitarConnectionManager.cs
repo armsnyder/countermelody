@@ -25,7 +25,7 @@ public class GuitarExtensionDisconnectMessage : WiimoteMessage {}
 /// first connected to the computer via the computer's bluetooth settings by the player before this script will have
 /// access to them.
 /// </summary>
-public class GuitarConnectionManager : MonoBehaviour {
+public class GuitarConnectionManager : MonoBehaviour, IMultiSceneSingleton {
 
 	[SerializeField]
 	private float updateInterval = 1f;  // Number of seconds between checking on the status of connected wiimotes
@@ -60,6 +60,12 @@ public class GuitarConnectionManager : MonoBehaviour {
 	}
 
 	private void Start() {
+		GuitarConnectionManager managerSingleton = ServiceFactory.Instance.Resolve<GuitarConnectionManager> ();
+		if (managerSingleton != null && managerSingleton != this) {
+			Destroy (this);
+		}
+		DontDestroyOnLoad(transform.gameObject);
+		ServiceFactory.Instance.RegisterSingleton<GuitarConnectionManager> (this);
 		MessageRouter = ServiceFactory.Instance.Resolve<MessageRouter> ();
 		MessageRouter.AddHandler<RegisterGuitarInputMessage> (OnRegisterGuitarInputMessage);
 		MessageRouter.AddHandler<UnregisterGuitarInputMessage> (OnUnregisterGuitarInputMessage);
@@ -145,7 +151,8 @@ public class GuitarConnectionManager : MonoBehaviour {
 	}
 
 	private void OnRegisterGuitarInputMessage(RegisterGuitarInputMessage e) {
-		Debug.Assert (!wiimotes.ContainsKey (e.PlayerNumber));
+		if (wiimotes.ContainsKey (e.PlayerNumber) || playerRequestQueue.Contains (e.PlayerNumber))
+			return;
 		Debug.Assert (!isGuitarConnected.ContainsKey (e.PlayerNumber));
 		Debug.Assert (!readFailures.ContainsKey (e.PlayerNumber));
 		EnqueuePlayerNumber (e.PlayerNumber);
@@ -227,5 +234,9 @@ public class GuitarConnectionManager : MonoBehaviour {
 			yield return new WaitForSeconds(updateInterval);
 		}
 		yield return null;
+	}
+
+	public IEnumerator HandleNewSceneLoaded() {
+		return null;
 	}
 }
