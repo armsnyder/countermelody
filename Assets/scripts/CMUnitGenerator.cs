@@ -57,41 +57,26 @@ public class CMUnitGenerator : MonoBehaviour, IUnitGenerator
 		CharacterSelectManager characterSelectManager = ServiceFactory.Instance.Resolve<CharacterSelectManager> ();
 		if (characterSelectManager == null)
 			return; // If the Movement scene is started first and no characters have been properly chosen, abort!
+		Transform ChosenParent = new GameObject("Units Parent").transform;
 		for (int i = 0; i < UnitsParent.childCount; i++) {
 			MelodyUnit unit = UnitsParent.GetChild (i).GetComponent<MelodyUnit> ();
 			if (unit == null)
 				continue;
-			GameObject replacement = characterSelectManager.chosen [unit.PlayerNumber, (int)unit.ColorButton];
+			// Instantiate correct prefab:
+			GameObject replacement = Instantiate (characterSelectManager.chosen [unit.PlayerNumber, (int)unit.ColorButton]);
+			replacement.transform.parent = ChosenParent;
+			replacement.transform.position = unit.transform.position;
 			MelodyUnit replacementUnit = replacement.GetComponent<MelodyUnit> ();
-			FieldInfo[] properties = unit.GetType ().GetFields ();
-			// Copy unit values from prefab:
-			List<string> skip = new List<string> { "playernumber", "unitcolor", "colorbutton" };
-			foreach (FieldInfo property in properties) {
-				if (skip.Contains (property.Name.ToLower ()))
-					continue;
-				if (!property.IsPublic) // If not public, skip
-					continue;
-				property.SetValue (unit, property.GetValue (replacementUnit));
-			}
-			// Replace animator:
-			UnitsParent.GetChild (i).GetComponentInChildren<Animator> ().runtimeAnimatorController = 
-				replacement.GetComponentInChildren<Animator> ().runtimeAnimatorController;
+			// Set new unit's color and player number:
+			replacementUnit.ColorButton = unit.ColorButton;
+			replacementUnit.unitColor = unit.unitColor;
+			replacementUnit.PlayerNumber = unit.PlayerNumber;
 			// Replace material:
-			UnitsParent.GetChild (i).GetComponentInChildren<SpriteRenderer> ().material = 
-				Instantiate (replacement.GetComponentInChildren<SpriteRenderer> ().sharedMaterial);
-			// Replace special move:
-			Destroy(UnitsParent.GetChild (i).gameObject.GetComponent<SpecialMoveBase>());
-			SpecialMoveBase replacementSpecial = replacement.GetComponent<SpecialMoveBase> ();
-			if (replacementSpecial == null)
-				continue;
-			UnitsParent.GetChild (i).gameObject.AddComponent (replacementSpecial.GetType ());
-			SpecialMoveBase addedSpecial = UnitsParent.GetChild (i).GetComponent<SpecialMoveBase> ();
-			properties = replacementSpecial.GetType ().GetFields ();
-			foreach (FieldInfo property in properties) {
-				if (!property.IsPublic) // If not public, skip
-					continue;
-				property.SetValue (addedSpecial, property.GetValue (replacementSpecial));
-			}
+			replacement.GetComponentInChildren<SpriteRenderer> ().material = 
+				Instantiate (unit.GetComponentInChildren<SpriteRenderer> ().sharedMaterial);
 		}
+		// Swap out default units with newly constructed units:
+		Destroy (UnitsParent.gameObject);
+		UnitsParent = ChosenParent;
 	}
 }
