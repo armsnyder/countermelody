@@ -10,7 +10,7 @@ public class DamageDisplay : MonoBehaviour {
 			yield return new WaitForSeconds(1);
 		}
 		else if (damage == 0) {
-			GetComponent<Text>().text = damage.ToString();
+			GetComponent<Text>().text = "Miss!";
 			yield return new WaitForSeconds(1);
 		}
 		GameObjectUtil.Destroy(gameObject);

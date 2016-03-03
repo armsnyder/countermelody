@@ -20,12 +20,17 @@ public class TakeDamageMessage {
 	public MelodyUnit Recipient;
 }
 
+public class CriticalDefendMessage {
+	public MelodyUnit Recipient;
+}
+
 public class MelodyUnit : Unit {
 	public InputButton ColorButton;
 	public Color unitColor;
 	public MessageRouter MessageRouter;
 	public float hopHeight = 10;
 	private int maxHitPoints;
+	public float critDefendPercent = 0.5f;
 	public string characterName;
 	public string description;
 	protected float danceAnimationEaseIn = 1f / 12; // assumes 1 frame at 12 fps
@@ -53,6 +58,10 @@ public class MelodyUnit : Unit {
 	public void Defend(Unit other, int damage, float defenseModifier) {
 		MarkAsDefending(other);
 		int damageTaken = Mathf.Max(damage - (int)(DefenceFactor * defenseModifier), 0);
+		if (defenseModifier >= 0.999f && UnityEngine.Random.value < critDefendPercent) {
+			damageTaken = 0;
+			MessageRouter.RaiseMessage (new CriticalDefendMessage () { Recipient = this });
+		}
 		HitPoints -= damageTaken;
 		MessageRouter.RaiseMessage(new TakeDamageMessage() {
 			damage = damageTaken,
