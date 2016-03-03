@@ -221,7 +221,7 @@ public class GuitarConnectionManager : MonoBehaviour, IMultiSceneSingleton {
 							readFailures.Add (playerNumber, 0);
 							WiimoteManager.Wiimotes [i].SendPlayerLED (playerNumber == 0, playerNumber == 1, 
 								playerNumber == 2, playerNumber == 3);
-							WiimoteManager.Wiimotes [i].SendDataReportMode (InputDataType.REPORT_BUTTONS_EXT8);
+							WiimoteManager.Wiimotes [i].SendDataReportMode (InputDataType.REPORT_BUTTONS_ACCEL_EXT16);
 							Debug.Log ("wiimote connected: " + playerNumber);
 							MessageRouter.RaiseMessage (new WiimoteConnectMessage ());
 						} else {

@@ -35,10 +35,12 @@ public class GuitarInput : ControllerInput {
 		public bool down;
 		public bool left;
 		public bool right;
+		public bool tilt;
 	}
-
-	[SerializeField]
-	public int WhammyThreshold = 20;
+		
+	private const int WhammyThreshold = 20;
+	private const int accelThreshold = 100;
+	private const int accelRest = 580;
 
 	private GuitarConnectionManager GuitarInputManager;
 	private MessageRouter MessageRouter;
@@ -96,6 +98,7 @@ public class GuitarInput : ControllerInput {
 		ThisFrameData.down = wiimote.Button.d_left || stick[1] > 0.5 + stickThreshold;
 		ThisFrameData.left = wiimote.Button.d_up || stick[0] < 0.5 - stickThreshold;
 		ThisFrameData.right = wiimote.Button.d_down || stick[0] > 0.5 + stickThreshold;
+		ThisFrameData.tilt = Mathf.Abs(wiimote.Accel.accel [0] - accelRest) > accelThreshold;
 
 
 		// plus
@@ -191,6 +194,13 @@ public class GuitarInput : ControllerInput {
 			MessageRouter.RaiseMessage(new ButtonDownMessage() { Button = InputButton.RIGHT, PlayerNumber = PlayerNumber });
 		} else if (!ThisFrameData.right && LastFrameData.right) {
 			MessageRouter.RaiseMessage(new ButtonUpMessage() { Button = InputButton.RIGHT, PlayerNumber = PlayerNumber });
+		}
+
+		// tilt
+		if (ThisFrameData.tilt && !LastFrameData.tilt) {
+			MessageRouter.RaiseMessage(new ButtonDownMessage() { Button = InputButton.TILT, PlayerNumber = PlayerNumber });
+		} else if (!ThisFrameData.tilt && LastFrameData.tilt) {
+			MessageRouter.RaiseMessage(new ButtonUpMessage() { Button = InputButton.TILT, PlayerNumber = PlayerNumber });
 		}
 
 		// Update LastFrameData

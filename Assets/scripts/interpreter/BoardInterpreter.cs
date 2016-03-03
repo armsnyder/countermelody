@@ -63,18 +63,13 @@ public class BoardInterpreter : Interpreter {
 					});
 				}
 				break;
-			case InputButton.WHAMMY:
+			case InputButton.TILT:
 				if (m.PlayerNumber == CurrentPlayer && IsAcceptingActions) {
 					MessageRouter.RaiseMessage(new UnitActionMessage() {
 						ActionType = UnitActionMessageType.SPECIAL,
 						PlayerNumber = CurrentPlayer
 					});
-				} else {
-					MessageRouter.RaiseMessage(new RejectActionMessage() {
-						ActionType = UnitActionMessageType.SPECIAL,
-						PlayerNumber = CurrentPlayer
-					});
-				}
+				} // No reject sent since tilting guitar can be unintentional
 				break;
 		case InputButton.GREEN:
 		case InputButton.RED:

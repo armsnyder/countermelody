@@ -1631,7 +1631,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PlayerNumber: 0
-  WhammyThreshold: 20
 --- !u!114 &1471062529
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1644,7 +1643,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PlayerNumber: 1
-  WhammyThreshold: 20
 --- !u!114 &1471062530
 MonoBehaviour:
   m_ObjectHideFlags: 0
