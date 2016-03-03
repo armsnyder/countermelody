@@ -69,7 +69,7 @@ public class MelodyUnit : Unit {
 		});
 		UpdateHealthBar();
 
-		if (HitPoints < 0)
+		if (HitPoints <= 0)
 			OnDestroyed();
 	}
 
@@ -83,9 +83,6 @@ public class MelodyUnit : Unit {
 		});
 
 		UpdateHealthBar();
-
-		if (HitPoints < 0)
-			OnDestroyed();
 	}
 	
 	public void UpdateHealthBar() {
