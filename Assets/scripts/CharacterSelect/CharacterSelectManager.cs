@@ -65,7 +65,7 @@ public class CharacterSelectManager : MonoBehaviour, IMultiSceneSingleton {
 			Choose (m.PlayerNumber, m.Button);
 			break;
 		case InputButton.PLUS:
-		case InputButton.WHAMMY: // Because keyboard ENTER is mapped to whammy for now
+		case InputButton.TILT: // AKA Enter key on keyboard
 			StartGame ();
 			break;
 		}
