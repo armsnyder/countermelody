@@ -178,44 +178,11 @@ public class UnitManager : MonoBehaviour
 	void Attack(InputButton color, int playerNumber) {
 		MelodyUnit recipient = null;
 		List<Unit> recipients;
-		if (SelectedUnit[playerNumber].GetComponent<MelodyUnit>() is MileyUnit) {
-			if (color == InputButton.NONE) {
-				recipients = GameBoard.Units.FindAll(c => 
-				(c != SelectedUnit[playerNumber]) &&
-				(c.PlayerNumber == playerNumber) && 
-				(Math.Abs(SelectedUnit[playerNumber].Cell.OffsetCoord[0] - c.Cell.OffsetCoord[0])) + (Math.Abs(SelectedUnit[playerNumber].Cell.OffsetCoord[1] - c.Cell.OffsetCoord[1])) <= SelectedUnit[playerNumber].AttackRange);
-	            int lowestValue = int.MaxValue;
-	            if (recipients.Count > 0) {
-	            	recipient = recipients[0] as MelodyUnit;
-	            	lowestValue = recipient.HitPoints;
-	            }
-	            foreach(Unit r in recipients) {
-	            	if (r.HitPoints < lowestValue) {
-	            		recipient = r as MelodyUnit;
-	            		lowestValue = r.HitPoints;
-	            	}
-	            }
-				if (recipient) {
-					SelectedUnit [playerNumber].Heal(recipient,40,50);	
-				}
-				else {
-					MessageRouter.RaiseMessage(new RejectActionMessage { PlayerNumber = GameBoard.CurrentPlayerNumber, ActionType = UnitActionMessageType.ATTACK });
-				}
-				return;
-			}
-			recipient = GameBoard.Units.Find(c => 
-				(c.PlayerNumber == playerNumber) && 
-				((c as MelodyUnit).ColorButton == color) &&
-				(Math.Abs(SelectedUnit[playerNumber].Cell.OffsetCoord[0] - c.Cell.OffsetCoord[0])) + (Math.Abs(SelectedUnit[playerNumber].Cell.OffsetCoord[1] - c.Cell.OffsetCoord[1])) <= SelectedUnit[playerNumber].AttackRange) 
-				as MelodyUnit;		
-			if (recipient && SelectedUnit[playerNumber]) {
-				// Passes control to BattleManager
-				SelectedUnit [playerNumber].Heal(recipient,40,50);				
-			} else {
-				MessageRouter.RaiseMessage(new RejectActionMessage { PlayerNumber = GameBoard.CurrentPlayerNumber, ActionType = UnitActionMessageType.ATTACK });
-			}
-		}
-		else {
+		/// Just a note that the code here is a bit asymmetrical: The logic for healing is in a separate Healer
+		/// script, whereas the logic for attacking is within the if statement. A better design would be to put the
+		/// attack logic elsewhere, like in the MelodyUnit class, but for now, this works fine.
+		if (SelectedUnit[playerNumber].GetComponent<Healer>() == null || 
+			!SelectedUnit[playerNumber].GetComponent<Healer>().OnHealAction(color)) {
 			if (color == InputButton.NONE) {
 				recipients = GameBoard.Units.FindAll(c => 
 				(c.PlayerNumber != playerNumber) && 
@@ -234,7 +201,8 @@ public class UnitManager : MonoBehaviour
 				if (recipient) {
 					MessageRouter.RaiseMessage (new EnterBattleMessage () { 
 						AttackingUnit = SelectedUnit [playerNumber],
-						DefendingUnit = recipient
+						DefendingUnit = recipient,
+						battleType = BattleType.ATTACK
 					});
 				}
 				else {
@@ -251,7 +219,8 @@ public class UnitManager : MonoBehaviour
 				// Passes control to BattleManager
 				MessageRouter.RaiseMessage (new EnterBattleMessage () { 
 					AttackingUnit = SelectedUnit [playerNumber],
-					DefendingUnit = recipient
+					DefendingUnit = recipient,
+					battleType = BattleType.ATTACK
 				});
 			} else {
 				MessageRouter.RaiseMessage(new RejectActionMessage { PlayerNumber = GameBoard.CurrentPlayerNumber, ActionType = UnitActionMessageType.ATTACK });
@@ -262,10 +231,13 @@ public class UnitManager : MonoBehaviour
 	void MarkAttackRange() {
 		//find all cells in attack range
 		int currentPlayer = GameManager.CurrentPlayer;
+		Healer healerComponent = SelectedUnit [currentPlayer].GetComponent<Healer> ();
+		// TODO: Differentiate between attack and heal range
+		int range = Mathf.Max (SelectedUnit [currentPlayer].AttackRange, healerComponent == null ? 0 : healerComponent.range);
 		List<Cell> AttackableCells = GameBoard.Cells.FindAll(c => 
 		{
 			Vector2 offset = c.OffsetCoord - SelectedUnit[currentPlayer].Cell.OffsetCoord;
-			return Math.Abs(offset[0]) + Math.Abs(offset[1]) <= SelectedUnit[currentPlayer].AttackRange;
+			return Math.Abs(offset[0]) + Math.Abs(offset[1]) <= range;
 		});
 		//highlight them
 		foreach (Cell c in AttackableCells) {
@@ -329,14 +301,14 @@ public class UnitManager : MonoBehaviour
 	void OnExitBattle(ExitBattleMessage m) {
 		// Battle is over. Deal damage according to results.
 		// TODO: Consider whether we want the defending unit to deal damage
-		if (m.AttackingUnit == null || m.DefendingUnit == null) {
-			return;
-			// TODO: Figure out why this is ever null. Ignored for demo purposes only.
+		switch (m.battleType) {
+		case BattleType.ATTACK:
+			m.AttackingUnit.DealDamage(m.DefendingUnit, m.AttackerHitPercent, m.DefenderHitPercent);
+			break;
+		case BattleType.HEAL:
+			m.AttackingUnit.GetComponent<Healer> ().Heal (m.DefendingUnit, m.AttackerHitPercent);
+			break;
 		}
-		m.AttackingUnit.DealDamage(m.DefendingUnit, m.AttackerHitPercent, m.DefenderHitPercent);
-//		if(m.DefendingUnit.HitPoints <= 0) {
-//
-//		}
 	}
 
 	void RefocusSpotlight(MelodyUnit u, int playerNumber) {

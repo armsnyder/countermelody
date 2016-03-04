@@ -29,6 +29,7 @@ public class MelodyUnit : Unit {
 	public Color unitColor;
 	public MessageRouter MessageRouter;
 	public float hopHeight = 10;
+	public int MaxHitPoints { get { return maxHitPoints; } }
 	private int maxHitPoints;
 	public float critDefendPercent = 0.5f;
 	public string characterName;
@@ -73,10 +74,11 @@ public class MelodyUnit : Unit {
 			OnDestroyed();
 	}
 
-	void Replenish(Unit other, int damage, float defenseModifier) {
+	public void Replenish(Unit other, int amount) {
 		MarkAsDefending(other);
-		int replenish_amount = Mathf.Min(20, maxHitPoints - HitPoints);
+		int replenish_amount = Math.Min (amount, maxHitPoints - HitPoints);
 		HitPoints += replenish_amount;
+
 		MessageRouter.RaiseMessage (new ExitHealMessage () {
 			Replenish = replenish_amount,
 			Recipient = this
@@ -161,24 +163,6 @@ public class MelodyUnit : Unit {
 		MarkAsAttacking(other);
 		ActionPoints--;
 		other.Defend(this, (int) (AttackFactor * attackModifier), DefenseModifier);
-
-		if (ActionPoints == 0)
-		{
-			SetState(new UnitStateMarkedAsFinished(this));
-			MovementPoints = 0;
-		}  
-	}
-
-	public void Heal(MelodyUnit other, float attackModifier, float DefenseModifier)
-	{
-		if (isMoving)
-			return;
-		if (ActionPoints == 0)
-			return;
-
-		MarkAsAttacking(other);
-		ActionPoints--;
-		other.Replenish(this, (int) (AttackFactor * attackModifier), DefenseModifier);
 
 		if (ActionPoints == 0)
 		{

@@ -69,6 +69,8 @@ public class Target : MonoBehaviour {
 	}
 
 	void OnEnterBattle(EnterBattleMessage m) {
+		if (m.battleType == BattleType.HEAL && m.AttackingUnit.PlayerNumber != player)
+			return; // Don't show other player's targets during heal-battle
 		spriteRenderer.enabled = true;
 	}
 

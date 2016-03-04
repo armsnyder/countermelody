@@ -28,6 +28,7 @@ public class EnterBattleMessage {
 	/// Right now this is just used by Song.cs to cue unmuting instrument tracks.
 	public MelodyUnit AttackingUnit {get; set;}
 	public MelodyUnit DefendingUnit {get; set;}
+	public BattleType battleType;
 }
 
 /// <summary>
@@ -39,6 +40,7 @@ public class ExitBattleMessage {
 	public MelodyUnit DefendingUnit {get; set;}
 	public float AttackerHitPercent{ get; set; }
 	public float DefenderHitPercent{ get; set; }
+	public BattleType battleType;
 }
 
 /// <summary>
@@ -49,24 +51,43 @@ public class BattleDifficultyChangeMessage {
 	public int Difficulty {get; set;}
 }
 
+/// <summary>
+/// Battle encounters can have different types depending on what kind of skill-based action is being performed.
+/// </summary>
+public enum BattleType {
+	ATTACK, HEAL
+}
+
 public class BattleManager : MonoBehaviour {
 
+	/// <summary>
+	/// Player data that persists outside of the context of the battle
+	/// </summary>
+	private class AllPlayersData {
+		public int difficulty;
+		public int playerNumber;
+		public bool hitLastNote;
+	}
+
+	/// <summary>
+	/// Ephemeral data for a player currently in-battle, either on the left or right of the screen
+	/// </summary>
 	private class PlayerBattleData {
+		public bool isOnLeft; // How to tell which side of the screen the player is on for this battle
+		public int playerNumber;
+		public bool isAttacker; // How to tell which player is the attacker / defender
 		public int instrumentID { get; set; }
-		public int difficulty { get; set; }
 		public Note[] battleNotes { get; set; }
 		public int[] battleNoteStates { get; set; }
 		public MelodyUnit unit {get; set;}
-		public int playerNumber { get; set; }
-		public bool hitLastNote { get; set; }
 		public GameObject battleSprite { get; set; }
 	}
 
-	private Dictionary<int, PlayerBattleData> players;
+	private Dictionary<int, AllPlayersData> allPlayers; // Track all players in the game
+	private List<PlayerBattleData> playersInBattle; // Temporary list that is refreshed at the start of each battle
 	private MessageRouter messageRouter;
 	private bool isInBattle;
-	private PlayerBattleData attacker;
-	private PlayerBattleData defender;
+	private BattleType battleType;
 	private int battleProgressInMeasures; // Number of measures into the battle
 	private MeshRenderer targetLine; // Renderer for note targets. Currently a temporary black line.
 	private GameObject divider; // Divider between player's notes
@@ -84,7 +105,8 @@ public class BattleManager : MonoBehaviour {
 	private const float SPAWN_DEPTH = 13f;
 
 	void Awake() {
-		players = new Dictionary<int, PlayerBattleData> ();
+		allPlayers = new Dictionary<int, AllPlayersData> ();
+		playersInBattle = new List<PlayerBattleData> (2);
 	}
 
 	void Start() {
@@ -121,32 +143,6 @@ public class BattleManager : MonoBehaviour {
 		}
 	}
 
-	/// <summary>
-	/// Register a new player or update a player's difficulty / instrument setting
-	/// </summary>
-	/// <param name="playerNumber">Player number.</param>
-	/// <param name="instrumentID">Instrument ID.</param>
-	/// <param name="difficulty">Difficulty.</param>
-	public void RegisterPlayer(int playerNumber, int instrumentID, int difficulty) {
-		if (players.ContainsKey(playerNumber)) {
-			players [playerNumber].instrumentID = instrumentID;
-			players [playerNumber].difficulty = difficulty;
-		} else {
-			players.Add (playerNumber, new PlayerBattleData (){ instrumentID = instrumentID, difficulty = difficulty });
-		}
-	}
-
-	/// <summary>
-	/// Sets the player instrument.
-	/// </summary>
-	/// <param name="playerNumber">Player number.</param>
-	/// <param name="instrumentID">Instrument I.</param>
-	public void SetPlayerInstrument(int playerNumber, int instrumentID) {
-		Debug.Assert (players.ContainsKey (playerNumber));
-
-	}
-
-
 	void OnStartBattle(EnterBattleMessage m) {
 
 		// Constants
@@ -169,39 +165,61 @@ public class BattleManager : MonoBehaviour {
 
 		targetLine.enabled = true;
 		divider.GetComponent<MeshRenderer>().enabled = true;
-		Debug.Assert (players.ContainsKey (m.AttackingUnit.PlayerNumber));
-		Debug.Assert (players.ContainsKey (m.DefendingUnit.PlayerNumber));
+
+		// If we are not aware of these players, start tracking them:
+		if (!allPlayers.ContainsKey (m.AttackingUnit.PlayerNumber)) { // Track attacking unit
+			allPlayers.Add (m.AttackingUnit.PlayerNumber, new AllPlayersData () {
+				playerNumber = m.AttackingUnit.PlayerNumber,
+				difficulty = 2,
+				hitLastNote = true
+			});
+		}
+		if (!allPlayers.ContainsKey (m.DefendingUnit.PlayerNumber)) { // Track defending unit
+			allPlayers.Add (m.DefendingUnit.PlayerNumber, new AllPlayersData () {
+				playerNumber = m.DefendingUnit.PlayerNumber,
+				difficulty = 2,
+				hitLastNote = true
+			});
+		}
+
 		// Prepare battle data per player
-		attacker = players [m.AttackingUnit.PlayerNumber];
-		defender = players [m.DefendingUnit.PlayerNumber];
+		playersInBattle.Clear();
+		playersInBattle.Add (new PlayerBattleData () { // Add attacking unit
+			isOnLeft = m.AttackingUnit.PlayerNumber == m.DefendingUnit.PlayerNumber ? 
+				m.AttackingUnit.PlayerNumber == 0 : 
+				m.AttackingUnit.PlayerNumber < m.DefendingUnit.PlayerNumber, 
+			playerNumber = m.AttackingUnit.PlayerNumber,
+			isAttacker = true,
+			instrumentID = 0,
+			battleNotes = song.GetNextBattleNotes (battleMeasures, 0, allPlayers [m.AttackingUnit.PlayerNumber].difficulty),
+			unit = m.AttackingUnit
+		});
+		playersInBattle.Add (new PlayerBattleData () { // Add defending unit
+			isOnLeft = m.AttackingUnit.PlayerNumber == m.DefendingUnit.PlayerNumber ? 
+				m.DefendingUnit.PlayerNumber != 0 : 
+				m.DefendingUnit.PlayerNumber < m.AttackingUnit.PlayerNumber, 
+			playerNumber = m.DefendingUnit.PlayerNumber,
+			isAttacker = false,
+			instrumentID = 1,
+			battleNotes = m.battleType == BattleType.HEAL ? new Note[]{ } :
+				song.GetNextBattleNotes (battleMeasures, 1, allPlayers [m.DefendingUnit.PlayerNumber].difficulty),
+			unit = m.DefendingUnit
+		});
+		foreach (PlayerBattleData d in playersInBattle) {
+			d.battleNoteStates = new int[d.battleNotes.Length];
+		}
 
-		attacker.playerNumber = m.AttackingUnit.PlayerNumber;
-		defender.playerNumber = m.DefendingUnit.PlayerNumber;
-
-		attacker.unit = m.AttackingUnit;
-		defender.unit = m.DefendingUnit;
-
-		attacker.instrumentID = 0; // Edgy synth
-		defender.instrumentID = 1; // Smoother synth
-
-		RenderBattleSprites(m.AttackingUnit, m.DefendingUnit);
-		
-		attacker.battleNotes = song.GetNextBattleNotes (battleMeasures, attacker.instrumentID, attacker.difficulty);
-		defender.battleNotes = song.GetNextBattleNotes (battleMeasures, defender.instrumentID, defender.difficulty);
-
-		attacker.battleNoteStates = new int[attacker.battleNotes.Length];
-		defender.battleNoteStates = new int[defender.battleNotes.Length];
-
-		List<int> OrderedPlayers = players.Keys.ToList();
-		OrderedPlayers.Sort();
-
-		float PlayerXPos = UNIT_MARGIN - FRET_RANGE/10;
+		// Add units to sides of battle:
+		RenderBattleSprites();
 
 		float currentMusicTime = song.playerPosition;
 		// Spawn notes:
-		foreach (int playerNumber in OrderedPlayers) {
-			float velocity = Math.Abs (velocityRange.x + (velocityRange.y - velocityRange.x) * players [playerNumber].difficulty / 2);
-			foreach (Note note in players[playerNumber].battleNotes) {
+		foreach (PlayerBattleData player in playersInBattle) {
+			// Decide X offset based on which side the player being looped is on:
+			float PlayerXPos = player.isOnLeft ? UNIT_MARGIN - FRET_RANGE / 10 : UNIT_MARGIN + FRET_RANGE * 9 / 10 + CENTER_MARGIN;
+
+			float velocity = Math.Abs (velocityRange.x + (velocityRange.y - velocityRange.x) * allPlayers [player.playerNumber].difficulty / 2);
+			foreach (Note note in player.battleNotes) {
 				GameObject spawnedNote = GameObjectUtil.Instantiate(notePrefab);
 				spawnedNote.transform.parent = parentCam.transform;
 				spawnedNote.transform.position = parentCam.ScreenToWorldPoint(
@@ -224,17 +242,18 @@ public class BattleManager : MonoBehaviour {
 				spawnedNote.transform.position += StartingOffset;
 
 			}
-			PlayerXPos += FRET_RANGE + CENTER_MARGIN;
 		}
 
 		isInBattle = true;
+		battleType = m.battleType;
 		battleProgressInMeasures = 0;
 	}
 
 	void Update() {
 		if (isInBattle) {
-			MarkPassedNotes(attacker);
-			MarkPassedNotes(defender);
+			foreach (PlayerBattleData d in playersInBattle) {
+				MarkPassedNotes (d);
+			}
 		}
 	}
 
@@ -260,25 +279,38 @@ public class BattleManager : MonoBehaviour {
 		// TODO: Figure out if we can penalize spamming strum to hit every note
 		yield return new WaitForSeconds(delay);
 		targetLine.enabled = false;
-		divider.GetComponent<MeshRenderer>().enabled = false;
-		GameObjectUtil.Destroy(attacker.battleSprite);
-		GameObjectUtil.Destroy(defender.battleSprite);
 		isInBattle = false;
-		int attackerHitCount = 0;
-		foreach (int i in attacker.battleNoteStates) {
-			if (i == 1)
-				attackerHitCount++;
+		divider.GetComponent<MeshRenderer>().enabled = false;
+
+		// Remove side-sprites:
+		foreach (PlayerBattleData d in playersInBattle) {
+			GameObjectUtil.Destroy (d.battleSprite);
 		}
-		int defenderHitCount = 0;
-		foreach (int i in defender.battleNoteStates) {
-			if (i == 1)
-				defenderHitCount++;
+
+		// Count up hit notes:
+		Dictionary<int, int> hitCount = new Dictionary<int, int> ();
+		foreach (PlayerBattleData d in playersInBattle) {
+			if (!hitCount.ContainsKey (d.playerNumber)) {
+				hitCount.Add (d.playerNumber, 0);
+			}
+			foreach (int i in d.battleNoteStates) {
+				if (i == 1) {
+					hitCount [d.playerNumber]++;
+				}
+			}
 		}
+
+		// Send end battle message:
+		PlayerBattleData attacker = playersInBattle.Find (c => c.isAttacker);
+		PlayerBattleData defender = playersInBattle.Find (c => !c.isAttacker);
 		messageRouter.RaiseMessage (new ExitBattleMessage () {
 			AttackingUnit = attacker.unit,
 			DefendingUnit = defender.unit,
-			AttackerHitPercent = (float) attackerHitCount / attacker.battleNotes.Length,
-			DefenderHitPercent = (float) defenderHitCount / defender.battleNotes.Length
+			AttackerHitPercent = attacker.battleNotes.Length == 0 ? 0 : 
+				(float) hitCount[attacker.playerNumber] / attacker.battleNotes.Length,
+			DefenderHitPercent = defender.battleNotes.Length == 0 ? 0 : 
+				(float) hitCount[defender.playerNumber] / defender.battleNotes.Length,
+			battleType = battleType
 		});
 	}
 
@@ -309,7 +341,7 @@ public class BattleManager : MonoBehaviour {
 		default:
 			break;
 		}
-		if (maxFret >= 0 && players [m.PlayerNumber].hitLastNote) {
+		if (maxFret >= 0 && allPlayers [m.PlayerNumber].hitLastNote) {
 			InputButton[] frets = Interpreter.HeldFrets.ContainsKey (m.PlayerNumber) ? 
 				Interpreter.HeldFrets [m.PlayerNumber].ToArray () : new InputButton[]{ };
 			foreach (InputButton b in frets) {
@@ -318,7 +350,7 @@ public class BattleManager : MonoBehaviour {
 				}
 			}
 			if (!tryHitNote (false, m.PlayerNumber, maxFret)) {
-				players [m.PlayerNumber].hitLastNote = false;
+				allPlayers [m.PlayerNumber].hitLastNote = false;
 			}
 		}
 	}
@@ -327,7 +359,7 @@ public class BattleManager : MonoBehaviour {
 		// Check if when the player strums that they actually hit something
 		if (!isInBattle)
 			return;
-		if (!players [m.PlayerNumber].hitLastNote)
+		if (!allPlayers [m.PlayerNumber].hitLastNote)
 			return;
 		switch (m.Button) {
 		case InputButton.GREEN:
@@ -353,24 +385,29 @@ public class BattleManager : MonoBehaviour {
 	}
 
 	bool tryHitNote(bool isStrum, int playerNumber, int hopoValue = -1) {
-		InputButton[] frets = !isStrum ? new InputButton[]{ (InputButton)hopoValue } : Interpreter.HeldFrets.ContainsKey (playerNumber) ? 
+		PlayerBattleData player = playersInBattle.Find (c => c.playerNumber == playerNumber);
+		if (player == null)
+			return false;
+		InputButton[] frets = !isStrum ? new InputButton[]{ (InputButton)hopoValue } : 
+			Interpreter.HeldFrets.ContainsKey (playerNumber) ? 
 			Interpreter.HeldFrets [playerNumber].ToArray () : new InputButton[]{ };
-		Note[] hitNotes = ServiceFactory.Instance.Resolve<Song>().GetHitNotes (players [playerNumber].instrumentID, players [playerNumber].difficulty, frets);
+		Note[] hitNotes = ServiceFactory.Instance.Resolve<Song> ()
+			.GetHitNotes (player.instrumentID, allPlayers [playerNumber].difficulty, frets);
 		bool noteWasHit = false;
 		// Go through the possible notes that the player could have been trying to hit
 		GameObject[] noteObjects = GameObject.FindGameObjectsWithTag("noteObject");
 		foreach (Note n in hitNotes) { // Warning! O(n^2)
-			for (int i = 0; i < players [playerNumber].battleNotes.Length; i++) {
-				if (n.Equals (players [playerNumber].battleNotes [i])) {
-					if (players [playerNumber].battleNoteStates [i] == 0) {
+			for (int i = 0; i < player.battleNotes.Length; i++) {
+				if (n.Equals (player.battleNotes [i])) {
+					if (player.battleNoteStates [i] == 0) {
 						if (!isStrum && !n.isHOPO)
 							continue;
-						players [playerNumber].battleNoteStates [i] = 1;
+						player.battleNoteStates [i] = 1;
 						noteWasHit = true;
-						players [playerNumber].hitLastNote = true;
+						allPlayers [playerNumber].hitLastNote = true;
 						messageRouter.RaiseMessage (new NoteHitMessage () {
 							PlayerNumber = playerNumber,
-							InstrumentID = players [playerNumber].instrumentID
+							InstrumentID = player.instrumentID
 						});
 						break;
 					}
@@ -388,30 +425,36 @@ public class BattleManager : MonoBehaviour {
 			}
 		}
 		if (!noteWasHit && isStrum) {
-			players [playerNumber].hitLastNote = false;
+			allPlayers [playerNumber].hitLastNote = false;
 			messageRouter.RaiseMessage (new NoteMissMessage () {
 				PlayerNumber = playerNumber,
-				InstrumentID = players [playerNumber].instrumentID
+				InstrumentID = player.instrumentID
 			});
 		}
 		return noteWasHit;
 	}
 
 	void OnBattleDifficultyChange(BattleDifficultyChangeMessage m) {
-		if (!players.ContainsKey (m.PlayerNumber)) {
-			players.Add (m.PlayerNumber, new PlayerBattleData ());
+		if (!allPlayers.ContainsKey (m.PlayerNumber)) {
+			allPlayers.Add (m.PlayerNumber, new AllPlayersData () {
+				playerNumber = m.PlayerNumber,
+				difficulty = m.Difficulty,
+				hitLastNote = true
+			});
+		} else {
+			allPlayers [m.PlayerNumber].difficulty = m.Difficulty;
 		}
-		players [m.PlayerNumber].difficulty = m.Difficulty;
 	}
 
 	void MarkPassedNotes(PlayerBattleData player) {
-		Note[] passedNotes = ServiceFactory.Instance.Resolve<Song>().GetPassedNotes(player.instrumentID, player.difficulty, Time.deltaTime);
+		Note[] passedNotes = ServiceFactory.Instance.Resolve<Song> ().GetPassedNotes (player.instrumentID, 
+			                     allPlayers [player.playerNumber].difficulty, Time.deltaTime);
 
 		foreach (Note n in passedNotes) {
 			int i = Array.IndexOf(player.battleNotes, n);
 			if (i >= 0 && player.battleNoteStates[i] != 1) {
 				player.battleNoteStates[i] = -1;
-				player.hitLastNote = false;
+				allPlayers [player.playerNumber].hitLastNote = false;
 				messageRouter.RaiseMessage (new NoteMissMessage () {
 					PlayerNumber = player.playerNumber,
 					InstrumentID = player.instrumentID
@@ -421,30 +464,23 @@ public class BattleManager : MonoBehaviour {
 	}
 
 	public int getPlayerDifficulty(int playerNumber) {
-		return players [playerNumber].difficulty;
+		return allPlayers [playerNumber].difficulty;
 	}
 	
-	void RenderBattleSprites(MelodyUnit AttackingUnit, MelodyUnit DefendingUnit) {
-		attacker.battleSprite = GameObjectUtil.Instantiate(AttackingUnit.transform.FindChild("RotatedVisual").gameObject);
-		defender.battleSprite = GameObjectUtil.Instantiate(DefendingUnit.transform.FindChild("RotatedVisual").gameObject);
-
-		attacker.battleSprite.layer = LayerMask.NameToLayer("BattleLayer");
-		defender.battleSprite.layer = LayerMask.NameToLayer("BattleLayer");
-
-		attacker.battleSprite.transform.parent = parentCam.transform;
-		defender.battleSprite.transform.parent = parentCam.transform;
-
-		if (AttackingUnit.PlayerNumber < DefendingUnit.PlayerNumber) {
-			attacker.battleSprite.transform.position = parentCam.ScreenToWorldPoint(new Vector3(UNIT_MARGIN / 2, Screen.height / 2, SPAWN_DEPTH/2));
-			defender.battleSprite.transform.position = parentCam.ScreenToWorldPoint(new Vector3(Screen.width - (UNIT_MARGIN / 2), Screen.height / 2, SPAWN_DEPTH/2));
+	void RenderBattleSprites() {
+		foreach (PlayerBattleData player in playersInBattle) {
+			player.battleSprite = GameObjectUtil.Instantiate (player.unit.transform.FindChild ("RotatedVisual").gameObject);
+			player.battleSprite.layer = LayerMask.NameToLayer("BattleLayer");
+			player.battleSprite.transform.parent = parentCam.transform;
+			if (player.isOnLeft) {
+				player.battleSprite.transform.position = 
+					parentCam.ScreenToWorldPoint (new Vector3 (UNIT_MARGIN / 2, Screen.height / 2, SPAWN_DEPTH / 2));
+			} else {
+				player.battleSprite.transform.position = 
+					parentCam.ScreenToWorldPoint (new Vector3 (Screen.width - (UNIT_MARGIN / 2), Screen.height / 2, 
+					SPAWN_DEPTH / 2));
+			}
+			player.battleSprite.transform.eulerAngles = new Vector3(0, 180);
 		}
-		else {
-			defender.battleSprite.transform.position = parentCam.ScreenToWorldPoint(new Vector3(UNIT_MARGIN / 2, Screen.height / 2, SPAWN_DEPTH/2));
-			attacker.battleSprite.transform.position = parentCam.ScreenToWorldPoint(new Vector3(Screen.width - (UNIT_MARGIN / 2), Screen.height / 2, SPAWN_DEPTH/2));
-		}
-
-		attacker.battleSprite.transform.eulerAngles = new Vector3(0, 180);
-		defender.battleSprite.transform.eulerAngles = new Vector3(0, 180);
-
 	}
 }

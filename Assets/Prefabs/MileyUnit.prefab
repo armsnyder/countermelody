@@ -63,6 +63,7 @@ GameObject:
   - 4: {fileID: 491698}
   - 114: {fileID: 11470696}
   - 114: {fileID: 11404160}
+  - 114: {fileID: 11432776}
   m_Layer: 8
   m_Name: MileyUnit
   m_TagString: Untagged
@@ -221,6 +222,19 @@ MonoBehaviour:
   musicVolume: 0.2
   WreckingBallSprite: {fileID: 101030, guid: d4ec8621268ad144e8b67a37d7e5c2eb, type: 2}
   damage: 50
+--- !u!114 &11432776
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 161762}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7676464d4a0c8470b87f042310566b45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  amount: 20
+  range: 1
 --- !u!114 &11446364
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -275,9 +289,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f627d936eeccb402985988debdfe19d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HitPoints: 100
-  AttackRange: 3
-  AttackFactor: 100
+  HitPoints: 80
+  AttackRange: 1
+  AttackFactor: 20
   DefenceFactor: 50
   MovementPoints: 4
   MovementSpeed: 8
@@ -286,6 +300,7 @@ MonoBehaviour:
   ColorButton: 4
   unitColor: {r: 0.99264705, g: 0.62619317, b: 0, a: 0.978}
   hopHeight: 1
+  critDefendPercent: 0.8
   characterName: Miley Cyrus
   description: Healer
 --- !u!124 &12448930
@@ -419,6 +434,30 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: musicVolume
       value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: HitPoints
+      value: 80
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: AttackRange
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: AttackFactor
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: critDefendPercent
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: amount
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: range
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
