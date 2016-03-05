@@ -62,7 +62,7 @@ public class Moonwalk : SpecialMoveBase {
 			yield return null;
 		}
 
-		while (isMoving || audioSource.isPlaying || inputStartTime + inputWaitTime > Time.time) {
+		while (isMoving || audioSource.isPlaying) {
 			yield return null;
 		}
 		base.EndSpecialMove();
