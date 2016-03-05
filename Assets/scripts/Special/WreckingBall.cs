@@ -6,7 +6,6 @@ using System;
 public class WreckingBall : SpecialMoveBase {
 
 	private bool isAnimating;
-	private bool hasSwung = false;
 	private readonly int MUSIC_INTRO_SAMPLES = 56006;
 	[SerializeField]
 	private GameObject WreckingBallSprite;
@@ -25,7 +24,7 @@ public class WreckingBall : SpecialMoveBase {
 		if (m.PlayerNumber != GetComponent<MelodyUnit>().PlayerNumber)
 			return;
 
-		if (hasSwung)
+		if (hasButtonPressed)
 			return;
 
 		switch (m.Button) {
@@ -33,7 +32,7 @@ public class WreckingBall : SpecialMoveBase {
 			case InputButton.DOWN:
 			case InputButton.LEFT:
 			case InputButton.RIGHT:
-				hasSwung = true;
+				hasButtonPressed = true;
 				StartCoroutine(SwingWreckingBall(BoardInterpreter.DirectionToVector(m.Button)));
 				audioSource.Play ();
 				break;
@@ -43,7 +42,12 @@ public class WreckingBall : SpecialMoveBase {
 	protected override IEnumerator DoSpecialMove() {
 		StartSpecialMove();
 
-		yield return new WaitForSeconds(inputWaitTime);
+		while (inputStartTime + inputWaitTime > Time.time) {
+			if(hasButtonPressed) {
+				break;
+			}
+			yield return null;
+		}
 
 		while (isAnimating) {
 			yield return null;

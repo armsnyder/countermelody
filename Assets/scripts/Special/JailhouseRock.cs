@@ -24,10 +24,15 @@ public class JailhouseRock : SpecialMoveBase {
 	protected override IEnumerator DoSpecialMove() {
 		StartSpecialMove();
 
-		yield return new WaitForSeconds(inputWaitTime);
+		while (inputStartTime + inputWaitTime > Time.time) {
+			if (hasButtonPressed) {
+				break;
+			}
+			yield return null;
+		}
 
 		while (audioSource.isPlaying) {
-			yield return null;
+				yield return null;
 		}
 
 		EndSpecialMove();
@@ -73,6 +78,7 @@ public class JailhouseRock : SpecialMoveBase {
 			case InputButton.ORANGE:
 				recipient = GameBoard.Units.Find(c => (c.PlayerNumber!=m.PlayerNumber) && ((c as MelodyUnit).ColorButton == m.Button));
 				if (recipient) {
+					hasButtonPressed = true;
 					DisableUnit(recipient);
 					ServiceFactory.Instance.Resolve<UnitManager>().UnHighlightAll();
 				}

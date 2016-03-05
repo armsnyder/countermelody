@@ -6,7 +6,6 @@ using System;
 
 public class Moonwalk : SpecialMoveBase {
 	protected bool isMoving = false;
-	private bool hasMoved = false;
 	public float moonwalkSpeed = 3;
 	private readonly float MUSIC_FADE_OUT_TIME = 0.1f;
 
@@ -23,7 +22,7 @@ public class Moonwalk : SpecialMoveBase {
 		if (m.PlayerNumber != GetComponent<MelodyUnit>().PlayerNumber)
 			return;
 
-		if (hasMoved)
+		if (hasButtonPressed)
 			return;
 
 		switch (m.Button) {
@@ -31,7 +30,7 @@ public class Moonwalk : SpecialMoveBase {
 			case InputButton.DOWN:
 			case InputButton.LEFT:
 			case InputButton.RIGHT:
-				hasMoved = true;
+				hasButtonPressed = true;
 				StartCoroutine(MovementAnimation(BoardInterpreter.DirectionToVector(m.Button)));
 				StartCoroutine (PlayMusic ());
 				break;
@@ -56,9 +55,14 @@ public class Moonwalk : SpecialMoveBase {
 	protected override IEnumerator DoSpecialMove() {
 		StartSpecialMove();
 
-		yield return new WaitForSeconds(inputWaitTime);
+		while (inputStartTime + inputWaitTime > Time.time) {
+			if (hasButtonPressed) {
+				break;
+			}
+			yield return null;
+		}
 
-		while (isMoving || audioSource.isPlaying) {
+		while (isMoving || audioSource.isPlaying || inputStartTime + inputWaitTime > Time.time) {
 			yield return null;
 		}
 		base.EndSpecialMove();

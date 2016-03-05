@@ -16,12 +16,14 @@ public abstract class SpecialMoveBase : MonoBehaviour {
 	public AudioClip music;
 	public float musicVolume;
 
-	protected float inputWaitTime = 5f;
+	protected float inputWaitTime = 10f;
+	protected float inputStartTime;
 	protected int NumPerformed = 0;
 	protected MessageRouter MessageRouter;
 	protected Song Song;
 	protected bool isActive;
 	protected AudioSource audioSource;
+	protected bool hasButtonPressed;
 
 	protected virtual void Start () {
 		MessageRouter = ServiceFactory.Instance.Resolve<MessageRouter>();
@@ -57,6 +59,7 @@ public abstract class SpecialMoveBase : MonoBehaviour {
 	protected abstract void HighlightSpecial();
 
 	protected virtual void StartSpecialMove() {
+		inputStartTime = Time.time;
 		ServiceFactory.Instance.Resolve<UnitManager>().UnHighlightAll();
 		HighlightSpecial();
 	}
