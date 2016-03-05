@@ -6,7 +6,6 @@ using System;
 
 public class Moonwalk : SpecialMoveBase {
 	protected bool isMoving = false;
-	private bool hasMoved = false;
 	public float moonwalkSpeed = 3;
 	private readonly float MUSIC_FADE_OUT_TIME = 0.1f;
 
@@ -23,7 +22,7 @@ public class Moonwalk : SpecialMoveBase {
 		if (m.PlayerNumber != GetComponent<MelodyUnit>().PlayerNumber)
 			return;
 
-		if (hasMoved)
+		if (hasButtonPressed)
 			return;
 
 		switch (m.Button) {
@@ -31,7 +30,7 @@ public class Moonwalk : SpecialMoveBase {
 			case InputButton.DOWN:
 			case InputButton.LEFT:
 			case InputButton.RIGHT:
-				hasMoved = true;
+				hasButtonPressed = true;
 				StartCoroutine(MovementAnimation(BoardInterpreter.DirectionToVector(m.Button)));
 				StartCoroutine (PlayMusic ());
 				break;
@@ -54,28 +53,29 @@ public class Moonwalk : SpecialMoveBase {
 	}
 
 	protected override IEnumerator DoSpecialMove() {
+		StartSpecialMove();
 
-		ServiceFactory.Instance.Resolve<UnitManager>().UnHighlightAll();
-		HighlightSpecial();
-
-		yield return new WaitForSeconds(2);
+		while (inputStartTime + inputWaitTime > Time.time) {
+			if (hasButtonPressed) {
+				break;
+			}
+			yield return null;
+		}
 
 		while (isMoving || audioSource.isPlaying) {
 			yield return null;
 		}
-		
-		isActive = false;
-		MessageRouter.RaiseMessage(new EndSpecialMoveMessage());
+		base.EndSpecialMove();
 	}
 
-	private void HighlightSpecial() {
+	protected override void HighlightSpecial() {
 		Vector2[] directions = new Vector2[] { new Vector2(0, 1), new Vector2(1, 0), new Vector2(0, -1), new Vector2(-1, 0) };
 
 		
 		foreach (Vector2 dir in directions) {
 			Cell curr = GetComponent<MelodyUnit>().Cell;
 			Cell next = ServiceFactory.Instance.Resolve<CellGrid>().Cells.Find(c => c.OffsetCoord == curr.OffsetCoord + dir);
-			while (next != null) {
+			while (next != null && !next.IsTaken) {
 				next.MarkAsReachable();
 				next = ServiceFactory.Instance.Resolve<CellGrid>().Cells.Find(c => c.OffsetCoord == next.OffsetCoord + dir);
 			}

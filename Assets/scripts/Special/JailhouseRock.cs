@@ -21,18 +21,26 @@ public class JailhouseRock : SpecialMoveBase {
 		MessageRouter.AddHandler<ButtonDownMessage>(OnButtonDown);
 	}
 	protected override IEnumerator DoSpecialMove() {
-		ServiceFactory.Instance.Resolve<UnitManager>().UnHighlightAll();
+		StartSpecialMove();
+
+		while (inputStartTime + inputWaitTime > Time.time) {
+			if (hasButtonPressed) {
+				break;
+			}
+			yield return null;
+		}
+
+		while (audioSource.isPlaying) {
+				yield return null;
+		}
+
+		EndSpecialMove();
+	}
+
+	protected override void HighlightSpecial() {
 		foreach (Unit u in ServiceFactory.Instance.Resolve<CellGrid>().Units.FindAll(c => c.PlayerNumber != GetComponent<MelodyUnit>().PlayerNumber)) {
 			u.Cell.MarkAsReachable();
 		}
-
-		yield return new WaitForSeconds(2);
-
-		while (audioSource.isPlaying) {
-			yield return null;
-		}
-		isActive = false;
-		MessageRouter.RaiseMessage(new EndSpecialMoveMessage());
 	}
 
 	void OnSwitchPlayer(SwitchPlayerMessage m) {
@@ -69,6 +77,7 @@ public class JailhouseRock : SpecialMoveBase {
 			case InputButton.ORANGE:
 				recipient = GameBoard.Units.Find(c => (c.PlayerNumber!=m.PlayerNumber) && ((c as MelodyUnit).ColorButton == m.Button));
 				if (recipient) {
+					hasButtonPressed = true;
 					DisableUnit(recipient);
 					ServiceFactory.Instance.Resolve<UnitManager>().UnHighlightAll();
 				}

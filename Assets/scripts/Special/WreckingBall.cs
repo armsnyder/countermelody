@@ -6,7 +6,6 @@ using System;
 public class WreckingBall : SpecialMoveBase {
 
 	private bool isAnimating;
-	private bool hasSwung = false;
 	private readonly int MUSIC_INTRO_SAMPLES = 56006;
 	[SerializeField]
 	private GameObject WreckingBallSprite;
@@ -25,7 +24,7 @@ public class WreckingBall : SpecialMoveBase {
 		if (m.PlayerNumber != GetComponent<MelodyUnit>().PlayerNumber)
 			return;
 
-		if (hasSwung)
+		if (hasButtonPressed)
 			return;
 
 		switch (m.Button) {
@@ -33,7 +32,7 @@ public class WreckingBall : SpecialMoveBase {
 			case InputButton.DOWN:
 			case InputButton.LEFT:
 			case InputButton.RIGHT:
-				hasSwung = true;
+				hasButtonPressed = true;
 				StartCoroutine(SwingWreckingBall(BoardInterpreter.DirectionToVector(m.Button)));
 				audioSource.Play ();
 				break;
@@ -41,21 +40,26 @@ public class WreckingBall : SpecialMoveBase {
 	}
 
 	protected override IEnumerator DoSpecialMove() {
+		StartSpecialMove();
 
-		ServiceFactory.Instance.Resolve<UnitManager>().UnHighlightAll();
-		foreach (Cell c in ServiceFactory.Instance.Resolve<CellGrid>().Cells.FindAll(c => c.OffsetCoord.x == GetComponent<MelodyUnit>().Cell.OffsetCoord.x || c.OffsetCoord.y == GetComponent<MelodyUnit>().Cell.OffsetCoord.y)) {
-			c.MarkAsReachable();
+		while (inputStartTime + inputWaitTime > Time.time) {
+			if(hasButtonPressed) {
+				break;
+			}
+			yield return null;
 		}
-
-		yield return new WaitForSeconds(2);
 
 		while (isAnimating) {
 			yield return null;
 		}
 
+		EndSpecialMove();
+	}
 
-		isActive = false;
-		MessageRouter.RaiseMessage(new EndSpecialMoveMessage());
+	protected override void HighlightSpecial() {
+		foreach (Cell c in ServiceFactory.Instance.Resolve<CellGrid>().Cells.FindAll(c => c.OffsetCoord.x == GetComponent<MelodyUnit>().Cell.OffsetCoord.x || c.OffsetCoord.y == GetComponent<MelodyUnit>().Cell.OffsetCoord.y)) {
+			c.MarkAsReachable();
+		}
 	}
 
 	protected IEnumerator SwingWreckingBall(Vector2 direction) {
