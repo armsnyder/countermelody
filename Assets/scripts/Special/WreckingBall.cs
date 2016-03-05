@@ -53,7 +53,9 @@ public class WreckingBall : SpecialMoveBase {
 	}
 
 	protected override void HighlightSpecial() {
-
+		foreach (Cell c in ServiceFactory.Instance.Resolve<CellGrid>().Cells.FindAll(c => c.OffsetCoord.x == GetComponent<MelodyUnit>().Cell.OffsetCoord.x || c.OffsetCoord.y == GetComponent<MelodyUnit>().Cell.OffsetCoord.y)) {
+			c.MarkAsReachable();
+		}
 	}
 
 	protected IEnumerator SwingWreckingBall(Vector2 direction) {
