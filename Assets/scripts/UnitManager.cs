@@ -304,7 +304,8 @@ public class UnitManager : MonoBehaviour
 		switch (m.battleType) {
 		case BattleType.ATTACK:
 			m.AttackingUnit.DealDamage(m.DefendingUnit, m.AttackerHitPercent, m.DefenderHitPercent);
-			m.DefendingUnit.DealDamage(m.AttackingUnit, m.DefenderHitPercent, m.AttackerHitPercent);
+			if (m.DefendingUnit.HitPoints > 0)
+				m.DefendingUnit.DealDamage(m.AttackingUnit, m.DefenderHitPercent, m.AttackerHitPercent);
 			break;
 		case BattleType.HEAL:
 			m.AttackingUnit.GetComponent<Healer> ().Heal (m.DefendingUnit, m.AttackerHitPercent);
