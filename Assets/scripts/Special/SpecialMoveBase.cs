@@ -16,7 +16,7 @@ public abstract class SpecialMoveBase : MonoBehaviour {
 	public AudioClip music;
 	public float musicVolume;
 
-	protected float inputWaitTime = 2f;
+	protected float inputWaitTime = 5f;
 	protected int NumPerformed = 0;
 	protected MessageRouter MessageRouter;
 	protected Song Song;
