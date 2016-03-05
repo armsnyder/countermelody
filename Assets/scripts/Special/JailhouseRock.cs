@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Frictionless;
-using System;
 
 public class JailhouseRock : SpecialMoveBase {
 
