@@ -16,6 +16,7 @@ public abstract class SpecialMoveBase : MonoBehaviour {
 	public AudioClip music;
 	public float musicVolume;
 
+	protected float inputWaitTime = 2f;
 	protected int NumPerformed = 0;
 	protected MessageRouter MessageRouter;
 	protected Song Song;
@@ -48,8 +49,21 @@ public abstract class SpecialMoveBase : MonoBehaviour {
 	}
 
 	protected virtual IEnumerator DoSpecialMove() {
-		yield return new WaitForSeconds(2);
+		StartSpecialMove();
+		yield return new WaitForSeconds(inputWaitTime);
+		EndSpecialMove();
+	}
+
+	protected abstract void HighlightSpecial();
+
+	protected virtual void StartSpecialMove() {
+		ServiceFactory.Instance.Resolve<UnitManager>().UnHighlightAll();
+		HighlightSpecial();
+	}
+
+	protected virtual void EndSpecialMove() {
 		isActive = false;
+		ServiceFactory.Instance.Resolve<UnitManager>().UnHighlightAll();
 		MessageRouter.RaiseMessage(new EndSpecialMoveMessage());
 	}
 

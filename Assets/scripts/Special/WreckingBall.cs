@@ -41,21 +41,19 @@ public class WreckingBall : SpecialMoveBase {
 	}
 
 	protected override IEnumerator DoSpecialMove() {
+		StartSpecialMove();
 
-		ServiceFactory.Instance.Resolve<UnitManager>().UnHighlightAll();
-		foreach (Cell c in ServiceFactory.Instance.Resolve<CellGrid>().Cells.FindAll(c => c.OffsetCoord.x == GetComponent<MelodyUnit>().Cell.OffsetCoord.x || c.OffsetCoord.y == GetComponent<MelodyUnit>().Cell.OffsetCoord.y)) {
-			c.MarkAsReachable();
-		}
-
-		yield return new WaitForSeconds(2);
+		yield return new WaitForSeconds(inputWaitTime);
 
 		while (isAnimating) {
 			yield return null;
 		}
 
+		EndSpecialMove();
+	}
 
-		isActive = false;
-		MessageRouter.RaiseMessage(new EndSpecialMoveMessage());
+	protected override void HighlightSpecial() {
+
 	}
 
 	protected IEnumerator SwingWreckingBall(Vector2 direction) {

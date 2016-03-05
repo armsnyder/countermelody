@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Frictionless;
+using System;
 
 public class JailhouseRock : SpecialMoveBase {
 
@@ -21,18 +22,21 @@ public class JailhouseRock : SpecialMoveBase {
 		MessageRouter.AddHandler<ButtonDownMessage>(OnButtonDown);
 	}
 	protected override IEnumerator DoSpecialMove() {
-		ServiceFactory.Instance.Resolve<UnitManager>().UnHighlightAll();
-		foreach (Unit u in ServiceFactory.Instance.Resolve<CellGrid>().Units.FindAll(c => c.PlayerNumber != GetComponent<MelodyUnit>().PlayerNumber)) {
-			u.Cell.MarkAsReachable();
-		}
+		StartSpecialMove();
 
-		yield return new WaitForSeconds(2);
+		yield return new WaitForSeconds(inputWaitTime);
 
 		while (audioSource.isPlaying) {
 			yield return null;
 		}
-		isActive = false;
-		MessageRouter.RaiseMessage(new EndSpecialMoveMessage());
+
+		EndSpecialMove();
+	}
+
+	protected override void HighlightSpecial() {
+		foreach (Unit u in ServiceFactory.Instance.Resolve<CellGrid>().Units.FindAll(c => c.PlayerNumber != GetComponent<MelodyUnit>().PlayerNumber)) {
+			u.Cell.MarkAsReachable();
+		}
 	}
 
 	void OnSwitchPlayer(SwitchPlayerMessage m) {

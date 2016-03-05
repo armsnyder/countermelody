@@ -54,28 +54,24 @@ public class Moonwalk : SpecialMoveBase {
 	}
 
 	protected override IEnumerator DoSpecialMove() {
+		StartSpecialMove();
 
-		ServiceFactory.Instance.Resolve<UnitManager>().UnHighlightAll();
-		HighlightSpecial();
-
-		yield return new WaitForSeconds(2);
+		yield return new WaitForSeconds(inputWaitTime);
 
 		while (isMoving || audioSource.isPlaying) {
 			yield return null;
 		}
-		
-		isActive = false;
-		MessageRouter.RaiseMessage(new EndSpecialMoveMessage());
+		base.EndSpecialMove();
 	}
 
-	private void HighlightSpecial() {
+	protected override void HighlightSpecial() {
 		Vector2[] directions = new Vector2[] { new Vector2(0, 1), new Vector2(1, 0), new Vector2(0, -1), new Vector2(-1, 0) };
 
 		
 		foreach (Vector2 dir in directions) {
 			Cell curr = GetComponent<MelodyUnit>().Cell;
 			Cell next = ServiceFactory.Instance.Resolve<CellGrid>().Cells.Find(c => c.OffsetCoord == curr.OffsetCoord + dir);
-			while (next != null) {
+			while (next != null && !next.IsTaken) {
 				next.MarkAsReachable();
 				next = ServiceFactory.Instance.Resolve<CellGrid>().Cells.Find(c => c.OffsetCoord == next.OffsetCoord + dir);
 			}
