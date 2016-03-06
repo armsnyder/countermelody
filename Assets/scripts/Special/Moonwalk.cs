@@ -107,6 +107,7 @@ public class Moonwalk : SpecialMoveBase {
 				yield return 0;
 			}
 			GetComponent<MelodyUnit>().Cell.IsTaken = false;
+			neighbor.IsTaken = true;
 			GetComponent<MelodyUnit>().Cell = neighbor;
 			neighbor = ServiceFactory.Instance.Resolve<CellGrid>().Cells.Find(
 				c => c.OffsetCoord == neighbor.OffsetCoord + direction && !c.IsTaken);
