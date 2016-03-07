@@ -15,6 +15,7 @@ public abstract class SpecialMoveBase : MonoBehaviour {
 	public int NumPerGame = 1;
 	public AudioClip music;
 	public float musicVolume;
+	public string description;
 
 	protected float inputWaitTime = 10f;
 	protected float inputStartTime;
