@@ -249,6 +249,7 @@ MonoBehaviour:
   ColorButton: 3
   unitColor: {r: 0.12282246, g: 0.007298882, b: 0.99264705, a: 0.991}
   hopHeight: 1
+  critDefendPercent: 0.5
   characterName: Elvis Presley
   description: Melee
 --- !u!114 &11448352
@@ -286,6 +287,7 @@ MonoBehaviour:
   NumPerGame: 1
   music: {fileID: 8300000, guid: a1e9236eb4b284e65b3d4e5f2cdab129, type: 3}
   musicVolume: 0.3
+  description: Jailhouse Rock. Disable an enemy unit for 5 turns.
   DisableTurns: 5
   JailPrefab: {fileID: 152296, guid: 965e326b5f1c17f428dd5dbe5d1b0c92, type: 2}
 --- !u!124 &12441814
@@ -414,7 +416,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: description
-      value: Melee
+      value: Jailhouse Rock. Disable an enemy unit for 5 turns.
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: JailPrefab

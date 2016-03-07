@@ -10,14 +10,9 @@ public class CharacterSelectUI : MonoBehaviour {
 
 	CharacterSelectManager manager;
 	MessageRouter messageRouter;
-	Color unselectedColor;
-	Color selectedColor;
+	static readonly Color unselectedColor = new Color (1, 1, 1, 0);
+	static readonly Color selectedColor = new Color (1, 1, 1, 0.5f);
 	List<InputButton>[,] assigments;
-
-	void Awake() {
-		unselectedColor = new Color (1, 1, 1, 0);
-		selectedColor = new Color (1, 1, 1, 0.5f);
-	}
 
 	void Start () {
 		StartCoroutine (FindManager ());
@@ -74,12 +69,18 @@ public class CharacterSelectUI : MonoBehaviour {
 		Color color = selected ? selectedColor : unselectedColor;
 		transform.FindChild ("UnitList" + playerNumber).FindChild ("Unit" + index).GetComponent<Image> ().color = color;
 		if (selected) {
-			SetText (playerNumber, "Name", manager.unitPrefabs [index].GetComponent<MelodyUnit> ().characterName);
-			SetText (playerNumber, "Description", manager.unitPrefabs [index].GetComponent<MelodyUnit> ().description);
-			SetText (playerNumber, "HP", "HP: " + manager.unitPrefabs [index].GetComponent<MelodyUnit> ().HitPoints);
-			SetText (playerNumber, "ATK", "ATK: " + manager.unitPrefabs [index].GetComponent<MelodyUnit> ().AttackFactor);
-			SetText (playerNumber, "DEF", "DEF: " + manager.unitPrefabs [index].GetComponent<MelodyUnit> ().DefenceFactor);
-			SetText (playerNumber, "ATK RANGE", "ATK RANGE: " + manager.unitPrefabs [index].GetComponent<MelodyUnit> ().AttackRange);
+			MelodyUnit selectedUnit = manager.unitPrefabs [index].GetComponent<MelodyUnit> ();
+			Healer selectedHealer = manager.unitPrefabs [index].GetComponent<Healer> ();
+			SpecialMoveBase selectedSpecial = manager.unitPrefabs [index].GetComponent<SpecialMoveBase> ();
+			SetText (playerNumber, "Name", selectedUnit.characterName);
+			SetText (playerNumber, "Description", selectedUnit.description);
+			SetText (playerNumber, "HP", "HP: " + selectedUnit.HitPoints);
+			SetText (playerNumber, "ATK", "ATK: " + selectedUnit.AttackFactor);
+			SetText (playerNumber, "DEF", "DEF: " + selectedUnit.DefenceFactor);
+			SetText (playerNumber, "ATK RANGE", "ATK RANGE: " + selectedUnit.AttackRange);
+			SetText (playerNumber, "HEAL", "HEAL: " + (selectedHealer == null ? "N/A" : selectedHealer.amount.ToString ()));
+			SetText (playerNumber, "HEAL RANGE", "HEAL RANGE: " + (selectedHealer == null ? "N/A" : selectedHealer.range.ToString()));
+			SetText (playerNumber, "Special Move", "SPECIAL MOVE: " + (selectedSpecial == null ? "N/A" : selectedSpecial.description));
 			SpriteRenderer fromR = manager.unitPrefabs [index].GetComponentInChildren<SpriteRenderer> ();
 			SpriteRenderer toR = GameObject.Find ("Unit" + playerNumber + "Sprite").GetComponent<SpriteRenderer> ();
 			toR.sprite = fromR.sprite;
