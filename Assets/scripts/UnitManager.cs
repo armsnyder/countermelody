@@ -302,14 +302,14 @@ public class UnitManager : MonoBehaviour
 		// Battle is over. Deal damage according to results.
 		// TODO: Consider whether we want the defending unit to deal damage
 		switch (m.battleType) {
-		case BattleType.ATTACK:
-			m.AttackingUnit.DealDamage(m.DefendingUnit, m.AttackerHitPercent, m.DefenderHitPercent);
-			if (m.DefendingUnit.HitPoints > 0)
-				m.DefendingUnit.DealDamage(m.AttackingUnit, m.DefenderHitPercent, m.AttackerHitPercent);
-			break;
-		case BattleType.HEAL:
-			m.AttackingUnit.GetComponent<Healer> ().Heal (m.DefendingUnit, m.AttackerHitPercent);
-			break;
+			case BattleType.ATTACK:
+				m.AttackingUnit.DealDamage(m.DefendingUnit, m.AttackerHitPercent, m.DefenderHitPercent);
+				if (m.DefendingUnit.HitPoints > 0)
+					m.DefendingUnit.DealDamage(m.AttackingUnit, m.DefenderHitPercent, m.AttackerHitPercent);
+				break;
+			case BattleType.HEAL:
+				m.AttackingUnit.GetComponent<Healer> ().Heal (m.DefendingUnit, m.AttackerHitPercent);
+				break;
 		}
 	}
 

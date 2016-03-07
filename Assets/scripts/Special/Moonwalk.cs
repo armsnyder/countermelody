@@ -94,6 +94,7 @@ public class Moonwalk : SpecialMoveBase {
 		List<Cell> path = new List<Cell>();
 		Cell neighbor = ServiceFactory.Instance.Resolve<CellGrid>().Cells.Find(
 			c => c.OffsetCoord == GetComponent<MelodyUnit>().Cell.OffsetCoord + direction && !c.IsTaken);
+
 		while (neighbor != null) {
 			Vector3 startPosition = transform.position;
 			float totalDistance = Vector3.Distance(transform.position, neighbor.transform.position);
@@ -105,6 +106,8 @@ public class Moonwalk : SpecialMoveBase {
 				transform.position = Vector3.Lerp(startPosition, neighbor.transform.position, moveProgress / totalDistance);
 				yield return 0;
 			}
+			GetComponent<MelodyUnit>().Cell.IsTaken = false;
+			neighbor.IsTaken = true;
 			GetComponent<MelodyUnit>().Cell = neighbor;
 			neighbor = ServiceFactory.Instance.Resolve<CellGrid>().Cells.Find(
 				c => c.OffsetCoord == neighbor.OffsetCoord + direction && !c.IsTaken);

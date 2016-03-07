@@ -157,8 +157,6 @@ public class MelodyUnit : Unit {
 	{
 		if (isMoving)
 			return;
-		if (ActionPoints == 0)
-			return;
 
 		MarkAsAttacking(other);
 		ActionPoints--;

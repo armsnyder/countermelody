@@ -4,4 +4,4 @@
 *.mid filter=lfs diff=lfs merge=lfs -crlf
 *.bytes filter=lfs diff=lfs merge=lfs -text
 *.exr filter=lfs diff=lfs merge=lfs -crlf
-*.asset filter=lfs diff=lfs merge=lfs -crlf
+Assets/**/*.asset filter=lfs diff=lfs merge=lfs -crlf
