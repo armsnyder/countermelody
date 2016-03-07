@@ -43,6 +43,9 @@ public class RecycleGameObject : MonoBehaviour {
 
 	public void Shutdown(){
 		gameObject.SetActive (false);
+		if(recycleComponents == null) {
+			return;
+		}
 
 		foreach (var component in recycleComponents) {
 			component.Shutdown();

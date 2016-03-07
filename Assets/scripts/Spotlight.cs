@@ -24,8 +24,20 @@ public class Spotlight : MonoBehaviour {
 	void Start () {
 		MessageRouter = ServiceFactory.Instance.Resolve<MessageRouter>();
 		MessageRouter.AddHandler<SpotlightChangeMessage>(OnSpotlightChange);
+		MessageRouter.AddHandler<SceneChangeMessage> (OnSceneChange);
 		turnOff();
 	}
+
+	void OnSceneChange(SceneChangeMessage m) {
+		StartCoroutine(RemoveHandlers());
+	}
+
+	IEnumerator RemoveHandlers() {
+		yield return new WaitForEndOfFrame();
+		MessageRouter.RemoveHandler<SpotlightChangeMessage>(OnSpotlightChange);
+		MessageRouter.RemoveHandler<SceneChangeMessage> (OnSceneChange);
+	}
+
 	
 	// Update is called once per frame
 	void Update () {
