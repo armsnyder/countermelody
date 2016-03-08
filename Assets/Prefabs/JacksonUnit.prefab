@@ -270,6 +270,7 @@ MonoBehaviour:
   ColorButton: 2
   unitColor: {r: 1, g: 0.9831643, b: 0.3897059, a: 0.984}
   hopHeight: 1
+  critDefendPercent: 0.5
   characterName: Michael Jackson
   description: Ranged
 --- !u!114 &11481162
@@ -286,6 +287,7 @@ MonoBehaviour:
   NumPerGame: 1
   music: {fileID: 8300000, guid: 4bf9a389a9d1144108e2f5edaef821a3, type: 3}
   musicVolume: 0.2
+  description: Moonwalk. Glide in a direction until reaching an obstacle.
   moonwalkSpeed: 3
 --- !u!124 &12463386
 Behaviour:
@@ -405,7 +407,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: description
-      value: Ranged
+      value: Moonwalk. Glide in a direction until reaching an obstacle.
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: music

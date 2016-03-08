@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System.Collections;
 using Frictionless;
 
 public class BoardInterpreter : Interpreter {
@@ -7,19 +8,38 @@ public class BoardInterpreter : Interpreter {
 	private bool IsAcceptingActions;
 	private const bool SWITCH_UNIT_ON_END_BEAT = true;
 	public static Dictionary<int, List<InputButton>> HeldThisBeat;
+	private bool ignore;
 
 	protected virtual void Awake() {
 		HeldThisBeat = new Dictionary<int, List<InputButton>> ();
 	}
 
 	protected override void Start() {
+		ignore = false;
 		base.Start ();
 		MessageRouter.AddHandler<UnitActionMessage>(OnUnitAction);
 		MessageRouter.AddHandler<EnterBeatWindowMessage>(OnEnterBeatWindow);
 		MessageRouter.AddHandler<ExitBeatWindowMessage>(OnExitBeatWindow);
+		MessageRouter.AddHandler<SceneChangeMessage> (OnSceneChange);
+	}
+
+	void OnSceneChange(SceneChangeMessage m) {
+		ignore = true;
+		StartCoroutine(RemoveHandlers());
+	}
+
+	IEnumerator RemoveHandlers() {
+		yield return new WaitForEndOfFrame();
+		MessageRouter.RemoveHandler<UnitActionMessage>(OnUnitAction);
+		MessageRouter.RemoveHandler<EnterBeatWindowMessage>(OnEnterBeatWindow);
+		MessageRouter.RemoveHandler<ExitBeatWindowMessage>(OnExitBeatWindow);
+		MessageRouter.RemoveHandler<SceneChangeMessage> (OnSceneChange);
 	}
 
 	protected override void OnButtonDown(ButtonDownMessage m) {
+		if (ignore) {
+			return;
+		}
 		base.OnButtonDown (m);
 		if (!enabled)
 			return;

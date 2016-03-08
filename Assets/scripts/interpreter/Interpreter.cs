@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System.Collections;
 using Frictionless;
 
 public class UnitActionMessage {
@@ -25,15 +26,34 @@ public class Interpreter : MonoBehaviour {
 	public static Dictionary<int, List<InputButton>> HeldFrets = new Dictionary<int, List<InputButton>> ();
 	protected static int CurrentPlayer;
 	protected MessageRouter MessageRouter;
+	private bool ignore;
 
 	protected virtual void Start() {
+		ignore = false;
 		MessageRouter = ServiceFactory.Instance.Resolve<MessageRouter> ();
 		MessageRouter.AddHandler<SwitchPlayerMessage> (OnSwitchPlayer);
 		MessageRouter.AddHandler<ButtonDownMessage> (OnButtonDown);
 		MessageRouter.AddHandler<ButtonUpMessage> (OnButtonUp);
+		MessageRouter.AddHandler<SceneChangeMessage> (OnSceneChange);
+	}
+
+	void OnSceneChange(SceneChangeMessage m) {
+		ignore = true;
+		StartCoroutine(RemoveHandlers());
+	}
+
+	IEnumerator RemoveHandlers() {
+		yield return new WaitForEndOfFrame();
+		MessageRouter.RemoveHandler<SwitchPlayerMessage> (OnSwitchPlayer);
+		MessageRouter.RemoveHandler<ButtonDownMessage> (OnButtonDown);
+		MessageRouter.RemoveHandler<ButtonUpMessage> (OnButtonUp);
+		MessageRouter.RemoveHandler<SceneChangeMessage> (OnSceneChange);
 	}
 
 	protected virtual void OnButtonDown(ButtonDownMessage m) {
+		if (ignore) {
+			return;
+		}
 		if (!enabled)
 			return;
 		switch (m.Button) {

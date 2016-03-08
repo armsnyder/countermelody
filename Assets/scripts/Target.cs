@@ -20,26 +20,43 @@ public class Target : MonoBehaviour {
 
 	private MessageRouter messageRouter;
 	private SpriteRenderer spriteRenderer;
+	private bool ignore;
 
 	void Start () {
+		ignore = false;
 		messageRouter = ServiceFactory.Instance.Resolve<MessageRouter> ();
 		messageRouter.AddHandler<ButtonDownMessage> (OnButtonDown);
 		messageRouter.AddHandler<ButtonUpMessage> (OnButtonUp);
 		messageRouter.AddHandler<EnterBattleMessage> (OnEnterBattle);
 		messageRouter.AddHandler<ExitBattleMessage> (OnExitBattle);
+		messageRouter.AddHandler<SceneChangeMessage> (OnSceneChange);
 		spriteRenderer = GetComponent<SpriteRenderer> ();
 		StartCoroutine (setRenderColor (_color));
 		spriteRenderer.enabled = false;
 	}
 
+	void OnSceneChange(SceneChangeMessage m) {
+		ignore = true;		
+		StartCoroutine(RemoveHandlers());
+	}
+
+	IEnumerator RemoveHandlers() {
+		yield return new WaitForEndOfFrame();
+		messageRouter.RemoveHandler<ButtonDownMessage> (OnButtonDown);
+		messageRouter.RemoveHandler<ButtonUpMessage> (OnButtonUp);
+		messageRouter.RemoveHandler<EnterBattleMessage> (OnEnterBattle);
+		messageRouter.RemoveHandler<ExitBattleMessage> (OnExitBattle);
+		messageRouter.RemoveHandler<SceneChangeMessage> (OnSceneChange);
+	}
+
 	void OnButtonDown(ButtonDownMessage m) {
-		if (m.PlayerNumber == player && m.Button == _color) {
+		if (!ignore && m.PlayerNumber == player && m.Button == _color) {
 			spriteRenderer.sprite = fretDownSprite;
 		}
 	}
 
 	void OnButtonUp(ButtonUpMessage m) {
-		if (m.PlayerNumber == player && m.Button == _color) {
+		if (!ignore && m.PlayerNumber == player && m.Button == _color) {
 			spriteRenderer.sprite = fretUpSprite;
 		}
 	}

@@ -20,6 +20,7 @@ public class GameManager : MonoBehaviour {
 	private bool isInSpecial;
 
 	private MessageRouter MessageRouter;
+	private bool ignore;
 
 	void Awake() {
 		// Register MessageRouter (the event BUS) as a singleton so that it can be referenced anywhere
@@ -31,13 +32,37 @@ public class GameManager : MonoBehaviour {
 	}
 
 	void Start() {
+		ignore = false;
+		/*if (GameObject.Find ("GameManager") != null && GameObject.Find ("GameManager") != this.gameObject) {
+			Debug.Log("got here");
+			Destroy (this.gameObject);
+			Destroy(this);
+			return;
+		}*/
 		MessageRouter = ServiceFactory.Instance.Resolve<MessageRouter> ();
 		MessageRouter.AddHandler<ExitBeatWindowMessage> (OnExitBeatWindow);
 		MessageRouter.AddHandler<EnterBattleMessage> (OnEnterBattle);
 		MessageRouter.AddHandler<ExitBattleMessage> (OnExitBattle);
 		MessageRouter.AddHandler<StartSpecialMoveMessage>(OnStartSpecial);
 		MessageRouter.AddHandler<EndSpecialMoveMessage>(OnEndSpecial);
+		MessageRouter.AddHandler<SceneChangeMessage> (OnSceneChange);
 		StartCoroutine (FirstFrameCoroutine ());
+	}
+
+	void OnSceneChange(SceneChangeMessage m) {
+		ignore = true;
+		StartCoroutine(RemoveHandlers());
+	}
+
+	IEnumerator RemoveHandlers() {
+		yield return new WaitForEndOfFrame();
+		MessageRouter = ServiceFactory.Instance.Resolve<MessageRouter> ();
+		MessageRouter.RemoveHandler<ExitBeatWindowMessage> (OnExitBeatWindow);
+		MessageRouter.RemoveHandler<EnterBattleMessage> (OnEnterBattle);
+		MessageRouter.RemoveHandler<ExitBattleMessage> (OnExitBattle);
+		MessageRouter.RemoveHandler<StartSpecialMoveMessage>(OnStartSpecial);
+		MessageRouter.RemoveHandler<EndSpecialMoveMessage>(OnEndSpecial);
+		MessageRouter.RemoveHandler<SceneChangeMessage> (OnSceneChange);
 	}
 
 	IEnumerator FirstFrameCoroutine() {

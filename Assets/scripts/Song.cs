@@ -92,6 +92,7 @@ public class Song : MonoBehaviour {
 		MessageRouter.AddHandler<EndSpecialMoveMessage>(OnEndSpecial);
 		MessageRouter.AddHandler<NoteHitMessage> (OnNoteHit);
 		MessageRouter.AddHandler<NoteMissMessage> (OnNoteMiss);
+		MessageRouter.AddHandler<SceneChangeMessage> (OnSceneChange);
 		player = gameObject.AddComponent<AudioSource> ();
 		player.clip = songFile;
 		player.loop = true;
@@ -114,6 +115,21 @@ public class Song : MonoBehaviour {
 	
 	void OnDisable() {
 		StopCoroutine ("BeatCoroutine");
+	}
+
+	void OnSceneChange(SceneChangeMessage m) {
+		StartCoroutine(RemoveHandlers());
+	}
+
+	IEnumerator RemoveHandlers() {
+		yield return new WaitForEndOfFrame();
+		MessageRouter = ServiceFactory.Instance.Resolve<MessageRouter> ();
+		MessageRouter.RemoveHandler<ExitBattleMessage> (OnExitBattle);
+		MessageRouter.RemoveHandler<StartSpecialMoveMessage>(OnStartSpecial);
+		MessageRouter.RemoveHandler<EndSpecialMoveMessage>(OnEndSpecial);
+		MessageRouter.RemoveHandler<NoteHitMessage> (OnNoteHit);
+		MessageRouter.RemoveHandler<NoteMissMessage> (OnNoteMiss);
+		MessageRouter.RemoveHandler<SceneChangeMessage> (OnSceneChange);
 	}
 
 	private IEnumerator BeatCoroutine() {

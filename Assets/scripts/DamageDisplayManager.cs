@@ -14,6 +14,18 @@ public class DamageDisplayManager : MonoBehaviour {
 		MessageRouter = ServiceFactory.Instance.Resolve<MessageRouter>();
 		MessageRouter.AddHandler<TakeDamageMessage>(OnTakeDamage);
 		MessageRouter.AddHandler<ExitHealMessage>(OnExitHeal);
+		MessageRouter.AddHandler<SceneChangeMessage> (OnSceneChange);
+	}
+
+	void OnSceneChange(SceneChangeMessage m) {
+		StartCoroutine(RemoveHandlers());
+	}
+
+	IEnumerator RemoveHandlers() {
+		yield return new WaitForEndOfFrame();
+		MessageRouter.RemoveHandler<TakeDamageMessage>(OnTakeDamage);
+		MessageRouter.RemoveHandler<ExitHealMessage>(OnExitHeal);
+		MessageRouter.RemoveHandler<SceneChangeMessage> (OnSceneChange);
 	}
 
 	void OnTakeDamage(TakeDamageMessage m) {

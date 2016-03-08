@@ -34,6 +34,8 @@ public class CharacterSelectManager : MonoBehaviour, IMultiSceneSingleton {
 
 	public GameObject[,] chosen;
 
+	private bool ignore;
+
 	void Awake() {
 		DontDestroyOnLoad(transform.gameObject); // because we need to access public chosen array in next scene
 		ServiceFactory.Instance.RegisterSingleton<MessageRouter> ();
@@ -43,11 +45,35 @@ public class CharacterSelectManager : MonoBehaviour, IMultiSceneSingleton {
 	}
 
 	void Start () {
+		ignore = false;
 		messageRouter = ServiceFactory.Instance.Resolve<MessageRouter> ();
 		messageRouter.AddHandler<ButtonDownMessage> (OnButtonDown);
+		messageRouter.AddHandler<SceneChangeMessage> (OnSceneChange);
+		/*if (GameObject.Find ("CharacterSelectManager") != null && GameObject.Find ("CharacterSelectManager") != this.gameObject) {
+			Debug.Log("got here");
+			Destroy (this.gameObject);
+			Destroy(this);
+		}*/
+	}
+
+	void OnSceneChange(SceneChangeMessage m) {
+		//ignore = true;
+		if(ignore) {
+			return;
+		}
+		StartCoroutine(RemoveHandlers());
+	}
+
+	IEnumerator RemoveHandlers() {
+		yield return new WaitForEndOfFrame();
+		messageRouter.RemoveHandler<ButtonDownMessage> (OnButtonDown);
+		messageRouter.RemoveHandler<SceneChangeMessage> (OnSceneChange);
 	}
 
 	void OnButtonDown(ButtonDownMessage m) {
+		if(ignore) {
+			return;
+		}
 		switch (m.Button) {
 		case InputButton.STRUM_DOWN:
 		case InputButton.DOWN:
@@ -99,6 +125,9 @@ public class CharacterSelectManager : MonoBehaviour, IMultiSceneSingleton {
 	}
 
 	bool StartGame() {
+		if(ignore) {
+			return true;
+		}
 		// Make sure all units have been assigned:
 		for (int i = 0; i < chosen.GetLength(0); i++) {
 			for (int j = 0; j < chosen.GetLength(1); j++) {
@@ -118,15 +147,15 @@ public class CharacterSelectManager : MonoBehaviour, IMultiSceneSingleton {
 		return true;
 	}
 
-	IEnumerator RemoveHandlers() {
-		yield return null;
-		messageRouter.RemoveHandler<ButtonDownMessage> (OnButtonDown);
-	}
-
 	IEnumerator LoadSceneAfterFrame(string nextScene) {
 		yield return null;
 		yield return null;
 		SceneManager.LoadScene (nextScene);
+		yield return null;
+		yield return null;
+		Destroy(this.gameObject);
+		Destroy(this);
+		ignore = true;
 	}
 
 	public IEnumerator HandleNewSceneLoaded() {
