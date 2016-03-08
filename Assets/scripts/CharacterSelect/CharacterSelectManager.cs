@@ -49,11 +49,6 @@ public class CharacterSelectManager : MonoBehaviour, IMultiSceneSingleton {
 		messageRouter = ServiceFactory.Instance.Resolve<MessageRouter> ();
 		messageRouter.AddHandler<ButtonDownMessage> (OnButtonDown);
 		messageRouter.AddHandler<SceneChangeMessage> (OnSceneChange);
-		/*if (GameObject.Find ("CharacterSelectManager") != null && GameObject.Find ("CharacterSelectManager") != this.gameObject) {
-			Debug.Log("got here");
-			Destroy (this.gameObject);
-			Destroy(this);
-		}*/
 	}
 
 	void OnSceneChange(SceneChangeMessage m) {
