@@ -333,7 +333,7 @@ public class UnitManager : MonoBehaviour
 			}
 		}
 		zeroHasNoUnits = true;
-		string nextScene = "CharacterSelect";		
+		string nextScene = "MainMenu";		
 		if (zeroHasNoUnits && oneHasNoUnits) {
 			Debug.Log("Tie");
 			MessageRouter.RaiseMessage (new SceneChangeMessage () {
