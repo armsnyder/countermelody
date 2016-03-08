@@ -33,12 +33,6 @@ public class GameManager : MonoBehaviour {
 
 	void Start() {
 		ignore = false;
-		/*if (GameObject.Find ("GameManager") != null && GameObject.Find ("GameManager") != this.gameObject) {
-			Debug.Log("got here");
-			Destroy (this.gameObject);
-			Destroy(this);
-			return;
-		}*/
 		MessageRouter = ServiceFactory.Instance.Resolve<MessageRouter> ();
 		MessageRouter.AddHandler<ExitBeatWindowMessage> (OnExitBeatWindow);
 		MessageRouter.AddHandler<EnterBattleMessage> (OnEnterBattle);
