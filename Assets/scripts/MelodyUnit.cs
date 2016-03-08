@@ -35,10 +35,12 @@ public class MelodyUnit : Unit {
 	public string characterName;
 	public string description;
 	protected float danceAnimationEaseIn = 1f / 12; // assumes 1 frame at 12 fps
+	private bool ignore;
 
     public override void Initialize()
-    {
+    {    	
         base.Initialize();
+        ignore = false;
 
 		maxHitPoints = HitPoints;
 
@@ -53,7 +55,19 @@ public class MelodyUnit : Unit {
 		}
 		MessageRouter = ServiceFactory.Instance.Resolve<MessageRouter> ();
 		MessageRouter.AddHandler<BeatCenterMessage> (OnBeatCenter);
+		MessageRouter.AddHandler<SceneChangeMessage> (OnSceneChange);
         this.UnMark();
+	}
+
+	void OnSceneChange(SceneChangeMessage m) {
+		ignore = true;
+		StartCoroutine(RemoveHandlers());
+	}
+
+	IEnumerator RemoveHandlers() {
+		yield return new WaitForEndOfFrame();
+		MessageRouter.RemoveHandler<BeatCenterMessage> (OnBeatCenter);
+		MessageRouter.RemoveHandler<SceneChangeMessage> (OnSceneChange);
 	}
 
 	public void Defend(Unit other, int damage, float defenseModifier) {
@@ -201,10 +215,12 @@ public class MelodyUnit : Unit {
 
 	void OnBeatCenter(BeatCenterMessage m) {
 		// Animate unit's beat animation on every beat
-		float whenStartAnimate = 60f / m.BeatsPerMinute - danceAnimationEaseIn;
-		if (whenStartAnimate < 0)
-			whenStartAnimate = 0f;
-		StartCoroutine (QueuedDance (whenStartAnimate));
+		if (!ignore) {
+			float whenStartAnimate = 60f / m.BeatsPerMinute - danceAnimationEaseIn;
+			if (whenStartAnimate < 0)
+				whenStartAnimate = 0f;
+			StartCoroutine (QueuedDance (whenStartAnimate));
+		}
 	}
 
 	IEnumerator QueuedDance(float whenStartAnimate) {

@@ -4,6 +4,8 @@ using System;
 using Frictionless;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class UnitManager : MonoBehaviour
 {
@@ -12,6 +14,8 @@ public class UnitManager : MonoBehaviour
 	private GameManager GameManager;
 	private MessageRouter MessageRouter;
 	private StateManager StateManager;
+	public GameObject replenishDisplayPrefab;
+	public GameObject canvas;
 
 	void Awake() {
 		SelectedUnit = new Dictionary<int, MelodyUnit> ();
@@ -76,10 +80,27 @@ public class UnitManager : MonoBehaviour
 
 		foreach (int i in partys) {
 			foreach( Unit u in partyLists[i]) {
-				Camera UnitCamera = u.GetComponentInChildren<Camera>();
+				Camera UnitCamera = u.GetComponentInChildren<Camera>();				
 
 				UnitCamera.rect = new Rect(offset, 0, UnitCamera.rect.width, UnitCamera.rect.height);
 				offset += UnitCamera.rect.width;
+
+				
+     			/*float height_offset = 0.1f;
+				float width_offset = -0.02f;
+				Vector3 viewportPoint = Camera.main.WorldToViewportPoint(u.transform.position);
+				viewportPoint += new Vector3(width_offset, height_offset);
+				
+     			GameObject replenish_display_object = GameObjectUtil.Instantiate(replenishDisplayPrefab);
+				replenish_display_object.transform.parent = canvas.transform;
+				replenish_display_object.transform.localPosition = new Vector3();
+
+				Text replenish_display = replenish_display_object.GetComponent<Text>();
+
+				replenish_display.rectTransform.anchorMin = viewportPoint;
+				replenish_display.rectTransform.anchorMax = viewportPoint;
+
+				replenish_display.text = "Heloo";*/
 			}
 			offset += margin;
 		}
@@ -280,11 +301,79 @@ public class UnitManager : MonoBehaviour
 		}
 	}
 
+	void LoadSceneAfterFrame(string nextScene) {
+		DateTime a = DateTime.Now;
+		DateTime b = DateTime.Now.AddSeconds(2);
+		while (a < b)
+		{
+		    a = DateTime.Now;
+		}
+		SceneManager.LoadScene (nextScene);
+	}
+
+	IEnumerator RemoveHandlers() {
+		yield return new WaitForEndOfFrame();
+		MessageRouter.RemoveHandler<UnitActionMessage>(OnUnitAction);
+		MessageRouter.RemoveHandler<SwitchPlayerMessage>(OnSwitchPlayer);
+		MessageRouter.RemoveHandler<UnitDeathMessage>(OnUnitDeath);
+		MessageRouter.RemoveHandler<StateChangeMessage>(OnStateChange);
+		MessageRouter.RemoveHandler<ExitBattleMessage> (OnExitBattle);
+		MessageRouter.RemoveHandler<EndSpecialMoveMessage>(OnEndSpecial);
+	}
+
+	bool CheckWin() {
+		bool zeroHasNoUnits = true;
+		bool oneHasNoUnits = true;
+		foreach(Unit u in GameBoard.Units) {
+			if (u.PlayerNumber == 0) {
+				zeroHasNoUnits = false;
+			}
+			if (u.PlayerNumber == 1) {
+				oneHasNoUnits = false;
+			}
+		}
+		zeroHasNoUnits = true;
+		string nextScene = "CharacterSelect";		
+		if (zeroHasNoUnits && oneHasNoUnits) {
+			Debug.Log("Tie");
+			MessageRouter.RaiseMessage (new SceneChangeMessage () {
+				currentScene = SceneManager.GetActiveScene ().name,
+				nextScene = nextScene
+			});
+			StartCoroutine (RemoveHandlers ());
+			LoadSceneAfterFrame (nextScene);
+			return false;		
+		}
+		else if (zeroHasNoUnits) {
+			Debug.Log("Player One Wins");
+			MessageRouter.RaiseMessage (new SceneChangeMessage () {
+				currentScene = SceneManager.GetActiveScene ().name,
+				nextScene = nextScene
+			});
+			StartCoroutine (RemoveHandlers ());
+			LoadSceneAfterFrame (nextScene);
+			return false;			
+		}
+		else if (oneHasNoUnits) {
+			Debug.Log("Player Zero Wins");
+			MessageRouter.RaiseMessage (new SceneChangeMessage () {
+				currentScene = SceneManager.GetActiveScene ().name,
+				nextScene = nextScene
+			});
+			StartCoroutine (RemoveHandlers ());
+			LoadSceneAfterFrame (nextScene);
+			return false;
+		}
+		return true;
+	}
+
 	void OnUnitDeath(UnitDeathMessage m) {
-		GameBoard.Units.Remove (m.unit);
-		UnHighlightAll();
-		SelectedUnit[m.unit.PlayerNumber] = GameBoard.Units.Find(c => c.PlayerNumber == m.unit.PlayerNumber) as MelodyUnit;
-		RefocusSpotlight(SelectedUnit[m.unit.PlayerNumber], m.unit.PlayerNumber);
+		GameBoard.Units.Remove (m.unit);		
+		if (CheckWin()) {
+			UnHighlightAll();
+			SelectedUnit[m.unit.PlayerNumber] = GameBoard.Units.Find(c => c.PlayerNumber == m.unit.PlayerNumber) as MelodyUnit;
+			RefocusSpotlight(SelectedUnit[m.unit.PlayerNumber], m.unit.PlayerNumber);
+		}
 	}
 
 	void OnStateChange(StateChangeMessage m) {

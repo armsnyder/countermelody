@@ -29,6 +29,10 @@ public class CameraEffectsHandler : MonoBehaviour {
 
 	public float transitionTime = 0.2f;
 
+	/*void Awake() {
+		DontDestroyOnLoad(transform.gameObject); 		
+	}*/
+
 	void Start () {
 		// Get components
 		blurComponent = GetComponent<BlurOptimized> ();
@@ -38,6 +42,7 @@ public class CameraEffectsHandler : MonoBehaviour {
 		messageRouter = ServiceFactory.Instance.Resolve<MessageRouter> ();
 		messageRouter.AddHandler<EnterBattleMessage> (OnEnterBattle);
 		messageRouter.AddHandler<ExitBattleMessage> (OnExitBattle);
+		messageRouter.AddHandler<SceneChangeMessage> (OnSceneChange);
 
 		// Initialize effects parameters
 		if (blurComponent) {
@@ -58,6 +63,17 @@ public class CameraEffectsHandler : MonoBehaviour {
 			Array.Copy (colorComponent.blueChannel.keys, defaultColorParams.blueChannel, 
 				colorComponent.blueChannel.keys.Length);
 		}
+	}
+
+	void OnSceneChange(SceneChangeMessage m) {
+		StartCoroutine(RemoveHandlers());
+	}
+
+	IEnumerator RemoveHandlers() {
+		yield return new WaitForEndOfFrame();
+		messageRouter.RemoveHandler<EnterBattleMessage> (OnEnterBattle);
+		messageRouter.RemoveHandler<ExitBattleMessage> (OnExitBattle);
+		messageRouter.RemoveHandler<SceneChangeMessage> (OnSceneChange);
 	}
 
 	void OnEnterBattle(EnterBattleMessage m) {

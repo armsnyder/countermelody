@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using Frictionless;
 
 /// <summary>
 /// Object pool. This class is only ever used internally within GameObjectUtil, so don't worry about it.
@@ -10,6 +11,31 @@ public class ObjectPool : MonoBehaviour {
 	public RecycleGameObject prefab;
 
 	private List<RecycleGameObject> poolInstances = new List<RecycleGameObject>();
+
+	private MessageRouter messageRouter;
+	private bool ignore;
+
+	void Awake() {
+		DontDestroyOnLoad(transform.gameObject);
+	}
+
+	void Start() {
+		ignore = false;
+		messageRouter = ServiceFactory.Instance.Resolve<MessageRouter> ();
+		messageRouter.AddHandler<SceneChangeMessage> (OnSceneChange);
+	}
+
+	void OnSceneChange(SceneChangeMessage m) {
+		ignore = true;
+		poolInstances = new List<RecycleGameObject>();	
+		//StartCoroutine(RemoveHandlers());
+	}
+
+	IEnumerator RemoveHandlers() {
+		yield return new WaitForEndOfFrame();		
+
+		messageRouter.RemoveHandler<SceneChangeMessage> (OnSceneChange);
+	}
 
 	private RecycleGameObject CreateInstance(Vector3 pos){
 
@@ -22,7 +48,7 @@ public class ObjectPool : MonoBehaviour {
 		return clone;
 	}
 
-	public RecycleGameObject NextObject(Vector3 pos){
+	public RecycleGameObject NextObject(Vector3 pos){		
 		RecycleGameObject instance = null;
 
 		foreach (var go in poolInstances) {
