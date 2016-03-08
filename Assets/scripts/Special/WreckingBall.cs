@@ -76,8 +76,10 @@ public class WreckingBall : SpecialMoveBase {
 		CMCellGrid grid = ServiceFactory.Instance.Resolve<CellGrid>() as CMCellGrid;
 
 		Vector3 startPos = transform.position;
-		while (startPos.x >= grid.transform.position.x && startPos.z >= grid.transform.position.z) {
-				startPos -= new Vector3(Math.Abs(direction.x), 0, Math.Abs(direction.y));
+		float grid_width = grid.GetComponent<CMCellGridGenerator>().gridSize.x;
+		float grid_height = grid.GetComponent<CMCellGridGenerator>().gridSize.y;
+		while (startPos.x >= grid.transform.position.x && startPos.x <= grid.transform.position.x + grid_width  && startPos.z >= grid.transform.position.z && startPos.z <= grid.transform.position.z + grid_height) {
+				startPos -= new Vector3(direction.x, 0, direction.y);
 		}
 		// Grid offset
 		startPos -= new Vector3(0, 0, 0.5f);
@@ -85,21 +87,22 @@ public class WreckingBall : SpecialMoveBase {
 		wreckingBallSprite.transform.position += startPos;
 
 		Vector3 endPos = startPos;
-		if (direction.x != 0) {
-			endPos.x = grid.GetComponent<CMCellGridGenerator>().gridSize.x;
-		} else if (direction.y != 0) {
-			endPos.z = grid.GetComponent<CMCellGridGenerator>().gridSize.y;
-		} else {
-			Debug.LogError("Wrecking ball direction must be 1 in x or y");
-		}
+		endPos = startPos + new Vector3(direction.x * grid_width, 0, direction.y * grid_height);
+		//if (direction.x != 0) {
+		//	endPos.x = startPos * direction * new Vector3(;
+		//} else if (direction.y != 0) {
+		//	endPos.z = grid.GetComponent<CMCellGridGenerator>().gridSize.y;
+		//} else {
+		//	Debug.LogError("Wrecking ball direction must be 1 in x or y");
+		//}
 
 		float i = 0;
 		float rate = 1.0f / swingTime;
 
-		wreckingBallSprite.transform.GetChild(0).eulerAngles += new Vector3(20 * Math.Abs(direction.y), 0, -60 * Math.Abs(direction.x));
+		wreckingBallSprite.transform.GetChild(0).eulerAngles += new Vector3((60 * direction.y)-40, 0, -60 * direction.x);
 
 		Vector3 startRotation = new Vector3();
-		Vector3 endRotation = new Vector3(-120 * Math.Abs(direction.y), 0, 120 * Math.Abs(direction.x));
+		Vector3 endRotation = new Vector3(-120 * direction.y, 0, 120 * direction.x);
 		Vector3 rotationperFrame = Vector3.Slerp(startRotation, endRotation, Time.deltaTime * rate);
 
 		while (i < 1) { 

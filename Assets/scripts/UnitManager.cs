@@ -85,22 +85,6 @@ public class UnitManager : MonoBehaviour
 				UnitCamera.rect = new Rect(offset, 0, UnitCamera.rect.width, UnitCamera.rect.height);
 				offset += UnitCamera.rect.width;
 
-				
-     			/*float height_offset = 0.1f;
-				float width_offset = -0.02f;
-				Vector3 viewportPoint = Camera.main.WorldToViewportPoint(u.transform.position);
-				viewportPoint += new Vector3(width_offset, height_offset);
-				
-     			GameObject replenish_display_object = GameObjectUtil.Instantiate(replenishDisplayPrefab);
-				replenish_display_object.transform.parent = canvas.transform;
-				replenish_display_object.transform.localPosition = new Vector3();
-
-				Text replenish_display = replenish_display_object.GetComponent<Text>();
-
-				replenish_display.rectTransform.anchorMin = viewportPoint;
-				replenish_display.rectTransform.anchorMax = viewportPoint;
-
-				replenish_display.text = "Heloo";*/
 			}
 			offset += margin;
 		}
@@ -387,8 +371,13 @@ public class UnitManager : MonoBehaviour
 		switch (m.battleType) {
 			case BattleType.ATTACK:
 				m.AttackingUnit.DealDamage(m.DefendingUnit, m.AttackerHitPercent, m.DefenderHitPercent);
-				if (m.DefendingUnit.HitPoints > 0)
+				if (m.DefendingUnit.HitPoints > 0 && m.DefendingUnit.AttackRange >= 
+					(Math.Abs(m.DefendingUnit.Cell.OffsetCoord[0] - m.AttackingUnit.Cell.OffsetCoord[0])) + 
+					(Math.Abs(m.DefendingUnit.Cell.OffsetCoord[1] - m.AttackingUnit.Cell.OffsetCoord[1]))) {
+
 					m.DefendingUnit.DealDamage(m.AttackingUnit, m.DefenderHitPercent, m.AttackerHitPercent);
+				}
+					
 				break;
 			case BattleType.HEAL:
 				m.AttackingUnit.GetComponent<Healer> ().Heal (m.DefendingUnit, m.AttackerHitPercent);
