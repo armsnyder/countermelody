@@ -3,6 +3,7 @@ using System.Collections;
 
 public enum MenuItemType {
 	LoadScene,
+	LoadCanvas,
 	ExitGame
 }
 
