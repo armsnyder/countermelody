@@ -61,10 +61,10 @@ public class MainMenuManager : MonoBehaviour {
 	}
 
 	void OnSceneChange(SceneChangeMessage m) {
-		StartCoroutine(RemoveHandlers(m.nextScene));
+		StartCoroutine(LoadNextScene(m.nextScene));
 	}
 
-	IEnumerator RemoveHandlers(string nextScene) {
+	IEnumerator LoadNextScene(string nextScene) {
 		yield return new WaitForEndOfFrame();
 		MessageRouter.RemoveHandler<NavigateMenuMessage>(OnNavigateMenu);
 		MessageRouter.RemoveHandler<SceneChangeMessage>(OnSceneChange);
