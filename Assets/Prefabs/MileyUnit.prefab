@@ -460,6 +460,10 @@ Prefab:
       propertyPath: range
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: prefab
+      value: 
+      objectReference: {fileID: 196786, guid: 47f7f3974da7a4eca889ea3e48df3ddd, type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 161762}
