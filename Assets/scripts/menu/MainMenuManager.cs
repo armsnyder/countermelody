@@ -11,6 +11,13 @@ public class MainMenuManager : MonoBehaviour {
 	int CurrentSelectionIndex = 0;
 	[SerializeField]
 	private List<Text> MenuOptions;
+	[SerializeField]
+	private List<Canvas> HowToPlaySteps;
+	[SerializeField]
+	private Canvas MainCanvas;
+
+	private bool inHowToPlay;
+	private int howToPlayIndex = 0;
 
 	void Awake () {
 		ServiceFactory.Instance.RegisterSingleton<MessageRouter>();
@@ -21,6 +28,9 @@ public class MainMenuManager : MonoBehaviour {
 
 	void Start() {
 		MenuOptions[CurrentSelectionIndex].GetComponentInChildren<Image>().enabled = true;
+		foreach (Canvas c in HowToPlaySteps)
+			c.enabled = false;
+		MainCanvas.enabled = true;
 	}
 
 	void OnNavigateMenu(NavigateMenuMessage m) {
@@ -34,30 +44,75 @@ public class MainMenuManager : MonoBehaviour {
 			case NavigationType.SELECT:
 				MakeCurrentSelection();
 				break;
+			case NavigationType.BACK:
+				LoadPrevHowToPlay();
+				break;
 			default:
 				break;
 		}
 	}
 
 	void Scroll(int dir) {
+		if (inHowToPlay)
+			return;
+
 		MenuOptions[CurrentSelectionIndex].GetComponentInChildren<Image>().enabled = false;
 		CurrentSelectionIndex = (CurrentSelectionIndex + dir + MenuOptions.Count) % MenuOptions.Count;
 		MenuOptions[CurrentSelectionIndex].GetComponentInChildren<Image>().enabled = true;
 	}
 
 	void MakeCurrentSelection() {
-		switch (MenuOptions[CurrentSelectionIndex].GetComponent<MainMenuItem>().ItemType) {
-			case MenuItemType.LoadScene:
-				MessageRouter.RaiseMessage(new SceneChangeMessage() {
-					nextScene = MenuOptions[CurrentSelectionIndex].GetComponent<MainMenuItem>().SceneName
-				});
-				break;
-			case MenuItemType.ExitGame:
-				Application.Quit();
-				break;
-			default:
-				break;
+		if (inHowToPlay) {
+			LoadNextHowToPlay();
+		} else {
+			switch (MenuOptions[CurrentSelectionIndex].GetComponent<MainMenuItem>().ItemType) {
+				case MenuItemType.LoadScene:
+					MessageRouter.RaiseMessage(new SceneChangeMessage() {
+						nextScene = MenuOptions[CurrentSelectionIndex].GetComponent<MainMenuItem>().SceneName
+					});
+					break;
+				case MenuItemType.ExitGame:
+					Application.Quit();
+					break;
+				case MenuItemType.LoadCanvas:
+					LoadHowToPlay();
+					break;
+				default:
+					break;
+			}
 		}
+		
+	}
+
+	void LoadNextHowToPlay() {
+		if (!inHowToPlay)
+			return;
+		HowToPlaySteps[howToPlayIndex].enabled = false;
+		if (howToPlayIndex+1 < HowToPlaySteps.Count) {
+			howToPlayIndex++;
+			HowToPlaySteps[howToPlayIndex].enabled = true;
+		} else {
+			inHowToPlay = false;
+			MainCanvas.enabled = true;
+		}
+		
+	}
+
+	void LoadPrevHowToPlay() {
+		if (!inHowToPlay)
+			return;
+		if (howToPlayIndex - 1 >= 0) {
+			HowToPlaySteps[howToPlayIndex].enabled = false;
+			howToPlayIndex--;
+			HowToPlaySteps[howToPlayIndex].enabled = true;
+		}
+	}
+
+	void LoadHowToPlay() {
+		howToPlayIndex = 0;
+		inHowToPlay = true;
+		MainCanvas.enabled = false;
+		HowToPlaySteps[howToPlayIndex].enabled = true;
 	}
 
 	void OnSceneChange(SceneChangeMessage m) {
