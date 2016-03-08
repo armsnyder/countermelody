@@ -301,13 +301,11 @@ public class UnitManager : MonoBehaviour
 		}
 	}
 
-	void LoadSceneAfterFrame(string nextScene) {
-		DateTime a = DateTime.Now;
-		DateTime b = DateTime.Now.AddSeconds(2);
-		while (a < b)
-		{
-		    a = DateTime.Now;
-		}
+	IEnumerator LoadSceneAfterFrame(string nextScene, string winMessage) {
+		Text WinText = GameObject.Find ("WinnerText").GetComponent<Text> ();
+		WinText.text = winMessage;
+		yield return new WaitForSeconds (5);
+		WinText.text = "";
 		SceneManager.LoadScene (nextScene);
 	}
 
@@ -334,33 +332,30 @@ public class UnitManager : MonoBehaviour
 		}
 		string nextScene = "CharacterSelect";		
 		if (zeroHasNoUnits && oneHasNoUnits) {
-			Debug.Log("Tie");
 			MessageRouter.RaiseMessage (new SceneChangeMessage () {
 				currentScene = SceneManager.GetActiveScene ().name,
 				nextScene = nextScene
 			});
 			StartCoroutine (RemoveHandlers ());
-			LoadSceneAfterFrame (nextScene);
+			StartCoroutine(LoadSceneAfterFrame (nextScene, "Tie Game!"));
 			return false;		
 		}
 		else if (zeroHasNoUnits) {
-			Debug.Log("Player One Wins");
 			MessageRouter.RaiseMessage (new SceneChangeMessage () {
 				currentScene = SceneManager.GetActiveScene ().name,
 				nextScene = nextScene
 			});
 			StartCoroutine (RemoveHandlers ());
-			LoadSceneAfterFrame (nextScene);
+			StartCoroutine(LoadSceneAfterFrame (nextScene, "Player One Wins!"));
 			return false;			
 		}
 		else if (oneHasNoUnits) {
-			Debug.Log("Player Zero Wins");
 			MessageRouter.RaiseMessage (new SceneChangeMessage () {
 				currentScene = SceneManager.GetActiveScene ().name,
 				nextScene = nextScene
 			});
 			StartCoroutine (RemoveHandlers ());
-			LoadSceneAfterFrame (nextScene);
+			StartCoroutine(LoadSceneAfterFrame (nextScene, "Player Zero Wins!"));
 			return false;
 		}
 		return true;
