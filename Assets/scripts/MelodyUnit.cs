@@ -162,8 +162,8 @@ public class MelodyUnit : Unit {
 
 	IEnumerator QueuedDestroy() {
 		// Delay destroy until next frame to ensure we are not within a MessageRouter raised message loop
+		StartCoroutine(RemoveHandlers());
 		yield return null;
-		MessageRouter.RemoveHandler<BeatCenterMessage> (OnBeatCenter);
 		GameObjectUtil.Destroy(gameObject);
 	}
 
