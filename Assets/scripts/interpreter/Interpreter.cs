@@ -37,7 +37,7 @@ public class Interpreter : MonoBehaviour {
 		MessageRouter.AddHandler<SceneChangeMessage> (OnSceneChange);
 	}
 
-	void OnSceneChange(SceneChangeMessage m) {
+	protected virtual void OnSceneChange(SceneChangeMessage m) {
 		ignore = true;
 		StartCoroutine(RemoveHandlers());
 	}

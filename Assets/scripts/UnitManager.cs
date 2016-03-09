@@ -357,9 +357,9 @@ public class UnitManager : MonoBehaviour
 	void OnStateChange(StateChangeMessage m) {
 		if (GameBoard == null)
 			return;
-		UnHighlightAll();
 		switch (m.State) {
 			case State.MoveState:
+				UnHighlightAll();
 				MarkAttackRange();
 				break;
 		}

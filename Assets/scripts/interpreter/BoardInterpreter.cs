@@ -3,6 +3,14 @@ using System.Collections.Generic;
 using System.Collections;
 using Frictionless;
 
+public class PauseGameMessage {
+	public int playerNumber;
+}
+
+public class ResumeGameMessage {
+	public int playerNumber;
+}
+
 public class BoardInterpreter : Interpreter {
 
 	private bool IsAcceptingActions;
@@ -23,7 +31,8 @@ public class BoardInterpreter : Interpreter {
 		MessageRouter.AddHandler<SceneChangeMessage> (OnSceneChange);
 	}
 
-	void OnSceneChange(SceneChangeMessage m) {
+	protected override void OnSceneChange(SceneChangeMessage m) {
+		base.OnSceneChange (m);
 		ignore = true;
 		StartCoroutine(RemoveHandlers());
 	}
@@ -103,6 +112,9 @@ public class BoardInterpreter : Interpreter {
 				}
 				HeldThisBeat [m.PlayerNumber].Add (m.Button);
 			}
+			break;
+		case InputButton.PLUS:
+			MessageRouter.RaiseMessage (new PauseGameMessage () { playerNumber = CurrentPlayer });
 			break;
 			default:
 				break;

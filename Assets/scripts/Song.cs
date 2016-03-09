@@ -93,6 +93,8 @@ public class Song : MonoBehaviour {
 		MessageRouter.AddHandler<NoteHitMessage> (OnNoteHit);
 		MessageRouter.AddHandler<NoteMissMessage> (OnNoteMiss);
 		MessageRouter.AddHandler<SceneChangeMessage> (OnSceneChange);
+		MessageRouter.AddHandler<PauseGameMessage> (OnPauseGame);
+		MessageRouter.AddHandler<ResumeGameMessage> (OnResumeGame);
 		player = gameObject.AddComponent<AudioSource> ();
 		player.clip = songFile;
 		player.loop = true;
@@ -130,6 +132,8 @@ public class Song : MonoBehaviour {
 		MessageRouter.RemoveHandler<NoteHitMessage> (OnNoteHit);
 		MessageRouter.RemoveHandler<NoteMissMessage> (OnNoteMiss);
 		MessageRouter.RemoveHandler<SceneChangeMessage> (OnSceneChange);
+		MessageRouter.RemoveHandler<PauseGameMessage> (OnPauseGame);
+		MessageRouter.RemoveHandler<ResumeGameMessage> (OnResumeGame);
 	}
 
 	private IEnumerator BeatCoroutine() {
@@ -557,5 +561,13 @@ public class Song : MonoBehaviour {
 			if (startAtNextMeasure)
 				p.time = player.time;
 		}
+	}
+
+	void OnPauseGame(PauseGameMessage m) {
+		PauseSong ();
+	}
+
+	void OnResumeGame(ResumeGameMessage m) {
+		StartSong ();
 	}
 }

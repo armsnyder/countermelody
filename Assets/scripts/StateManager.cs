@@ -1,10 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using Frictionless;
 
 public enum State {
 	MoveState,
 	BattleState,
+	PauseState,
 	None
 }
 
@@ -16,10 +18,13 @@ public class StateChangeMessage {
 public class StateManager : MonoBehaviour {
 
 	MessageRouter MessageRouter;
-	BoardInterpreter BoardInterpreter;
-	Interpreter DefaultInterpreter;
+	Dictionary<State, Interpreter> interpreters;
 	int CurrentPlayer;
 	private State _CurrentState = State.None;
+
+	void Awake() {
+		interpreters = new Dictionary<State, Interpreter> ();
+	}
 
 	void Start () {
 
@@ -31,13 +36,15 @@ public class StateManager : MonoBehaviour {
 		MessageRouter.AddHandler<StartSpecialMoveMessage>(OnStartSpecial);
 		MessageRouter.AddHandler<EndSpecialMoveMessage>(OnEndSpecial);
 		MessageRouter.AddHandler<SceneChangeMessage> (OnSceneChange);
+		MessageRouter.AddHandler<PauseGameMessage> (OnPauseGame);
+		MessageRouter.AddHandler<ResumeGameMessage> (OnResumeGame);
 
-		BoardInterpreter = gameObject.AddComponent<BoardInterpreter> ();
-		DefaultInterpreter = gameObject.AddComponent<Interpreter> ();
+		interpreters [State.MoveState] = gameObject.AddComponent<BoardInterpreter> ();
+		interpreters [State.None] = interpreters [State.BattleState] = gameObject.AddComponent<Interpreter> ();
+		interpreters [State.PauseState] = gameObject.AddComponent<PauseMenuInterpreter> ();
 
 		//Start in Move State
-		LoadBoardInterpreter();
-		ChangeState (State.MoveState);
+		StartCoroutine(ChangeState (State.MoveState));
 	}
 
 	void OnSceneChange(SceneChangeMessage m) {
@@ -52,44 +59,48 @@ public class StateManager : MonoBehaviour {
 		MessageRouter.RemoveHandler<StartSpecialMoveMessage>(OnStartSpecial);
 		MessageRouter.RemoveHandler<EndSpecialMoveMessage>(OnEndSpecial);
 		MessageRouter.RemoveHandler<SceneChangeMessage> (OnSceneChange);
+		MessageRouter.RemoveHandler<PauseGameMessage> (OnPauseGame);
+		MessageRouter.RemoveHandler<ResumeGameMessage> (OnResumeGame);
 	}
 
 	void OnSwitchPlayer(SwitchPlayerMessage m) {
-		LoadBoardInterpreter ();
+		StartCoroutine (ChangeState (State.MoveState));
 		CurrentPlayer = m.PlayerNumber;
 	}
 
 	void OnEnterBattle(EnterBattleMessage m) {
-		LoadDefaultInterpreter ();
-		ChangeState (State.BattleState);
+		StartCoroutine (ChangeState (State.BattleState));
 	}
 
 	void OnExitBattle(ExitBattleMessage m) {
-		LoadBoardInterpreter ();
-		ChangeState (State.MoveState);
+		StartCoroutine (ChangeState (State.MoveState));
 	}
 
-	void LoadBoardInterpreter() {
-		Debug.Assert (DefaultInterpreter != null && BoardInterpreter != null);
-		DefaultInterpreter.enabled = false;
-		BoardInterpreter.enabled = true;
-	}
-
-	void LoadDefaultInterpreter() {
-		BoardInterpreter.enabled = false;
-		DefaultInterpreter.enabled = true;
-	}
-
-	void ChangeState(State newState) {
-		MessageRouter.RaiseMessage(new StateChangeMessage() { State = newState, PrevState = _CurrentState });
-		_CurrentState = newState;
+	IEnumerator ChangeState(State newState) {
+		yield return new WaitForEndOfFrame ();
+		foreach (Interpreter i in interpreters.Values) {
+			i.enabled = false;
+		}
+		interpreters [newState].enabled = true;
+		if (_CurrentState != newState) {
+			MessageRouter.RaiseMessage (new StateChangeMessage () { State = newState, PrevState = _CurrentState });
+			_CurrentState = newState;
+		}
 	}
 
 	void OnStartSpecial(StartSpecialMoveMessage m) {
-		LoadDefaultInterpreter();
+		StartCoroutine (ChangeState (State.None));
 	}
 
 	void OnEndSpecial(EndSpecialMoveMessage m) {
-		LoadBoardInterpreter();
+		StartCoroutine (ChangeState (State.MoveState));
+	}
+
+	void OnPauseGame(PauseGameMessage m) {
+		StartCoroutine (ChangeState (State.PauseState));
+	}
+
+	void OnResumeGame(ResumeGameMessage m) {
+		StartCoroutine (ChangeState (State.MoveState));
 	}
 }

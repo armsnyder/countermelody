@@ -17,6 +17,9 @@ public enum NavigationType {
 public class MenuInterpreter : Interpreter {
 
 	protected override void OnButtonDown(ButtonDownMessage m) {
+		base.OnButtonDown (m);
+		if (!enabled)
+			return;
 		switch (m.Button) {
 			case InputButton.STRUM_UP:
 			case InputButton.UP:

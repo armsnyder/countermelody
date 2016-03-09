@@ -1830,13 +1830,11 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1471062518}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 49604f47aee5bc44e854cbd2d55ce03a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  simulateBattles: 0
-  NoteThing: {fileID: 102260, guid: 1c69d35036871f24f9105e0db867d8fe, type: 2}
 --- !u!114 &1471062524
 MonoBehaviour:
   m_ObjectHideFlags: 0
