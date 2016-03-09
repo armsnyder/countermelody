@@ -238,7 +238,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 813fb0e327e8047a985198d4de57843d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HitPoints: 200
+  HitPoints: 250
   AttackRange: 1
   AttackFactor: 90
   DefenceFactor: 50
@@ -407,7 +407,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: HitPoints
-      value: 200
+      value: 250
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: characterName
