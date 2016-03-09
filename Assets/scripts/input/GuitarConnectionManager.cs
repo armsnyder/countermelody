@@ -51,6 +51,10 @@ public class GuitarConnectionManager : MonoBehaviour, IMultiSceneSingleton {
 	private void Awake() {
 		if (GameObject.Find ("GuitarConnectionManager") != null && GameObject.Find ("GuitarConnectionManager") != this.gameObject) {
 			ignore = true;
+			this.gameObject.SetActive (false);
+			foreach (MonoBehaviour c in this.gameObject.GetComponents<MonoBehaviour>()) {
+				c.enabled = false;
+			}
 			findWiimotesOnEnable = false;
 			return;
 		}
@@ -70,6 +74,10 @@ public class GuitarConnectionManager : MonoBehaviour, IMultiSceneSingleton {
 		//if (managerSingleton != null && managerSingleton != this) {
 		if (GameObject.Find ("GuitarConnectionManager") != null && GameObject.Find ("GuitarConnectionManager") != this.gameObject) {
 			ignore = true;
+			this.gameObject.SetActive (false);
+			foreach (MonoBehaviour c in this.gameObject.GetComponents<MonoBehaviour>()) {
+				c.enabled = false;
+			}
 			findWiimotesOnEnable = false;
 			return;
 		}
@@ -124,9 +132,8 @@ public class GuitarConnectionManager : MonoBehaviour, IMultiSceneSingleton {
 	}
 
 	private void OnDisable() {
-		if (ignore) {
-			return;	
-		}
+		if (ignore) 
+			return;		
 		
 		StopManagingWiimotes ();
 
@@ -209,8 +216,8 @@ public class GuitarConnectionManager : MonoBehaviour, IMultiSceneSingleton {
 	/// <returns>The player number of wiimote.</returns>
 	/// <param name="wiimote">Wiimote.</param>
 	public int IndexOfWiimote(Wiimote wiimote) {
-		if (ignore) {
-			return 0;
+		if (wiimotes == null) {
+			return -1;
 		}
 		foreach (KeyValuePair<int, Wiimote> i in wiimotes) {
 			if (i.Value.hidapi_handle == wiimote.hidapi_handle) {
