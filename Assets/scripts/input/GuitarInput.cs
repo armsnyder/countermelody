@@ -46,13 +46,19 @@ public class GuitarInput : ControllerInput {
 	private MessageRouter MessageRouter;
 	private GuitarDataModel LastFrameData; // Data from the last frame, used to detect button up/down
 	private GuitarDataModel ThisFrameData; // Basically a buffer for incoming guitar data
+	private bool ignore;
 
 	public GuitarInput(int PlayerNumber) : base(PlayerNumber) { }
 
 	void Start() {
+		if (GameObject.Find ("GuitarConnectionManager") != null && GameObject.Find ("GuitarConnectionManager") != this.gameObject) {
+			ignore = true;
+			return;
+		}
 		GuitarInputManager = ServiceFactory.Instance.Resolve<GuitarConnectionManager>();
 		MessageRouter = ServiceFactory.Instance.Resolve<MessageRouter>();
 		StartCoroutine ("RaiseRegisterInputCoroutine");
+		ignore = false;
 	}
 
 	IEnumerator RaiseRegisterInputCoroutine() {
@@ -71,6 +77,10 @@ public class GuitarInput : ControllerInput {
 	}
 
 	void Update() {
+
+		if (ignore) {
+			return;
+		}
 
 		// Make sure the wiimote and guitar are connected
 		if (!GuitarInputManager.wiimotes.ContainsKey(PlayerNumber))

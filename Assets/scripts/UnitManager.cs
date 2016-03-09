@@ -314,7 +314,7 @@ public class UnitManager : MonoBehaviour
 				oneHasNoUnits = false;
 			}
 		}
-		string nextScene = "CharacterSelect";		
+		string nextScene = "MainMenu";		
 		if (zeroHasNoUnits && oneHasNoUnits) {
 			MessageRouter.RaiseMessage (new SceneChangeMessage () {
 				currentScene = SceneManager.GetActiveScene ().name,

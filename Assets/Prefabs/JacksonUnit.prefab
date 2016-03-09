@@ -259,8 +259,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 120dd35e1e1414a828ca928a134383eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HitPoints: 100
-  AttackRange: 2
+  HitPoints: 150
+  AttackRange: 3
   AttackFactor: 100
   DefenceFactor: 50
   MovementPoints: 4
@@ -270,7 +270,7 @@ MonoBehaviour:
   ColorButton: 2
   unitColor: {r: 1, g: 0.9831643, b: 0.3897059, a: 0.984}
   hopHeight: 1
-  critDefendPercent: 0.5
+  critDefendPercent: 0.2
   characterName: Michael Jackson
   description: Ranged
 --- !u!114 &11481162
@@ -394,8 +394,8 @@ Prefab:
     m_Modifications:
     - target: {fileID: 0}
       propertyPath: AttackRange
-      value: 2
-      objectReference: {fileID: 9100000, guid: 1db58803e8a17478bb30e8760bae99ec, type: 2}
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: m_Sprite
       value: 
@@ -425,6 +425,18 @@ Prefab:
       propertyPath: prefab
       value: 
       objectReference: {fileID: 196786, guid: 47f7f3974da7a4eca889ea3e48df3ddd, type: 2}
+    - target: {fileID: 0}
+      propertyPath: HitPoints
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: AttackFactor
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: DefenceFactor
+      value: 50
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 108014}

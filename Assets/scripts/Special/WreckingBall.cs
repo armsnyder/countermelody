@@ -88,13 +88,6 @@ public class WreckingBall : SpecialMoveBase {
 
 		Vector3 endPos = startPos;
 		endPos = startPos + new Vector3(direction.x * grid_width, 0, direction.y * grid_height);
-		//if (direction.x != 0) {
-		//	endPos.x = startPos * direction * new Vector3(;
-		//} else if (direction.y != 0) {
-		//	endPos.z = grid.GetComponent<CMCellGridGenerator>().gridSize.y;
-		//} else {
-		//	Debug.LogError("Wrecking ball direction must be 1 in x or y");
-		//}
 
 		float i = 0;
 		float rate = 1.0f / swingTime;

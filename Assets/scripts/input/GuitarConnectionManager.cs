@@ -38,6 +38,7 @@ public class GuitarConnectionManager : MonoBehaviour, IMultiSceneSingleton {
 	private int maxTolerateReadFailures = 3;
 	private List<int> playerRequestQueue; // Queue of player numbers registered as inputs awaiting a connected wiimote
 	private MessageRouter MessageRouter;
+	private bool ignore;
 
 	/// <summary>
 	/// Gets the connected guitars as a dictionary of Wiimote objects, indexed by player number, which contain the 
@@ -48,6 +49,15 @@ public class GuitarConnectionManager : MonoBehaviour, IMultiSceneSingleton {
 	public Dictionary<int, Wiimote> wiimotes;
 
 	private void Awake() {
+		if (GameObject.Find ("GuitarConnectionManager") != null && GameObject.Find ("GuitarConnectionManager") != this.gameObject) {
+			ignore = true;
+			this.gameObject.SetActive (false);
+			foreach (MonoBehaviour c in this.gameObject.GetComponents<MonoBehaviour>()) {
+				c.enabled = false;
+			}
+			findWiimotesOnEnable = false;
+			return;
+		}
 		wiimotes = new Dictionary<int, Wiimote> ();
 		isGuitarConnected = new Dictionary<int, bool> ();
 		readFailures = new Dictionary<int, int> ();
@@ -57,26 +67,33 @@ public class GuitarConnectionManager : MonoBehaviour, IMultiSceneSingleton {
 		// Perhaps later we will change where this singleton is registed to an external GameManager
 		// class if we don't want to have to attach GuitarInputManager as a component.
 		ServiceFactory.Instance.RegisterSingleton<GuitarConnectionManager> (this);
+		ignore = false;
 	}
 
 	private void Start() {
-		GuitarConnectionManager managerSingleton = ServiceFactory.Instance.Resolve<GuitarConnectionManager> (true);
-		Debug.Log("got one");
-		Debug.Log(managerSingleton);
-		Debug.Log(managerSingleton.isGuitarConnected);
 		//if (managerSingleton != null && managerSingleton != this) {
 		if (GameObject.Find ("GuitarConnectionManager") != null && GameObject.Find ("GuitarConnectionManager") != this.gameObject) {
-			Debug.Log("got here");
-			Destroy (this.gameObject);
+			ignore = true;
+			this.gameObject.SetActive (false);
+			foreach (MonoBehaviour c in this.gameObject.GetComponents<MonoBehaviour>()) {
+				c.enabled = false;
+			}
+			findWiimotesOnEnable = false;
+			return;
 		}
+		GuitarConnectionManager managerSingleton = ServiceFactory.Instance.Resolve<GuitarConnectionManager> (true);
 		DontDestroyOnLoad(transform.gameObject);
 		ServiceFactory.Instance.RegisterSingleton<GuitarConnectionManager> (this);
 		MessageRouter = ServiceFactory.Instance.Resolve<MessageRouter> ();
 		MessageRouter.AddHandler<RegisterGuitarInputMessage> (OnRegisterGuitarInputMessage);
 		MessageRouter.AddHandler<UnregisterGuitarInputMessage> (OnUnregisterGuitarInputMessage);
+		ignore = false;
 	}
 
 	private void Update() {
+		if (ignore) {
+			return;
+		}
 		foreach (KeyValuePair<int, Wiimote> wiimote in wiimotes) {
 			// Read wiimote data
 			int ret;
@@ -115,6 +132,8 @@ public class GuitarConnectionManager : MonoBehaviour, IMultiSceneSingleton {
 	}
 
 	private void OnDisable() {
+		if (ignore) 
+			return;		
 		
 		StopManagingWiimotes ();
 
@@ -197,6 +216,9 @@ public class GuitarConnectionManager : MonoBehaviour, IMultiSceneSingleton {
 	/// <returns>The player number of wiimote.</returns>
 	/// <param name="wiimote">Wiimote.</param>
 	public int IndexOfWiimote(Wiimote wiimote) {
+		if (wiimotes == null) {
+			return -1;
+		}
 		foreach (KeyValuePair<int, Wiimote> i in wiimotes) {
 			if (i.Value.hidapi_handle == wiimote.hidapi_handle) {
 				return i.Key;
