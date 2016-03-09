@@ -249,7 +249,7 @@ MonoBehaviour:
   ColorButton: 3
   unitColor: {r: 0.12282246, g: 0.007298882, b: 0.99264705, a: 0.991}
   hopHeight: 1
-  critDefendPercent: 0.5
+  critDefendPercent: 0.2
   characterName: Elvis Presley
   description: Melee
 --- !u!114 &11448352

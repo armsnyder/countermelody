@@ -270,7 +270,7 @@ MonoBehaviour:
   ColorButton: 2
   unitColor: {r: 1, g: 0.9831643, b: 0.3897059, a: 0.984}
   hopHeight: 1
-  critDefendPercent: 0.5
+  critDefendPercent: 0.2
   characterName: Michael Jackson
   description: Ranged
 --- !u!114 &11481162

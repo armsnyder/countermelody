@@ -301,7 +301,7 @@ MonoBehaviour:
   ColorButton: 4
   unitColor: {r: 0.99264705, g: 0.62619317, b: 0, a: 0.978}
   hopHeight: 1
-  critDefendPercent: 0.8
+  critDefendPercent: 0.5
   characterName: Miley Cyrus
   description: Healer
 --- !u!124 &12448930
