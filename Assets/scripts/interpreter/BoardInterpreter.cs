@@ -84,7 +84,7 @@ public class BoardInterpreter : Interpreter {
 				}
 				break;
 			case InputButton.TILT:
-				if (m.PlayerNumber == CurrentPlayer && IsAcceptingActions) {
+				if (m.PlayerNumber == CurrentPlayer) {
 					MessageRouter.RaiseMessage(new UnitActionMessage() {
 						ActionType = UnitActionMessageType.SPECIAL,
 						PlayerNumber = CurrentPlayer
