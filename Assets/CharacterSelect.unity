@@ -437,8 +437,6 @@ GameObject:
   - 92: {fileID: 428337805}
   - 124: {fileID: 428337804}
   - 81: {fileID: 428337803}
-  - 114: {fileID: 428337812}
-  - 114: {fileID: 428337811}
   - 114: {fileID: 428337810}
   - 114: {fileID: 428337809}
   m_Layer: 0
@@ -536,30 +534,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a6f693cb838cb494b88b7defe8675688, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  PlayerNumber: 0
---- !u!114 &428337811
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 428337802}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cbdf1e84ae1ba44e2a9f61a9f1f478b1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  PlayerNumber: 1
---- !u!114 &428337812
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 428337802}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cbdf1e84ae1ba44e2a9f61a9f1f478b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   PlayerNumber: 0
@@ -697,6 +671,8 @@ GameObject:
   m_Component:
   - 4: {fileID: 824962360}
   - 114: {fileID: 824962359}
+  - 114: {fileID: 824962362}
+  - 114: {fileID: 824962361}
   m_Layer: 0
   m_Name: GuitarConnectionManager
   m_TagString: Untagged
@@ -729,6 +705,30 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 9
+--- !u!114 &824962361
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 824962358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cbdf1e84ae1ba44e2a9f61a9f1f478b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PlayerNumber: 0
+--- !u!114 &824962362
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 824962358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cbdf1e84ae1ba44e2a9f61a9f1f478b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PlayerNumber: 1
 --- !u!1 &919692876
 GameObject:
   m_ObjectHideFlags: 0

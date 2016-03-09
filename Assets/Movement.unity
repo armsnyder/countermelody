@@ -1776,8 +1776,6 @@ GameObject:
   - 114: {fileID: 1471062523}
   - 114: {fileID: 1471062525}
   - 114: {fileID: 1471062527}
-  - 114: {fileID: 1471062529}
-  - 114: {fileID: 1471062528}
   - 114: {fileID: 1471062530}
   - 114: {fileID: 1471062531}
   - 114: {fileID: 1471062526}
@@ -1901,30 +1899,6 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 5da84bfc348e241dd92b55ce0288c6d9, type: 3}
   offset: 0
   songData: {fileID: 4900000, guid: 5d9c5be7c4d6b4f9092f35081044ac63, type: 3}
---- !u!114 &1471062528
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1471062518}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cbdf1e84ae1ba44e2a9f61a9f1f478b1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  PlayerNumber: 0
---- !u!114 &1471062529
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1471062518}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cbdf1e84ae1ba44e2a9f61a9f1f478b1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  PlayerNumber: 1
 --- !u!114 &1471062530
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2233,6 +2207,8 @@ GameObject:
   m_Component:
   - 4: {fileID: 1679820750}
   - 114: {fileID: 1679820749}
+  - 114: {fileID: 1679820752}
+  - 114: {fileID: 1679820751}
   m_Layer: 0
   m_Name: GuitarConnectionManager
   m_TagString: Untagged
@@ -2265,6 +2241,30 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 14
+--- !u!114 &1679820751
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1679820748}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cbdf1e84ae1ba44e2a9f61a9f1f478b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PlayerNumber: 0
+--- !u!114 &1679820752
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1679820748}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cbdf1e84ae1ba44e2a9f61a9f1f478b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PlayerNumber: 1
 --- !u!1001 &1692980154
 Prefab:
   m_ObjectHideFlags: 0
