@@ -260,7 +260,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   HitPoints: 100
-  AttackRange: 2
+  AttackRange: 3
   AttackFactor: 100
   DefenceFactor: 50
   MovementPoints: 4
@@ -394,8 +394,8 @@ Prefab:
     m_Modifications:
     - target: {fileID: 0}
       propertyPath: AttackRange
-      value: 2
-      objectReference: {fileID: 9100000, guid: 1db58803e8a17478bb30e8760bae99ec, type: 2}
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: m_Sprite
       value: 

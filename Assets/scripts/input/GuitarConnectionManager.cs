@@ -61,12 +61,8 @@ public class GuitarConnectionManager : MonoBehaviour, IMultiSceneSingleton {
 
 	private void Start() {
 		GuitarConnectionManager managerSingleton = ServiceFactory.Instance.Resolve<GuitarConnectionManager> (true);
-		Debug.Log("got one");
-		Debug.Log(managerSingleton);
-		Debug.Log(managerSingleton.isGuitarConnected);
 		//if (managerSingleton != null && managerSingleton != this) {
 		if (GameObject.Find ("GuitarConnectionManager") != null && GameObject.Find ("GuitarConnectionManager") != this.gameObject) {
-			Debug.Log("got here");
 			Destroy (this.gameObject);
 		}
 		DontDestroyOnLoad(transform.gameObject);
