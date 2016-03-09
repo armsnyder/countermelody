@@ -222,7 +222,7 @@ MonoBehaviour:
   musicVolume: 0.2
   description: Wrecking Ball. Do damage to all enemies in a line.
   WreckingBallSprite: {fileID: 101030, guid: d4ec8621268ad144e8b67a37d7e5c2eb, type: 2}
-  damage: 50
+  damage: 75
 --- !u!114 &11432776
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -234,7 +234,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7676464d4a0c8470b87f042310566b45, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  amount: 20
+  amount: 40
   range: 1
 --- !u!114 &11446364
 MonoBehaviour:
@@ -290,9 +290,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f627d936eeccb402985988debdfe19d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HitPoints: 80
+  HitPoints: 150
   AttackRange: 1
-  AttackFactor: 20
+  AttackFactor: 50
   DefenceFactor: 50
   MovementPoints: 4
   MovementSpeed: 8
@@ -438,7 +438,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: HitPoints
-      value: 80
+      value: 150
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: AttackRange
@@ -446,7 +446,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: AttackFactor
-      value: 20
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: critDefendPercent
@@ -454,7 +454,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: amount
-      value: 20
+      value: 40
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: range
@@ -464,6 +464,14 @@ Prefab:
       propertyPath: prefab
       value: 
       objectReference: {fileID: 196786, guid: 47f7f3974da7a4eca889ea3e48df3ddd, type: 2}
+    - target: {fileID: 0}
+      propertyPath: DefenceFactor
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: damage
+      value: 75
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 161762}
