@@ -43,6 +43,8 @@ public class CameraEffectsHandler : MonoBehaviour {
 		messageRouter.AddHandler<EnterBattleMessage> (OnEnterBattle);
 		messageRouter.AddHandler<ExitBattleMessage> (OnExitBattle);
 		messageRouter.AddHandler<SceneChangeMessage> (OnSceneChange);
+		messageRouter.AddHandler<PauseGameMessage> (OnPauseGame);
+		messageRouter.AddHandler<ResumeGameMessage> (OnResumeGame);
 
 		// Initialize effects parameters
 		if (blurComponent) {
@@ -74,6 +76,8 @@ public class CameraEffectsHandler : MonoBehaviour {
 		messageRouter.RemoveHandler<EnterBattleMessage> (OnEnterBattle);
 		messageRouter.RemoveHandler<ExitBattleMessage> (OnExitBattle);
 		messageRouter.RemoveHandler<SceneChangeMessage> (OnSceneChange);
+		messageRouter.RemoveHandler<PauseGameMessage> (OnPauseGame);
+		messageRouter.RemoveHandler<ResumeGameMessage> (OnResumeGame);
 	}
 
 	void OnEnterBattle(EnterBattleMessage m) {
@@ -249,5 +253,13 @@ public class CameraEffectsHandler : MonoBehaviour {
 
 	void SetColorKeyTan(AnimationCurve curve, float inTangent) {
 		curve.keys[0].inTangent = inTangent;
+	}
+
+	void OnPauseGame(PauseGameMessage m) {
+		OnEnterBattle (new EnterBattleMessage ());
+	}
+
+	void OnResumeGame(ResumeGameMessage m) {
+		OnExitBattle (new ExitBattleMessage ());
 	}
 }
